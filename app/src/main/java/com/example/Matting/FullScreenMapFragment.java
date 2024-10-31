@@ -1,4 +1,4 @@
-package com.example.a2024pj;
+package com.example.Matting;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,7 +15,6 @@ import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
-import com.naver.maps.map.util.FusedLocationSource;
 
 public class FullScreenMapFragment extends Fragment implements OnMapReadyCallback {
     private double cur_lat, cur_lon;

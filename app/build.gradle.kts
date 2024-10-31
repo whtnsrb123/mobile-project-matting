@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.a2024pj"
+    namespace = "com.example.Matting"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.a2024pj"
+        applicationId = "com.example.Matting"
         minSdk = 33
         targetSdk = 34
         versionCode = 1
