@@ -45,10 +45,20 @@ public class MyProfileActivity extends AppCompatActivity {
                     Intent feedIntent = new Intent(MyProfileActivity.this, MainActivity.class);
                     startActivity(feedIntent);
                     return true;
+                } else if (itemId == R.id.nav_chat) {
+                    // 채팅 액티비티로 이동
+                    Intent feedIntent = new Intent(MyProfileActivity.this, Chat_ChatroomActivity.class);
+                    startActivity(feedIntent);
+                    return true;
                 } else if (itemId == R.id.nav_community) {
                     // 커뮤니티 액티비티로 이동
                     Intent communityIntent = new Intent(MyProfileActivity.this, CommunityActivity.class);
                     startActivity(communityIntent);
+                    return true;
+                }else if (itemId == R.id.nav_mypage) {
+                    // 마이페이지 액티비티로 이동
+                    Intent mypageIntent = new Intent(MyProfileActivity.this, MyProfileActivity.class);
+                    startActivity(mypageIntent);
                     return true;
                 }
                 return false;

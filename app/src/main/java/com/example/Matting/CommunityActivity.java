@@ -61,7 +61,14 @@ public class CommunityActivity extends AppCompatActivity {
                 } else if (itemId == R.id.nav_community) {
 
                     return true;
-                } else if (itemId == R.id.nav_mypage) {
+                }
+                else if (itemId == R.id.nav_chat) {
+                    // 채팅 액티비티로 이동
+                    Intent feedIntent = new Intent(CommunityActivity.this, Chat_ChatroomActivity.class);
+                    startActivity(feedIntent);
+                    return true;
+                }
+                else if (itemId == R.id.nav_mypage) {
                     // 마이페이지 액티비티로 이동
                     Intent mypageIntent = new Intent(CommunityActivity.this, MyProfileActivity.class);
                     startActivity(mypageIntent);
