@@ -1,11 +1,16 @@
 package com.example.a2024pj;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,27 +39,38 @@ public class CommunityActivity extends AppCompatActivity {
         communityAdapter = new CommunityAdapter(this, communityList);
         postsRecyclerView.setAdapter(communityAdapter);
 
-        // BottomNavigationView 설정
+        // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_community); // 세 번째 아이템 선택
 
-        // BottomNavigationView 아이템 선택 리스너 설정
-//        bottomNavigationView.setOnItemSelectedListener(item -> {
-//            switch (item.getItemId()) {
-//                case R.id.nav_home:
-//                    // HomeActivity로 이동하는 코드 작성
-//                    return true;
-//                case R.id.nav_feed:
-//                    // FeedActivity로 이동하는 코드 작성
-//                    return true;
-//                case R.id.nav_community:
-//                    // 이미 CommunityActivity에 있으므로 동작 없음
-//                    return true;
-//                case R.id.nav_mypage:
-//                    // MyPageActivity로 이동하는 코드 작성
-//                    return true;
-//            }
-//            return false;
-//        });
+        // 네비게이션 아이템 선택 리스너 설정
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemId = item.getItemId();
+                if (itemId == R.id.nav_home) {
+                    // 메인 액티비티로 이동
+                    Intent homeIntent = new Intent(CommunityActivity.this, MainActivity.class);
+                    startActivity(homeIntent);
+                    return true;
+                } else if (itemId == R.id.nav_feed) {
+                    // 피드 액티비티로 이동
+                    Intent feedIntent = new Intent(CommunityActivity.this, MainActivity.class);
+                    startActivity(feedIntent);
+                    return true;
+                } else if (itemId == R.id.nav_community) {
+                    // 커뮤니티 액티비티로 이동
+                    Intent communityIntent = new Intent(CommunityActivity.this, CommunityActivity.class);
+                    startActivity(communityIntent);
+                    return true;
+                } else if (itemId == R.id.nav_mypage) {
+                    // 마이페이지 액티비티로 이동
+                    Intent mypageIntent = new Intent(CommunityActivity.this, MainActivity.class);
+                    startActivity(mypageIntent);
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 }
