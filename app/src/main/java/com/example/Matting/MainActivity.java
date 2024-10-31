@@ -27,13 +27,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemId = item.getItemId();
-//                if (itemId == R.id.nav_home) {
-//                    // 메인 액티비티로 이동
-//                    Intent homeIntent = new Intent(MainActivity.this, MainActivity.class);
-//                    startActivity(homeIntent);
-//                    return true;
-//                } else
-                    if (itemId == R.id.nav_feed) {
+                if (itemId == R.id.nav_feed) {
                     // 피드 액티비티로 이동
                     Intent feedIntent = new Intent(MainActivity.this, CommunityActivity.class);
                     startActivity(feedIntent);
@@ -45,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.nav_mypage) {
                     // 마이페이지 액티비티로 이동
-                    Intent mypageIntent = new Intent(MainActivity.this, CommunityActivity.class);
+                    Intent mypageIntent = new Intent(MainActivity.this, MyProfileActivity.class);
                     startActivity(mypageIntent);
                     return true;
                 }

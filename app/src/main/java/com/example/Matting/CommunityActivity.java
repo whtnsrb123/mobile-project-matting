@@ -59,13 +59,11 @@ public class CommunityActivity extends AppCompatActivity {
                     startActivity(feedIntent);
                     return true;
                 } else if (itemId == R.id.nav_community) {
-                    // 커뮤니티 액티비티로 이동
-                    Intent communityIntent = new Intent(CommunityActivity.this, CommunityActivity.class);
-                    startActivity(communityIntent);
+
                     return true;
                 } else if (itemId == R.id.nav_mypage) {
                     // 마이페이지 액티비티로 이동
-                    Intent mypageIntent = new Intent(CommunityActivity.this, MainActivity.class);
+                    Intent mypageIntent = new Intent(CommunityActivity.this, MyProfileActivity.class);
                     startActivity(mypageIntent);
                     return true;
                 }

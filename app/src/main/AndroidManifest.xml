@@ -33,6 +33,7 @@
             android:name=".DetailActivity"
             android:exported="true">
         </activity>
+        <activity android:name=".MyProfileActivity" />
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="7f3g9xuc1m" />
