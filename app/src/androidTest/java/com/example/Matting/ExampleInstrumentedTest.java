@@ -1,4 +1,4 @@
-package com.example.a2024pj;
+package com.example.Matting;
 
 import android.content.Context;
 
