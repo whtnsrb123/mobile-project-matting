@@ -37,6 +37,12 @@ public class MainActivity extends AppCompatActivity {
                     Intent communityIntent = new Intent(MainActivity.this, CommunityActivity.class);
                     startActivity(communityIntent);
                     return true;
+                }else if (itemId == R.id.nav_chat) {
+                    // 챗 액티비티로 이동
+                    Intent communityIntent = new Intent(MainActivity.this, Chat_ChatroomActivity.class);
+                    startActivity(communityIntent);
+                    return true;
+
                 } else if (itemId == R.id.nav_mypage) {
                     // 마이페이지 액티비티로 이동
                     Intent mypageIntent = new Intent(MainActivity.this, MyProfileActivity.class);
