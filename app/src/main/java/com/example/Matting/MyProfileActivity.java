@@ -3,12 +3,15 @@ package com.example.Matting;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -26,6 +29,12 @@ public class MyProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_profile); // activity_main.xml 파일과 연결
 
+        ImageView profileImage = findViewById(R.id.profileImage);
+        Glide.with(this)
+                .load(R.drawable.profile_image) // 이미지 경로
+                .circleCrop() // 원형으로 자르기
+                .into(profileImage);
+
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_mypage); // 세 번째 아이템 선택
@@ -39,26 +48,32 @@ public class MyProfileActivity extends AppCompatActivity {
                     // 메인 액티비티로 이동
                     Intent homeIntent = new Intent(MyProfileActivity.this, MainActivity.class);
                     startActivity(homeIntent);
+                    overridePendingTransition(0, 0);
                     return true;
                 } else if (itemId == R.id.nav_feed) {
                     // 피드 액티비티로 이동
                     Intent feedIntent = new Intent(MyProfileActivity.this, MainActivity.class);
                     startActivity(feedIntent);
+                    overridePendingTransition(0, 0);
                     return true;
                 } else if (itemId == R.id.nav_chat) {
                     // 채팅 액티비티로 이동
                     Intent feedIntent = new Intent(MyProfileActivity.this, Chat_ChatroomActivity.class);
                     startActivity(feedIntent);
+                    overridePendingTransition(0, 0);
                     return true;
                 } else if (itemId == R.id.nav_community) {
                     // 커뮤니티 액티비티로 이동
                     Intent communityIntent = new Intent(MyProfileActivity.this, CommunityActivity.class);
                     startActivity(communityIntent);
-                    return true;
-                }else if (itemId == R.id.nav_mypage) {
-                    // 마이페이지 액티비티로 이동
-                    Intent mypageIntent = new Intent(MyProfileActivity.this, MyProfileActivity.class);
-                    startActivity(mypageIntent);
+        ImageView profileImage = findViewById(R.id.profileImage);
+        Glide.with(MyProfileActivity.this)
+                .load(R.drawable.profile_image) // 이미지 경로
+                .circleCrop() // 원형으로 자르기
+                .into(profileImage);
+
+                    overridePendingTransition(0, 0);
+                    overridePendingTransition(0, 0);
                     return true;
                 }
                 return false;

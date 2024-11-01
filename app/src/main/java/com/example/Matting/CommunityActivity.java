@@ -52,11 +52,13 @@ public class CommunityActivity extends AppCompatActivity {
                     // 메인 액티비티로 이동
                     Intent homeIntent = new Intent(CommunityActivity.this, MainActivity.class);
                     startActivity(homeIntent);
+                    overridePendingTransition(0, 0);
                     return true;
                 } else if (itemId == R.id.nav_feed) {
                     // 피드 액티비티로 이동
                     Intent feedIntent = new Intent(CommunityActivity.this, MainActivity.class);
                     startActivity(feedIntent);
+                    overridePendingTransition(0, 0);
                     return true;
                 } else if (itemId == R.id.nav_community) {
 
@@ -66,12 +68,14 @@ public class CommunityActivity extends AppCompatActivity {
                     // 채팅 액티비티로 이동
                     Intent feedIntent = new Intent(CommunityActivity.this, Chat_ChatroomActivity.class);
                     startActivity(feedIntent);
+                    overridePendingTransition(0, 0);
                     return true;
                 }
                 else if (itemId == R.id.nav_mypage) {
                     // 마이페이지 액티비티로 이동
                     Intent mypageIntent = new Intent(CommunityActivity.this, MyProfileActivity.class);
                     startActivity(mypageIntent);
+                    overridePendingTransition(0, 0);
                     return true;
                 }
                 return false;

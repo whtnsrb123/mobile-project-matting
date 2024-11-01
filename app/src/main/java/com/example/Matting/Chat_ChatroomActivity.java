@@ -73,26 +73,31 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
                     // 메인 액티비티로 이동
                     Intent homeIntent = new Intent(Chat_ChatroomActivity.this, MainActivity.class);
                     startActivity(homeIntent);
+                    overridePendingTransition(0, 0);
                     return true;
                 } else if (itemId == R.id.nav_feed) {
                     // 피드 액티비티로 이동
                     Intent feedIntent = new Intent(Chat_ChatroomActivity.this, MainActivity.class);
                     startActivity(feedIntent);
+                    overridePendingTransition(0, 0);
                     return true;
                 } else if (itemId == R.id.nav_chat) {
                     // 채팅 액티비티로 이동
                     Intent chatIntent = new Intent(Chat_ChatroomActivity.this, Chat_ChatroomActivity.class);
                     startActivity(chatIntent);
+                    overridePendingTransition(0, 0);
                     return true;
                 } else if (itemId == R.id.nav_community) {
                     // 커뮤니티 액티비티로 이동
                     Intent communityIntent = new Intent(Chat_ChatroomActivity.this, CommunityActivity.class);
                     startActivity(communityIntent);
+                    overridePendingTransition(0, 0);
                     return true;
                 }else if (itemId == R.id.nav_mypage) {
                     // 마이페이지 액티비티로 이동
                     Intent mypageIntent = new Intent(Chat_ChatroomActivity.this, MyProfileActivity.class);
                     startActivity(mypageIntent);
+                    overridePendingTransition(0, 0);
                     return true;
                 }
                 return false;

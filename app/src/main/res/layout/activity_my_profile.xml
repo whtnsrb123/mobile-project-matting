@@ -33,7 +33,7 @@
                 android:id="@+id/addPostButton"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/ic_launcher_background" />
+                android:src="@drawable/plus_circle" />
         </LinearLayout>
 
         <LinearLayout
@@ -48,9 +48,8 @@
                 android:id="@+id/profileImage"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:background="@drawable/ic_launcher_background"
                 android:scaleType="centerCrop"
-                android:src="@drawable/your_image" />
+                android:src="@drawable/profile_image" />
 
             <!-- 게시물, 팔로워, 팔로잉 정보를 담은 LinearLayout -->
             <LinearLayout
