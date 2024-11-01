@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.naver.maps.map.MapView
+        android:id="@+id/full_screen_map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <!-- 닫기 버튼을 화면 오른쪽 상단에 배치 -->
+    <Button
+        android:id="@+id/btn_close_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|top"
+        android:layout_margin="16dp"
+        android:text="닫기" />
+</FrameLayout>
