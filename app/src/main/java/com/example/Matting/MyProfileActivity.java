@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,7 +30,7 @@ public class MyProfileActivity extends AppCompatActivity {
 
         ImageView profileImage = findViewById(R.id.profileImage);
         Glide.with(this)
-                .load(R.drawable.your_image) // 이미지 경로
+                .load(R.drawable.profile_image) // 이미지 경로
                 .circleCrop() // 원형으로 자르기
                 .into(profileImage);
 
@@ -66,6 +65,13 @@ public class MyProfileActivity extends AppCompatActivity {
                     // 커뮤니티 액티비티로 이동
                     Intent communityIntent = new Intent(MyProfileActivity.this, CommunityActivity.class);
                     startActivity(communityIntent);
+        ImageView profileImage = findViewById(R.id.profileImage);
+        Glide.with(MyProfileActivity.this)
+                .load(R.drawable.profile_image) // 이미지 경로
+                .circleCrop() // 원형으로 자르기
+                .into(profileImage);
+
+                    overridePendingTransition(0, 0);
                     overridePendingTransition(0, 0);
                     return true;
                 }
