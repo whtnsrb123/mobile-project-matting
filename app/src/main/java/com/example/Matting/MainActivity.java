@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 int itemId = item.getItemId();
                 if (itemId == R.id.nav_feed) {
                     // 피드 액티비티로 이동
-                    Intent feedIntent = new Intent(MainActivity.this, CommunityActivity.class);
+                    Intent feedIntent = new Intent(MainActivity.this, Feed_MainActivity.class);
                     startActivity(feedIntent);
                     overridePendingTransition(0, 0);
                     return true;
