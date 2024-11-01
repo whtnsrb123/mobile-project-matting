@@ -56,7 +56,7 @@ public class CommunityActivity extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.nav_feed) {
                     // 피드 액티비티로 이동
-                    Intent feedIntent = new Intent(CommunityActivity.this, MainActivity.class);
+                    Intent feedIntent = new Intent(CommunityActivity.this, Feed_MainActivity.class);
                     startActivity(feedIntent);
                     overridePendingTransition(0, 0);
                     return true;
