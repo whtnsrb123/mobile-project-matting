@@ -59,6 +59,7 @@ public class Feed_MainActivity extends AppCompatActivity {
                     // 메인 액티비티로 이동
                     Intent homeIntent = new Intent(Feed_MainActivity.this, MainActivity.class);
                     startActivity(homeIntent);
+                    overridePendingTransition(0, 0);
                     return true;
                 } else if (itemId == R.id.nav_feed) {
                     // 피드 액티비티로 이동
@@ -66,18 +67,21 @@ public class Feed_MainActivity extends AppCompatActivity {
                 } else if (itemId == R.id.nav_community) {
                     Intent feedIntent = new Intent(Feed_MainActivity.this, CommunityActivity.class);
                     startActivity(feedIntent);
+                    overridePendingTransition(0, 0);
                     return true;
                 }
                 else if (itemId == R.id.nav_chat) {
                     // 채팅 액티비티로 이동
                     Intent feedIntent = new Intent(Feed_MainActivity.this, Chat_ChatroomActivity.class);
                     startActivity(feedIntent);
+                    overridePendingTransition(0, 0);
                     return true;
                 }
                 else if (itemId == R.id.nav_mypage) {
                     // 마이페이지 액티비티로 이동
                     Intent mypageIntent = new Intent(Feed_MainActivity.this, MyProfileActivity.class);
                     startActivity(mypageIntent);
+                    overridePendingTransition(0, 0);
                     return true;
                 }
                 return false;
