@@ -36,8 +36,8 @@ import java.util.ArrayList;
 public class DetailActivity extends AppCompatActivity implements OnMapReadyCallback{
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
     LocationManager locationManager;
-    private double cur_lat = 37.5665; // 초기값 (서울 예시)
-    private double cur_lon = 126.9780;
+    private double cur_lat = 37.59056; // 초기값 (서울 예시)
+    private double cur_lon = 127.03639;
     private NaverMap naverMap;
 
     private RecyclerView mRecyclerView;
@@ -52,9 +52,6 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         String title = getIntent().getStringExtra("title");
         String subtitle = getIntent().getStringExtra("subtitle");
         Toast.makeText(getApplicationContext(), subtitle, Toast.LENGTH_LONG).show();
-
-        // 위치 요청
-        getLocation();
 
         // 지도 초기화
         initMap();
@@ -106,28 +103,6 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         });
     }
 
-    // 위치 가져오기 메서드
-    private void getLocation() {
-        // 위치 권한이 있는지 확인
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            Location loc_Current = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-            if (loc_Current != null) {
-                cur_lat = loc_Current.getLatitude();
-                cur_lon = loc_Current.getLongitude();
-                updateMapLocation();
-            } else {
-                // 위치를 가져올 수 없는 경우의 처리
-                cur_lat = 37.5665; // 기본값 (서울)
-                cur_lon = 126.9780;
-            }
-        } else {
-            // 권한이 없을 경우 사용자에게 요청
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-        }
-    }
-
     // 맵 위치 업데이트 메서드
     private void updateMapLocation() {
         if (naverMap != null) {
@@ -159,27 +134,11 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         //위치 및 각도 조정
         CameraPosition cameraPosition = new CameraPosition(
                 new LatLng(cur_lat, cur_lon),   // 위치 지정
-                13,                           // 줌 레벨
+                15,                           // 줌 레벨
                 0,                          // 기울임 각도
                 0                           // 방향
         );
         naverMap.setCameraPosition(cameraPosition);
-    }
-
-    // 권한 요청 결과 처리
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // 권한이 허용된 경우
-                getLocation();
-            } else {
-                // 권한이 거부된 경우 기본 위치 사용
-                cur_lat = 37.5665; // 서울
-                cur_lon = 126.9780;
-            }
-        }
     }
 
     // 전체 화면 지도 표시 메서드
