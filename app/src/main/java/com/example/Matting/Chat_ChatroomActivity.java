@@ -33,7 +33,7 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
     private Chat_MessageAdapter chatMessageAdapter;
     private List<Chat_Message> chatMessageList;
     private DatabaseReference db;
-    private String userId;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +45,10 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
         editTextMessage = findViewById(R.id.editTextMessage);
         buttonSend = findViewById(R.id.buttonSend);
 
-        userId = "user_temp" + UUID.randomUUID().toString();
+        user = new User(this);
         db = FirebaseDatabase.getInstance().getReference("chat");
         chatMessageList = new ArrayList<>();
-        chatMessageAdapter = new Chat_MessageAdapter(this, chatMessageList, userId);
+        chatMessageAdapter = new Chat_MessageAdapter(this, chatMessageList, user.getUserId());
         listViewMessages.setAdapter(chatMessageAdapter);
 
         buttonSend.setOnClickListener(v -> {
@@ -106,7 +106,7 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
     }
 
     private void sendMessage(String message) {
-        Chat_Message chatMessageData = new Chat_Message(userId, message, System.currentTimeMillis());
+        Chat_Message chatMessageData = new Chat_Message(user.getUserId(), message, System.currentTimeMillis());
         db.push().setValue(chatMessageData);
     }
 
