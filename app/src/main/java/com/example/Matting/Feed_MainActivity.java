@@ -25,12 +25,9 @@ public class Feed_MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed_main);
 
-
         recyclerView = findViewById(R.id.recyclerView);
 
-
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
 
         feedItems = new ArrayList<>();
 
@@ -39,7 +36,6 @@ public class Feed_MainActivity extends AppCompatActivity {
         feedItems.add(new com.example.Matting.FeedItem("user2", "두 번째 게시물입니다.", R.drawable.feed_food_image1, 3, 7));
         feedItems.add(new com.example.Matting.FeedItem("user3", "세 번째 게시물입니다.", R.drawable.feed_food_image1, 8, 12));
         feedItems.add(new com.example.Matting.FeedItem("user4", "네 번째 게시물입니다.", R.drawable.feed_food_image1, 1, 2));
-
 
 
         feedAdapter = new com.example.Matting.FeedAdapter(feedItems);
