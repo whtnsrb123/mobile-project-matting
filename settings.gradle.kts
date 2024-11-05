@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "2024pj"
+rootProject.name = "Matting"
 include(":app")

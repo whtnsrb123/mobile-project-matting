@@ -4,8 +4,11 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationRequest;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -14,6 +17,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.naver.maps.geometry.LatLng;
@@ -29,11 +34,13 @@ import com.naver.maps.map.overlay.OverlayImage;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
-    LocationManager locationManager;
+
     private double cur_lat = 37.5665; // 초기값 (서울 예시)
     private double cur_lon = 126.9780;
     private NaverMap naverMap;
     private Marker marker = new Marker();
+
+    LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,16 +95,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     // 위치 가져오기 메서드
     private void getLocation() {
+        Log.d("LocationDebug", "getLocation");
         // 위치 권한이 있는지 확인
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            Location loc_Current = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
+            Log.d("LocationDebug", "권한있음");
+            Location loc_Current = (locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) != null)
+                    ? locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                    : locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             if (loc_Current != null) {
                 cur_lat = loc_Current.getLatitude();
                 cur_lon = loc_Current.getLongitude();
+                Log.d("LocationDebug", "Location updated in onLocationChanged: lat = " + cur_lat + ", lon = " + cur_lon);
                 updateMapLocation();
             } else {
+                Log.d("LocationDebug", "위치 못가져옴");
                 // 위치를 가져올 수 없는 경우의 처리
                 cur_lat = 37.5665; // 기본값 (서울)
                 cur_lon = 126.9780;
@@ -107,6 +119,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
+
+
 
     // 맵 위치 업데이트 메서드
     private void updateMapLocation() {
@@ -118,11 +132,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     // 지도 초기화 메서드
     private void initMap() {
+        Log.d("LocationDebug", "initMap");
         FragmentManager fm = getSupportFragmentManager();
-        MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map_fragment);
+        MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map_fragment_main);
         if (mapFragment == null) {
             mapFragment = MapFragment.newInstance();
-            fm.beginTransaction().add(R.id.map_fragment, mapFragment).commit();
+            fm.beginTransaction().add(R.id.map_fragment_main, mapFragment).commit();
         }
         mapFragment.getMapAsync(this);
     }
@@ -131,15 +146,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(@NonNull NaverMap naverMap) {
         this.naverMap = naverMap;
-
+        Log.d("LocationDebug", "Naver map is ready");
         //배경 지도 선택
         naverMap.setMapType(NaverMap.MapType.Basic);
         //건물 표시
-        naverMap.setLayerGroupEnabled(naverMap.LAYER_GROUP_BUILDING, true);
+        naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_BUILDING, true);
         //위치 및 각도 조정
         CameraPosition cameraPosition = new CameraPosition(
                 new LatLng(cur_lat, cur_lon),   // 위치 지정
-                13,                           // 줌 레벨
+                15,                           // 줌 레벨
                 0,                          // 기울임 각도
                 0                           // 방향
         );
@@ -148,20 +163,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     // 권한 요청 결과 처리
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // 권한이 허용된 경우
-                getLocation();
-            } else {
-                // 권한이 거부된 경우 기본 위치 사용
-                cur_lat = 37.5665; // 서울
-                cur_lon = 126.9780;
-            }
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        Log.d("LocationDebug", "onRequestPermissionsResult");
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                // 권한이 허용된 경우
+//                Log.d("LocationDebug", "Location permission granted.");
+//                getLocation();
+//            } else {
+//                Log.d("LocationDebug", "Location permission denied.");
+//                // 권한이 거부된 경우 기본 위치 사용
+//                cur_lat = 37.5665; // 서울
+//                cur_lon = 126.9780;
+//            }
+//        }
+//    }
 
     // 지도 마커
     private void setMark(Marker marker, int resourceID, int zIndex)
