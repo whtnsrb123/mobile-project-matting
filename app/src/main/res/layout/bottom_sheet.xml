@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/background_bottom_sheet"
     app:behavior_hideable="true"
-    app:behavior_peekHeight="200dp"
+    app:behavior_peekHeight="150dp"
     android:orientation="vertical"
     android:padding="10dp"
     android:clickable="true"
