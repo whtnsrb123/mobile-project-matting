@@ -6,61 +6,61 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
-public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.CommunityViewHolder> {
+public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder> {
 
     private Context context;
-    private List<Community> communityList;
+    private List<Main> mainList;
 
-    public CommunityAdapter(Context context, List<Community> communityList) {
+    public MainAdapter(Context context, List<Main> mainList) {
         this.context = context;
-        this.communityList = communityList;
+        this.mainList = mainList;
     }
 
     @NonNull
     @Override
-    public CommunityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.activity_comunity_recycler_item, parent, false);
-        return new CommunityViewHolder(view);
+    public MainViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.activity_main_info_recycler_item, parent, false);
+        return new MainViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CommunityViewHolder holder, int position) {
-        Community community = communityList.get(position);
-        holder.tvTitle.setText(community.getTitle());
-        holder.tvSubtitle.setText(community.getSubtitle());
-        holder.tvInfo.setText(community.getInfo());
+    public void onBindViewHolder(@NonNull MainViewHolder holder, int position) {
+        Main main = mainList.get(position);
+        holder.tvTitle.setText(main.getTitle());
+        holder.tvCategory.setText(main.getCategory());
+        holder.tvDescription.setText(main.getDescription());
+        holder.tvRating.setText(String.valueOf(main.getRating()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 팝업창 표시
-//                Toast.makeText(context, "토스트 메시지입니다.",Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(context, DetailActivity.class);
-                intent.putExtra("title", community.getTitle());
-                intent.putExtra("subtitle", community.getSubtitle());
-                context.startActivity(intent);
+            // 팝업창 표시
+            Toast.makeText(context, "토스트 메시지입니다.",Toast.LENGTH_LONG).show();
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return communityList.size();
+        return mainList.size();
     }
 
-    public static class CommunityViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvSubtitle, tvInfo;
+    public static class MainViewHolder extends RecyclerView.ViewHolder {
+        TextView tvTitle, tvCategory, tvDescription, tvRating;
 
-        public CommunityViewHolder(@NonNull View itemView) {
+        public MainViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvSubtitle = itemView.findViewById(R.id.tvSubtitle);
-            tvInfo = itemView.findViewById(R.id.tvInfo);
+            tvCategory = itemView.findViewById(R.id.tvCategory);
+            tvDescription = itemView.findViewById(R.id.tvDescription);
+            tvRating = itemView.findViewById(R.id.tvRating);
         }
     }
 }

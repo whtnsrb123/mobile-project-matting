@@ -1,6 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_sheet_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_bottom_sheet"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="200dp"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:text="식당 정보"
+        android:textStyle="bold"
+        android:layout_margin="10dp"
+        android:textSize="20dp" />
+
+    <TableLayout
+        android:id="@+id/categoryTable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="*"
+        android:padding="16dp">
+
+        <!-- 첫 번째 줄 -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/category1"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:text="한식"
+                android:textSize="15sp"
+                android:background="@drawable/category_background"
+                android:layout_margin="5dp"
+                android:textColor="@color/black"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/category2"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:text="중식"
+                android:textSize="15sp"
+                android:background="@drawable/category_background"
+                android:layout_margin="5dp"
+                android:textColor="@color/black"/>
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/category3"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:text="일식"
+                android:textSize="15sp"
+                android:background="@drawable/category_background"
+                android:layout_margin="5dp"
+                android:textColor="@color/black"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/category4"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:text="양식"
+                android:textSize="15sp"
+                android:background="@drawable/category_background"
+                android:layout_margin="5dp"
+                android:textColor="@color/black"/>
+        </TableRow>
+
+    </TableLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/restaurantRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp" />
+
+</LinearLayout>

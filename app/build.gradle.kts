@@ -42,6 +42,8 @@ dependencies {
     implementation("com.naver.maps:map-sdk:3.19.1")
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("com.github.bumptech.glide:glide:4.12.0")
+    implementation("com.google.android.material:material:1.8.0")
+
     implementation("com.google.firebase:firebase-firestore:25.1.1")
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-analytics")

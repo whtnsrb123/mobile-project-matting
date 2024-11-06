@@ -1,57 +1,105 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="10dp">
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="1">
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <!-- Title and Rating Row -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-            <!-- Title -->
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
             <TextView
                 android:id="@+id/tvTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="제목"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:layout_weight="1"
+                android:text="기차순대국"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"/>
 
-            <!-- Subtitle -->
-            <TextView
-                android:id="@+id/tvSubtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="소제목"
-                android:textSize="14sp"
-                android:layout_marginTop="4dp" />
-
-            <!-- Info (Location, Time, Views) -->
-            <TextView
-                android:id="@+id/tvInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="공릉1동 · 58분 전 · 조회 39"
-                android:textSize="12sp"
-                android:layout_marginTop="4dp"
-                android:textColor="#757575" />
         </LinearLayout>
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/ic_launcher_background" />
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-    <!-- Separator -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#E0E0E0"
-        android:layout_marginTop="8dp" />
-</LinearLayout>
+            <TextView
+                android:id="@+id/tvCategory"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="육류, 고기요리"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"/>
+
+            <TextView
+                android:id="@+id/tvRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4.26"
+                android:textSize="16sp"
+                android:textColor="@android:color/holo_red_dark"/>
+        </LinearLayout>
+
+        <!-- Image Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/image1"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="1"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_launcher_foreground"/>
+
+            <ImageView
+                android:id="@+id/image2"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="1"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_launcher_foreground"/>
+
+            <ImageView
+                android:id="@+id/image3"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="1"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_launcher_foreground"/>
+        </LinearLayout>
+
+        <!-- Description Text -->
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="전에 술집에서 옆 테이블 아저씨들이 진짜 맛있는 순대국집이라고 말해서..."
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            android:maxLines="2"
+            android:ellipsize="end"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
+
+
