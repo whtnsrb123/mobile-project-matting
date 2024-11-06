@@ -1,0 +1,5 @@
+<!-- res/drawable/category_background.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="?attr/colorButtonNormal"/> <!-- 원하는 배경색 지정 -->
+    <corners android:radius="10dp"/> <!-- 모서리 둥글게 설정 (선택) -->
+</shape>

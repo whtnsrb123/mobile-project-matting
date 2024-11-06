@@ -4,9 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationRequest;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -16,9 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.naver.maps.geometry.LatLng;
@@ -27,20 +25,25 @@ import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.overlay.Marker;
-import com.naver.maps.map.overlay.Overlay;
 import com.naver.maps.map.overlay.OverlayImage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
-
     private double cur_lat = 37.5665; // 초기값 (서울 예시)
     private double cur_lon = 126.9780;
     private NaverMap naverMap;
     private Marker marker = new Marker();
-
     LocationManager locationManager;
+
+
+    private RecyclerView restaurantRecyclerView;
+    private MainAdapter mainAdapter;
+    private List<Main> mainList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +52,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // 위치 요청
         getLocation();
-
         // 지도 초기화
         initMap();
+
+        // RecyclerView 설정
+        restaurantRecyclerView = findViewById(R.id.restaurantRecyclerView);
+        restaurantRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+
+        // 데이터 초기화 및 어댑터 연결
+        mainList = new ArrayList<>();
+        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지,, 주소를 할지,, ", 4.26));
+        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지,, 주소를 할지,, ", 4.26));
+        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지,, 주소를 할지,, ", 4.26));
+        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지,, 주소를 할지,, ", 4.26));
+        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지,, 주소를 할지,, ", 4.26));
+        // 필요시 더 많은 데이터를 추가
+
+        mainAdapter = new MainAdapter(this, mainList);
+        restaurantRecyclerView.setAdapter(mainAdapter);
+
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
@@ -121,7 +141,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-
     // 맵 위치 업데이트 메서드
     private void updateMapLocation() {
         if (naverMap != null) {
@@ -162,25 +181,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setMark(marker, R.drawable.baseline_place_24, 0);
     }
 
-    // 권한 요청 결과 처리
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        Log.d("LocationDebug", "onRequestPermissionsResult");
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                // 권한이 허용된 경우
-//                Log.d("LocationDebug", "Location permission granted.");
-//                getLocation();
-//            } else {
-//                Log.d("LocationDebug", "Location permission denied.");
-//                // 권한이 거부된 경우 기본 위치 사용
-//                cur_lat = 37.5665; // 서울
-//                cur_lon = 126.9780;
-//            }
-//        }
-//    }
-
     // 지도 마커
     private void setMark(Marker marker, int resourceID, int zIndex)
     {
@@ -197,4 +197,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //마커 표시
         marker.setMap(naverMap);
     }
+
+
 }
