@@ -28,12 +28,12 @@
 
         <ImageButton
             android:id="@+id/imageButton7"
-            android:layout_width="74dp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="?attr/selectableItemBackground"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/feed_ic_search"
+            app:srcCompat="@drawable/search"
             android:contentDescription="@string/comment_button" />
 
     </LinearLayout>
@@ -45,9 +45,6 @@
             android:layout_weight="1"
             android:padding="8dp" />
 
-
-
-
     <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
@@ -56,8 +53,5 @@
         android:layout_alignParentBottom="true"
         android:background="?android:attr/windowBackground"
         app:menu="@menu/bottom_navigation_menu" />
-
-
-
 
 </LinearLayout>
