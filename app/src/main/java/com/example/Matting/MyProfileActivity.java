@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,23 +26,24 @@ public class MyProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_profile); // activity_main.xml 파일과 연결
+        setContentView(R.layout.activity_my_profile);
 
         ImageView profileImage = findViewById(R.id.profileImage);
         Glide.with(this)
-                .load(R.drawable.profile_image) // 이미지 경로
-                .circleCrop() // 원형으로 자르기
+                .load(R.drawable.profile_image)
+                .circleCrop()
                 .into(profileImage);
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setSelectedItemId(R.id.nav_mypage); // 세 번째 아이템 선택
+        bottomNavigationView.setSelectedItemId(R.id.nav_mypage);
 
         // 네비게이션 아이템 선택 리스너 설정
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemId = item.getItemId();
+
                 if (itemId == R.id.nav_home) {
                     // 메인 액티비티로 이동
                     Intent homeIntent = new Intent(MyProfileActivity.this, MainActivity.class);
@@ -58,22 +58,18 @@ public class MyProfileActivity extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.nav_chat) {
                     // 채팅 액티비티로 이동
-                    Intent feedIntent = new Intent(MyProfileActivity.this, Chat_ChatroomActivity.class);
-                    startActivity(feedIntent);
+                    Intent chatIntent = new Intent(MyProfileActivity.this, Chat_ChatroomActivity.class);
+                    startActivity(chatIntent);
                     overridePendingTransition(0, 0);
                     return true;
                 } else if (itemId == R.id.nav_community) {
                     // 커뮤니티 액티비티로 이동
                     Intent communityIntent = new Intent(MyProfileActivity.this, CommunityActivity.class);
                     startActivity(communityIntent);
-        ImageView profileImage = findViewById(R.id.profileImage);
-        Glide.with(MyProfileActivity.this)
-                .load(R.drawable.profile_image) // 이미지 경로
-                .circleCrop() // 원형으로 자르기
-                .into(profileImage);
-
                     overridePendingTransition(0, 0);
-                    overridePendingTransition(0, 0);
+                    return true;
+                } else if (itemId == R.id.nav_mypage) {
+                    // 현재 액티비티 그대로 유지
                     return true;
                 }
                 return false;
@@ -82,19 +78,24 @@ public class MyProfileActivity extends AppCompatActivity {
 
         // RecyclerView 설정
         postRecyclerView = findViewById(R.id.postRecyclerView);
-        // 한 줄에 3개의 아이템을 표시하는 GridLayoutManager 설정
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         postRecyclerView.setLayoutManager(gridLayoutManager);
 
-        // 게시글 데이터 설정
-        postList = new ArrayList<>();
-        postList.add(new Post("게시글 설명 1", R.drawable.ic_launcher_background));
-        postList.add(new Post("게시글 설명 2", R.drawable.ic_launcher_background));
-        postList.add(new Post("게시글 설명 3", R.drawable.ic_launcher_background));
-        postList.add(new Post("게시글 설명 4", R.drawable.ic_launcher_background));
+        // **postList를 PostData.getPostList()로 초기화**
+        postList = PostData.getPostList();
 
         // 어댑터 설정
         postAdapter = new PostAdapter(this, postList);
+        // **여기에 클릭 리스너 설정을 추가**
+        postAdapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                // 클릭된 게시글의 위치를 전달하며 PostViewerActivity로 이동
+                Intent intent = new Intent(MyProfileActivity.this, PostViewerActivity.class);
+                intent.putExtra("position", position); // 클릭한 게시글의 위치 전달
+                startActivity(intent);
+            }
+        });
         postRecyclerView.setAdapter(postAdapter);
     }
 }
