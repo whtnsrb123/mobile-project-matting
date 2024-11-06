@@ -4,6 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/map_fragment_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/topBar"
+        android:name="com.naver.maps.map.MapFragment" />
+
     <LinearLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
@@ -31,6 +38,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_alignParentEnd="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_launcher_background" />
 
         <ImageView
@@ -38,15 +46,11 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_launcher_background" />
     </LinearLayout>
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/map_fragment_main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/topBar"
-        android:name="com.naver.maps.map.MapFragment" />
+
 
     <!-- BottomSheet-->
     <include

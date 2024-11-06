@@ -40,12 +40,12 @@
                 android:id="@+id/category1"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
-                android:layout_weight="1"
-                android:text="한식"
-                android:textSize="15sp"
-                android:background="@drawable/category_background"
                 android:layout_margin="5dp"
-                android:textColor="@color/black"/>
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:text="한식"
+                android:textColor="@color/black"
+                android:textSize="15sp" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/category2"
