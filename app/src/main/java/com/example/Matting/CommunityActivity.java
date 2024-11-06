@@ -24,7 +24,7 @@ public class CommunityActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_community); // XML 파일도 activity_community로 수정해야 함
+        setContentView(R.layout.activity_community);
 
         // RecyclerView 설정
         postsRecyclerView = findViewById(R.id.postsRecyclerView);
