@@ -66,7 +66,7 @@ public class CommunityActivity extends AppCompatActivity {
                 }
                 else if (itemId == R.id.nav_chat) {
                     // 채팅 액티비티로 이동
-                    Intent feedIntent = new Intent(CommunityActivity.this, Chat_ChatroomActivity.class);
+                    Intent feedIntent = new Intent(CommunityActivity.this, Chat_ChatlistActivity.class);
                     startActivity(feedIntent);
                     overridePendingTransition(0, 0);
                     return true;

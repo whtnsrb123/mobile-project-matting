@@ -1,7 +1,10 @@
 package com.example.Matting;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton; // ImageButton 추가
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,36 +20,34 @@ import java.util.List;
 public class Feed_MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private com.example.Matting.FeedAdapter feedAdapter;
-    private List<com.example.Matting.FeedItem> feedItems;
+    private FeedAdapter feedAdapter;
+    private List<FeedItem> feedItems;
+    private ImageButton searchButton;  // imageButton7을 위한 변수
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed_main);
 
+        // RecyclerView 설정
         recyclerView = findViewById(R.id.recyclerView);
-
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         feedItems = new ArrayList<>();
 
-        // 피드  데이터 추가 맨 뒤 count는 일단 상수 값 넣음
-        feedItems.add(new com.example.Matting.FeedItem("user1", "첫 번째 게시물입니다.", R.drawable.feed_food_image1, 5, 10));
-        feedItems.add(new com.example.Matting.FeedItem("user2", "두 번째 게시물입니다.", R.drawable.feed_food_image1, 3, 7));
-        feedItems.add(new com.example.Matting.FeedItem("user3", "세 번째 게시물입니다.", R.drawable.feed_food_image1, 8, 12));
-        feedItems.add(new com.example.Matting.FeedItem("user4", "네 번째 게시물입니다.", R.drawable.feed_food_image1, 1, 2));
+        // 피드 데이터 추가
+        feedItems.add(new FeedItem("user1", "첫 번째 게시물입니다.", R.drawable.feed_food_image1, 5, 10));
+        feedItems.add(new FeedItem("user2", "두 번째 게시물입니다.", R.drawable.feed_food_image1, 3, 7));
+        feedItems.add(new FeedItem("user3", "세 번째 게시물입니다.", R.drawable.feed_food_image1, 8, 12));
+        feedItems.add(new FeedItem("user4", "네 번째 게시물입니다.", R.drawable.feed_food_image1, 1, 2));
 
-
-        feedAdapter = new com.example.Matting.FeedAdapter(feedItems);
+        feedAdapter = new FeedAdapter(feedItems);
         recyclerView.setAdapter(feedAdapter);
-
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_feed); // 세 번째 아이템 선택
 
-        // 네비게이션 아이템 선택 리스너 설정
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -65,15 +66,13 @@ public class Feed_MainActivity extends AppCompatActivity {
                     startActivity(feedIntent);
                     overridePendingTransition(0, 0);
                     return true;
-                }
-                else if (itemId == R.id.nav_chat) {
+                } else if (itemId == R.id.nav_chat) {
                     // 채팅 액티비티로 이동
-                    Intent feedIntent = new Intent(Feed_MainActivity.this, Chat_ChatroomActivity.class);
+                    Intent feedIntent = new Intent(Feed_MainActivity.this, Chat_ChatlistActivity.class);
                     startActivity(feedIntent);
                     overridePendingTransition(0, 0);
                     return true;
-                }
-                else if (itemId == R.id.nav_mypage) {
+                } else if (itemId == R.id.nav_mypage) {
                     // 마이페이지 액티비티로 이동
                     Intent mypageIntent = new Intent(Feed_MainActivity.this, MyProfileActivity.class);
                     startActivity(mypageIntent);
@@ -83,8 +82,18 @@ public class Feed_MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        // imageButton7 찾기
+        searchButton = findViewById(R.id.imageButton7);
+
+        // imageButton7 클릭 시 FeedSearchActivity로 이동
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // FeedSearchActivity로 이동
+                Intent intent = new Intent(Feed_MainActivity.this, FeedSearchActivity.class);
+                startActivity(intent);
+            }
+        });
     }
-
-
-
 }
