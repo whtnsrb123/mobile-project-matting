@@ -42,6 +42,8 @@
         </activity>
         <activity android:name=".MyProfileActivity" />
         <activity android:name=".Feed_MainActivity" />
+        <activity android:name=".FeedSearchActivity" />
+
         <activity android:name=".PostViewerActivity" />
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
