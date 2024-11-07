@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     return true;
                 }else if (itemId == R.id.nav_chat) {
                     // 챗 액티비티로 이동
-                    Intent communityIntent = new Intent(MainActivity.this, Chat_ChatroomActivity.class);
+                    Intent communityIntent = new Intent(MainActivity.this, Chat_ChatlistActivity.class);
                     startActivity(communityIntent);
                     overridePendingTransition(0, 0);
                     return true;

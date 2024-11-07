@@ -40,6 +40,8 @@
             android:windowSoftInputMode="adjustResize|stateHidden"
             android:exported="true">
         </activity>
+        <activity android:name=".Chat_ChatlistActivity" />
+
         <activity android:name=".MyProfileActivity" />
         <activity android:name=".Feed_MainActivity" />
         <activity android:name=".FeedSearchActivity" />
