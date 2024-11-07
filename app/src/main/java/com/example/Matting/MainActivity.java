@@ -8,10 +8,12 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
@@ -78,33 +80,35 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         restaurantRecyclerView = findViewById(R.id.restaurantRecyclerView);
         restaurantRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-
         // 데이터 초기화 및 어댑터 연결
         mainList = new ArrayList<>();
         mainAdapter = new MainAdapter(this, mainList);
         restaurantRecyclerView.setAdapter(mainAdapter);
 
-        // API 호출을 위한 스레드 실행
-        new Thread(new Runnable() {
+        // 디폴트 검색어로 초기 API 호출
+        callNaverSearchAPI("서울 성북구");
+
+        // 버튼들을 가져오기
+        AppCompatButton category1 = findViewById(R.id.category1);
+        AppCompatButton category2 = findViewById(R.id.category2);
+        AppCompatButton category3 = findViewById(R.id.category3);
+        AppCompatButton category4 = findViewById(R.id.category4);
+
+        // 공통 리스너 설정
+        View.OnClickListener searchClickListener = new View.OnClickListener() {
             @Override
-            public void run() {
-                String keyword = "서울 성북구 식당"; // 검색어 설정
-                final String result = getNaverSearch(keyword);
-
-                // 만약 result가 null이 아닌 경우에만 JSON 파싱 및 UI 업데이트 수행
-                if (result != null && !result.isEmpty()) {
-                    parseAndAddToList(result);
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(MainActivity.this, "데이터를 가져오지 못했습니다.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
+            public void onClick(View view) {
+                AppCompatButton button = (AppCompatButton) view;
+                String keyword = button.getText().toString(); // 버튼의 텍스트를 검색어로 사용
+                callNaverSearchAPI(keyword); // 클릭한 버튼의 텍스트로 API 호출
             }
-        }).start();
+        };
 
+        // 각 버튼에 리스너 설정
+        category1.setOnClickListener(searchClickListener);
+        category2.setOnClickListener(searchClickListener);
+        category3.setOnClickListener(searchClickListener);
+        category4.setOnClickListener(searchClickListener);
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
@@ -328,6 +332,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    // API 호출 메서드 (검색어를 받아서 호출하는 공통 메서드)
+    private void callNaverSearchAPI(String keyword) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final String result = getNaverSearch(keyword);
+
+                // UI 업데이트는 메인 스레드에서 실행해야 함
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (result != null && !result.isEmpty()) {
+                            parseAndAddToList(result);
+                        } else {
+                            Toast.makeText(MainActivity.this, "검색 결과를 가져오지 못했습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        }).start();
     }
 
 }
