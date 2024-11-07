@@ -10,8 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-
 import java.util.List;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
@@ -48,8 +46,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         Post post = postList.get(position);
 
-        // 공통으로 설정할 부분 (이미지)
-        Glide.with(context).load(post.getImageResId()).into(holder.postImage);
+        // 로컬 이미지 리소스 ID를 사용하여 이미지 설정
+        holder.postImage.setImageResource(post.getImageResId());
 
         // imageOnlyMode가 아닌 경우에만 추가 정보를 설정
         if (!imageOnlyMode) {
