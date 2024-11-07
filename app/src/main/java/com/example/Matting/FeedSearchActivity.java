@@ -1,14 +1,21 @@
 package com.example.Matting;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +54,47 @@ public class FeedSearchActivity extends AppCompatActivity {
 
                 // 검색 수행
                 performSearch(query);
+            }
+        });
+        // BottomNavigationView 초기화
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
+        bottomNavigationView.setSelectedItemId(R.id.nav_feed); // 세 번째 아이템 선택
+
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemId = item.getItemId();
+                if (itemId == R.id.nav_home) {
+                    // 메인 액티비티로 이동
+                    Intent homeIntent = new Intent(FeedSearchActivity.this, MainActivity.class);
+                    startActivity(homeIntent);
+                    overridePendingTransition(0, 0);
+                    return true;
+                } else if (itemId == R.id.nav_feed) {
+                    // 피드 액티비티로 이동
+                    Intent feedIntent = new Intent(FeedSearchActivity.this, Feed_MainActivity.class);
+                    startActivity(feedIntent);
+                    overridePendingTransition(0, 0);
+                    return true;
+                } else if (itemId == R.id.nav_community) {
+                    Intent feedIntent = new Intent(FeedSearchActivity.this, CommunityActivity.class);
+                    startActivity(feedIntent);
+                    overridePendingTransition(0, 0);
+                    return true;
+                } else if (itemId == R.id.nav_chat) {
+                    // 채팅 액티비티로 이동
+                    Intent feedIntent = new Intent(FeedSearchActivity.this, Chat_ChatroomActivity.class);
+                    startActivity(feedIntent);
+                    overridePendingTransition(0, 0);
+                    return true;
+                } else if (itemId == R.id.nav_mypage) {
+                    // 마이페이지 액티비티로 이동
+                    Intent mypageIntent = new Intent(FeedSearchActivity.this, MyProfileActivity.class);
+                    startActivity(mypageIntent);
+                    overridePendingTransition(0, 0);
+                    return true;
+                }
+                return false;
             }
         });
     }
