@@ -46,8 +46,7 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
         // 액션바 설정
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        // 뒤로가기 버튼 활성화
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);// 뒤로가기 버튼 활성화
         getSupportActionBar().setTitle(chatroomId);
 
 

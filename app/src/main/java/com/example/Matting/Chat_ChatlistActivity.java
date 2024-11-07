@@ -6,7 +6,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -56,6 +58,7 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
             }
         });
 
+
         listViewChatRooms.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -65,6 +68,14 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ImageButton addButton = findViewById(R.id.btn_add_chat);
+        addButton.setOnClickListener(v -> addNewChatRoom());
+
+
+
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
@@ -104,5 +115,11 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+    private void addNewChatRoom() {
+        // 새 채팅방을 추가하는 코드 예시
+        String newChatRoomId = "chatRoom_" + System.currentTimeMillis();
+        FirebaseDatabase.getInstance().getReference("chatroomlist").child(newChatRoomId).setValue(newChatRoomId);
+
     }
 }
