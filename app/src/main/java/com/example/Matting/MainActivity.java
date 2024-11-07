@@ -8,7 +8,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -16,7 +15,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.naver.maps.geometry.LatLng;
@@ -26,10 +24,8 @@ import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.overlay.OverlayImage;
-
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -40,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Marker marker = new Marker();
     LocationManager locationManager;
 
-
     private RecyclerView restaurantRecyclerView;
     private MainAdapter mainAdapter;
     private List<Main> mainList;
@@ -49,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mastermanaging d = new mastermanaging(this); // 앱 시작 시 하고 싶은 작업을 하게 하는 용도
 
         // 위치 요청
         getLocation();
@@ -59,23 +56,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         restaurantRecyclerView = findViewById(R.id.restaurantRecyclerView);
         restaurantRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-
         // 데이터 초기화 및 어댑터 연결
         mainList = new ArrayList<>();
-        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지,, 주소를 할지,, ", 4.26));
-        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지,, 주소를 할지,, ", 4.26));
-        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지,, 주소를 할지,, ", 4.26));
-        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지,, 주소를 할지,, ", 4.26));
-        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지,, 주소를 할지,, ", 4.26));
-        // 필요시 더 많은 데이터를 추가
+        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지, 주소를 할지", 4.26));
+        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지, 주소를 할지", 4.26));
+        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지, 주소를 할지", 4.26));
+        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지, 주소를 할지", 4.26));
+        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지, 주소를 할지", 4.26));
+        // 필요 시 더 많은 데이터를 추가
 
         mainAdapter = new MainAdapter(this, mainList);
         restaurantRecyclerView.setAdapter(mainAdapter);
 
-
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-
         bottomNavigationView.setSelectedItemId(R.id.nav_home); // 세 번째 아이템 선택
 
         // 네비게이션 아이템 선택 리스너 설정
@@ -95,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     startActivity(communityIntent);
                     overridePendingTransition(0, 0);
                     return true;
-                }else if (itemId == R.id.nav_chat) {
+                } else if (itemId == R.id.nav_chat) {
                     // 챗 액티비티로 이동
                     Intent communityIntent = new Intent(MainActivity.this, Chat_ChatlistActivity.class);
                     startActivity(communityIntent);
@@ -119,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // 위치 권한이 있는지 확인
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            Log.d("LocationDebug", "권한있음");
+            Log.d("LocationDebug", "권한 있음");
             Location loc_Current = (locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) != null)
                     ? locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
                     : locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -129,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Log.d("LocationDebug", "Location updated in onLocationChanged: lat = " + cur_lat + ", lon = " + cur_lon);
                 updateMapLocation();
             } else {
-                Log.d("LocationDebug", "위치 못가져옴");
+                Log.d("LocationDebug", "위치 못 가져옴");
                 // 위치를 가져올 수 없는 경우의 처리
                 cur_lat = 37.5665; // 기본값 (서울)
                 cur_lon = 126.9780;
@@ -139,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
-
 
     // 맵 위치 업데이트 메서드
     private void updateMapLocation() {
@@ -166,11 +159,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(@NonNull NaverMap naverMap) {
         this.naverMap = naverMap;
         Log.d("LocationDebug", "Naver map is ready");
-        //배경 지도 선택
+        // 배경 지도 선택
         naverMap.setMapType(NaverMap.MapType.Basic);
-        //건물 표시
+        // 건물 표시
         naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_BUILDING, true);
-        //위치 및 각도 조정
+        // 위치 및 각도 조정
         CameraPosition cameraPosition = new CameraPosition(
                 new LatLng(cur_lat, cur_lon),   // 위치 지정
                 15,                           // 줌 레벨
@@ -182,21 +175,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     // 지도 마커
-    private void setMark(Marker marker, int resourceID, int zIndex)
-    {
-        //원근감 표시
+    private void setMark(Marker marker, int resourceID, int zIndex) {
+        // 원근감 표시
         marker.setIconPerspectiveEnabled(true);
-        //아이콘 지정
+        // 아이콘 지정
         marker.setIcon(OverlayImage.fromResource(resourceID));
-        //마커의 투명도
+        // 마커의 투명도
         marker.setAlpha(0.8f);
-        //마커 위치
+        // 마커 위치
         marker.setPosition(new LatLng(cur_lat, cur_lon));
-        //마커 우선순위
+        // 마커 우선순위
         marker.setZIndex(zIndex);
-        //마커 표시
+        // 마커 표시
         marker.setMap(naverMap);
     }
-
-
 }

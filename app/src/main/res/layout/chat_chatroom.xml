@@ -41,12 +41,4 @@
             android:text="전송" />
     </LinearLayout>
 
-    <!-- 하단 네비게이션 바 고정 -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="?android:attr/windowBackground"
-        app:menu="@menu/bottom_navigation_menu" />
 </LinearLayout>
