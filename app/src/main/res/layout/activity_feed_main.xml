@@ -46,9 +46,6 @@
             android:layout_weight="1"
             android:padding="8dp" />
 
-
-
-
     <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
@@ -57,6 +54,5 @@
         android:layout_alignParentBottom="true"
         android:background="?android:attr/windowBackground"
         app:menu="@menu/bottom_navigation_menu" />
-
 
 </LinearLayout>

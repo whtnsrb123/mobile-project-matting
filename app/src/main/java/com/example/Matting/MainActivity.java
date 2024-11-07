@@ -8,6 +8,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -27,9 +29,22 @@ import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.overlay.OverlayImage;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -44,6 +59,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private RecyclerView restaurantRecyclerView;
     private MainAdapter mainAdapter;
     private List<Main> mainList;
+
+    private static final String CLIENT_ID = "WkJqg1dwU0AIZSFbQ4Ld"; // 네이버 애플리케이션 클라이언트 ID
+    private static final String CLIENT_SECRET = "PvoSkMQnin"; // 네이버 애플리케이션 클라이언트 시크릿
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,22 +81,34 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // 데이터 초기화 및 어댑터 연결
         mainList = new ArrayList<>();
-        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지,, 주소를 할지,, ", 4.26));
-        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지,, 주소를 할지,, ", 4.26));
-        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지,, 주소를 할지,, ", 4.26));
-        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지,, 주소를 할지,, ", 4.26));
-        mainList.add(new Main("대성갈비", "육류, 고기요리", "리뷰를 할지,, 주소를 할지,, ", 4.26));
-        // 필요시 더 많은 데이터를 추가
-
         mainAdapter = new MainAdapter(this, mainList);
         restaurantRecyclerView.setAdapter(mainAdapter);
+
+        // API 호출을 위한 스레드 실행
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String keyword = "서울 성북구 식당"; // 검색어 설정
+                final String result = getNaverSearch(keyword);
+
+                // 만약 result가 null이 아닌 경우에만 JSON 파싱 및 UI 업데이트 수행
+                if (result != null && !result.isEmpty()) {
+                    parseAndAddToList(result);
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, "데이터를 가져오지 못했습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        }).start();
 
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-
         bottomNavigationView.setSelectedItemId(R.id.nav_home); // 세 번째 아이템 선택
-
         // 네비게이션 아이템 선택 리스너 설정
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -140,7 +171,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-
     // 맵 위치 업데이트 메서드
     private void updateMapLocation() {
         if (naverMap != null) {
@@ -198,5 +228,106 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         marker.setMap(naverMap);
     }
 
+    // 네이버 API 호출 메서드
+    private String getNaverSearch(String keyword) {
+        String text;
+        try {
+            text = URLEncoder.encode(keyword, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("검색어 인코딩 실패", e);
+        }
+
+        String apiURL = "https://openapi.naver.com/v1/search/local?query=" + text + "&display=5"; // JSON 결과
+        Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put("X-Naver-Client-Id", CLIENT_ID);
+        requestHeaders.put("X-Naver-Client-Secret", CLIENT_SECRET);
+
+        String responseBody = get(apiURL, requestHeaders);
+        // JSON 응답을 파싱하고 리스트에 추가
+        parseAndAddToList(responseBody);
+
+        return responseBody;
+    }
+
+    private String get(String apiUrl, Map<String, String> requestHeaders) {
+        HttpURLConnection con = connect(apiUrl);
+        try {
+            con.setRequestMethod("GET");
+            for (Map.Entry<String, String> header : requestHeaders.entrySet()) {
+                con.setRequestProperty(header.getKey(), header.getValue());
+            }
+
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) { // 정상 호출
+                return readBody(con.getInputStream());
+            } else { // 오류 발생
+                return readBody(con.getErrorStream());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("API 요청과 응답 실패", e);
+        } finally {
+            con.disconnect();
+        }
+    }
+
+    private HttpURLConnection connect(String apiUrl) {
+        try {
+            URL url = new URL(apiUrl);
+            return (HttpURLConnection) url.openConnection();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("API URL이 잘못되었습니다: " + apiUrl, e);
+        } catch (IOException e) {
+            throw new RuntimeException("연결이 실패했습니다: " + apiUrl, e);
+        }
+    }
+
+    private String readBody(InputStream body) {
+        InputStreamReader streamReader = new InputStreamReader(body);
+        try (BufferedReader lineReader = new BufferedReader(streamReader)) {
+            StringBuilder responseBody = new StringBuilder();
+            String line;
+            while ((line = lineReader.readLine()) != null) {
+                responseBody.append(line);
+            }
+            return responseBody.toString();
+        } catch (IOException e) {
+            throw new RuntimeException("API 응답을 읽는 데 실패했습니다.", e);
+        }
+    }
+
+    private void parseAndAddToList(String jsonResponse) {
+        try {
+            // 중복 방지를 위해 리스트 초기화
+            mainList.clear();
+
+            JSONObject jsonObject = new JSONObject(jsonResponse);
+            JSONArray itemsArray = jsonObject.getJSONArray("items");
+
+            for (int i = 0; i < itemsArray.length(); i++) {
+                JSONObject item = itemsArray.getJSONObject(i);
+
+                String title = item.getString("title").replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", ""); // HTML 태그 제거
+                String category = item.getString("category");
+                String address = item.optString("address", item.optString("roadAddress", "주소 없음")); // address 우선, 없으면 roadAddress 사용
+
+                // 예시 평점 (데이터에 따라 변경 가능)
+                double rating = 4.26;
+
+                // Main 객체를 생성하고 리스트에 추가
+                mainList.add(new Main(title, category, address, rating));
+            }
+
+            // RecyclerView에 데이터 갱신 알림
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mainAdapter.notifyDataSetChanged();
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }
