@@ -33,7 +33,7 @@
             android:layout_weight="1"
             android:background="?attr/selectableItemBackground"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/feed_ic_search"
+            app:srcCompat="@drawable/feed"
             android:contentDescription="@string/comment_button" />
 
     </LinearLayout>
