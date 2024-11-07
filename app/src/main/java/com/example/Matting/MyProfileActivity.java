@@ -85,14 +85,12 @@ public class MyProfileActivity extends AppCompatActivity {
         postList = PostData.getPostList();
 
         // 어댑터 설정
-        postAdapter = new PostAdapter(this, postList);
-        // **여기에 클릭 리스너 설정을 추가**
+        postAdapter = new PostAdapter(this, postList, true); // 이미지 전용 모드 활성화
         postAdapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                // 클릭된 게시글의 위치를 전달하며 PostViewerActivity로 이동
                 Intent intent = new Intent(MyProfileActivity.this, PostViewerActivity.class);
-                intent.putExtra("position", position); // 클릭한 게시글의 위치 전달
+                intent.putExtra("position", position);
                 startActivity(intent);
             }
         });

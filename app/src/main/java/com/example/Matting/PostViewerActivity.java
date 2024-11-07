@@ -3,12 +3,14 @@ package com.example.Matting;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager2.widget.ViewPager2;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
 public class PostViewerActivity extends AppCompatActivity {
-    private ViewPager2 viewPager;
+    private RecyclerView recyclerView;
+    private PostAdapter postAdapter;
     private List<Post> postList;
 
     @Override
@@ -16,13 +18,19 @@ public class PostViewerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_viewer);
 
-        postList = PostData.getPostList();  // 게시글 데이터를 가져오는 메서드
-        int startPosition = getIntent().getIntExtra("position", 0);
+        // 게시글 리스트 가져오기
+        postList = PostData.getPostList();
 
-        viewPager = findViewById(R.id.viewPager);
-        viewPager.setOrientation(ViewPager2.ORIENTATION_VERTICAL); // 세로 방향으로 설정
-        PostPagerAdapter adapter = new PostPagerAdapter(this, postList);
-        viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(startPosition, false);
+        // RecyclerView 설정
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // 어댑터 설정 (전체 정보 모드로 설정하기 위해 imageOnlyMode를 false로 전달)
+        postAdapter = new PostAdapter(this, postList, false);
+        recyclerView.setAdapter(postAdapter);
+
+        // 클릭한 게시글 위치로 이동
+        int startPosition = getIntent().getIntExtra("position", 0);
+        recyclerView.scrollToPosition(startPosition);
     }
 }
