@@ -34,6 +34,7 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
     private List<Chat_Message> chatMessageList;
     private DatabaseReference db;
     private User user;
+    private String chatroomId = "testroom";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,9 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
         buttonSend = findViewById(R.id.buttonSend);
 
         user = new User(this);
-        db = FirebaseDatabase.getInstance().getReference("chat");
+
+        db = FirebaseDatabase.getInstance().getReference().child("chatroomlist").child(chatroomId);
+        db.child("id").setValue(chatroomId);
         chatMessageList = new ArrayList<>();
         chatMessageAdapter = new Chat_MessageAdapter(this, chatMessageList, user.getUserId());
         listViewMessages.setAdapter(chatMessageAdapter);
@@ -93,7 +96,7 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
                     startActivity(communityIntent);
                     overridePendingTransition(0, 0);
                     return true;
-                }else if (itemId == R.id.nav_mypage) {
+                } else if (itemId == R.id.nav_mypage) {
                     // 마이페이지 액티비티로 이동
                     Intent mypageIntent = new Intent(Chat_ChatroomActivity.this, MyProfileActivity.class);
                     startActivity(mypageIntent);
@@ -106,12 +109,13 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
     }
 
     private void sendMessage(String message) {
+        String messageId = db.child("messages").push().getKey();
         Chat_Message chatMessageData = new Chat_Message(user.getUserId(), message, System.currentTimeMillis());
-        db.push().setValue(chatMessageData);
+        db.child("messages").child(messageId).setValue(chatMessageData);
     }
 
     private void receiveMessages() {
-        db.addValueEventListener(new ValueEventListener() {
+        db.child("messages").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 chatMessageList.clear();
