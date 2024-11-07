@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,6 +43,14 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
         setContentView(R.layout.chat_chatroom);
 
+        // 액션바 설정
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // 뒤로가기 버튼 활성화
+        getSupportActionBar().setTitle(chatroomId);
+
+
         listViewMessages = findViewById(R.id.listViewMessages);
         editTextMessage = findViewById(R.id.editTextMessage);
         buttonSend = findViewById(R.id.buttonSend);
@@ -68,6 +77,13 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
         receiveMessages();
     }
 
+    @Override public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed(); // 뒤로가기 버튼 클릭 시 이전 액티비티로 이동
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
     private void sendMessage(String message) {
         String messageId = db.child("messages").push().getKey();
         Chat_Message chatMessageData = new Chat_Message(user.getUserId(), message, System.currentTimeMillis());
