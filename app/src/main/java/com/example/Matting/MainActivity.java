@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mastermanaging d = new mastermanaging(this); // 앱 시작 시 하고 싶은 작업을 하게 하는 용도
+        //mastermanaging d = new mastermanaging(this); // 앱 시작 시 하고 싶은 작업을 하게 하는 용도
 
         // 위치 요청
         getLocation();

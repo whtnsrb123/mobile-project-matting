@@ -6,8 +6,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
@@ -59,7 +61,6 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
             }
         });
 
-
         listViewChatRooms.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -69,14 +70,12 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         ImageButton addButton = findViewById(R.id.btn_add_chat);
-        addButton.setOnClickListener(v -> addNewChatRoom());
-
-
-
+        addButton.setOnClickListener(v -> showAddChatRoomDialog());
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
@@ -117,9 +116,28 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
             }
         });
     }
-    private void addNewChatRoom() {
+
+    private void showAddChatRoomDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add Chat Room");
+
+        final EditText input = new EditText(this);
+        builder.setView(input);
+
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            String newChatRoomId = input.getText().toString();
+            if (!newChatRoomId.isEmpty()) {
+                addNewChatRoom(newChatRoomId);
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+    }
+
+    private void addNewChatRoom(String chatRoomId) {
         DatabaseReference db;
-        String newChatRoomId = "chatRoom_" + System.currentTimeMillis();
         User user = new User(this);
         db = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUserId());
 
@@ -130,13 +148,13 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
                 List<String> chats = new ArrayList<>();
                 if (snapshot.exists()) {
                     for (DataSnapshot chatSnapshot : snapshot.getChildren()) {
-                        String chatRoomId = chatSnapshot.getValue(String.class);
-                        if (chatRoomId != null) {
-                            chats.add(chatRoomId);
+                        String existingChatRoomId = chatSnapshot.getValue(String.class);
+                        if (existingChatRoomId != null) {
+                            chats.add(existingChatRoomId);
                         }
                     }
                 }
-                chats.add(newChatRoomId);
+                chats.add(chatRoomId);
 
                 // Firebase에 저장
                 db.child("chats").setValue(chats);
@@ -148,5 +166,4 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
             }
         });
     }
-
 }
