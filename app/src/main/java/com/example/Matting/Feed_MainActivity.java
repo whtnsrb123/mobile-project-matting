@@ -41,6 +41,9 @@ public class Feed_MainActivity extends AppCompatActivity {
         feedItems.add(new FeedItem("user3", "세 번째 게시물입니다.", R.drawable.feed_food_image3, 8, 12));
         feedItems.add(new FeedItem("user4", "네 번째 게시물입니다.", R.drawable.feed_food_image1, 1, 2));
 
+        // 예시 코드 - 댓글 버튼 클릭 이벤트
+
+
         feedAdapter = new FeedAdapter(feedItems);
         recyclerView.setAdapter(feedAdapter);
 
@@ -95,5 +98,13 @@ public class Feed_MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
+
+
+
+
+
+
     }
 }
