@@ -3,9 +3,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!-- 검색을 위한 EditText 추가 -->
+    <EditText
+        android:id="@+id/searchEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="검색"
+        android:padding="16dp"
+        android:layout_margin="8dp"
+        android:background="@android:drawable/edit_text" />
+
     <!-- 팔로워 목록을 표시할 RecyclerView -->
     <RecyclerView
-        android:id="@+id/followersRecyclerView"
+        android:id="@+id/recyclerViewFollowers"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
