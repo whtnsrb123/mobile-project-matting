@@ -73,6 +73,13 @@ public class MyProfileActivity extends AppCompatActivity {
         Button editProfileButton = findViewById(R.id.editProfileButton);
         editProfileButton.setOnClickListener(v -> checkPermissionAndOpenGallery());
 
+        Button followersButton = findViewById(R.id.followersListButton);
+        followersButton.setOnClickListener(v -> {
+            // 팔로워 목록 액티비티로 이동
+            Intent intent = new Intent(MyProfileActivity.this, FollowersActivity.class);
+            startActivity(intent);
+        });
+
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_mypage);
