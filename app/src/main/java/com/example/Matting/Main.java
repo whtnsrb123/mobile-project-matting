@@ -28,20 +28,4 @@ public class Main {
     public double getRating() {
         return rating;
     }
-
-//    public void setTitle(String title) {
-//        this.title = title;
-//    }
-//
-//    public void setSubtitle(String subtitle) {
-//        this.subtitle = subtitle;
-//    }
-//
-//    public void setInfo(String info) {
-//        this.info = info;
-//    }
-//
-//    public void setRating(double rating) {
-//        this.rating = rating;
-//    }
 }

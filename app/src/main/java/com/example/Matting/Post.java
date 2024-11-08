@@ -1,20 +1,22 @@
 package com.example.Matting;
 
-// Post.java
 public class Post {
+    private String username;
     private String description;
-    private int imageResId;
+    private int imageResId;  // 이미지 리소스 ID 필드
+    private String timestamp;
 
-    public Post(String description, int imageResId) {
-//        this.description = description;
+    public Post() {}
+
+    public Post(String username, String description, int imageResId, String timestamp) {
+        this.username = username;
+        this.description = description;
         this.imageResId = imageResId;
+        this.timestamp = timestamp;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public int getImageResId() {
-        return imageResId;
-    }
+    public String getUsername() { return username; }
+    public String getDescription() { return description; }
+    public int getImageResId() { return imageResId; }  // 리소스 ID 반환
+    public String getTimestamp() { return timestamp; }
 }

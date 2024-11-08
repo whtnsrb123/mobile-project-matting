@@ -25,12 +25,22 @@ public class PostFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_post, container, false);
 
+        // View 요소들 연결
+        ImageView profileImage = view.findViewById(R.id.profileImage);
+        TextView username = view.findViewById(R.id.username);
         ImageView postImage = view.findViewById(R.id.postImage);
+        ImageView likeButton = view.findViewById(R.id.likeButton);
+        ImageView commentButton = view.findViewById(R.id.commentButton);
         TextView postDescription = view.findViewById(R.id.postDescription);
+        TextView postTimestamp = view.findViewById(R.id.postTimestamp);
 
-        // getImageResId()로 변경
-        Glide.with(this).load(post.getImageResId()).into(postImage);
-        postDescription.setText(post.getDescription());
+        // 게시글 데이터 설정
+        username.setText(post.getUsername());  // 사용자 이름 설정
+        Glide.with(this).load(post.getImageResId()).into(postImage); // 게시글 이미지 설정
+        postDescription.setText(post.getDescription()); // 게시글 본문 설정
+        postTimestamp.setText(post.getTimestamp()); // 게시글 시간 설정
+
+        // 좋아요 버튼과 댓글 버튼은 여기서 기능을 추가할 수도 있음
 
         return view;
     }

@@ -20,6 +20,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_launcher_foreground"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Back button" />
 
         <TextView
@@ -145,6 +146,7 @@
                     android:layout_width="0dp"
                     android:layout_height="24dp"
                     android:layout_weight="0.5"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_launcher_background"/>
 
             </LinearLayout>

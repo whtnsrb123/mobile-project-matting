@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/background_bottom_sheet"
     app:behavior_hideable="true"
-    app:behavior_peekHeight="200dp"
+    app:behavior_peekHeight="150dp"
     android:orientation="vertical"
     android:padding="10dp"
     android:clickable="true"
@@ -40,12 +40,12 @@
                 android:id="@+id/category1"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
-                android:layout_weight="1"
-                android:text="한식"
-                android:textSize="15sp"
-                android:background="@drawable/category_background"
                 android:layout_margin="5dp"
-                android:textColor="@color/black"/>
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:text="한식"
+                android:textColor="@color/black"
+                android:textSize="15sp" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/category2"
@@ -86,6 +86,6 @@
         android:id="@+id/restaurantRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp" />
+        android:layout_marginBottom="80dp" />
 
 </LinearLayout>
