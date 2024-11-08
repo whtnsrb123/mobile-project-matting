@@ -1,51 +1,84 @@
 package com.example.Matting;
 
-
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.view.MenuItem;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommentActivity extends AppCompatActivity {
+public class CommunityActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
-    private CommentAdapter adapter;
-    private List<String> commentList;
-    private EditText editTextComment;
-    private Button buttonPostComment;
+    private RecyclerView postsRecyclerView;
+    private CommunityAdapter communityAdapter;
+    private List<Community> communityList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.comment_layout);
+        setContentView(R.layout.activity_community);
 
-        recyclerView = findViewById(R.id.recyclerViewComments);
-        editTextComment = findViewById(R.id.editTextComment);
-        buttonPostComment = findViewById(R.id.buttonPostComment);
+        // RecyclerView 설정
+        postsRecyclerView = findViewById(R.id.postsRecyclerView);
+        postsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        commentList = new ArrayList<>();
-        adapter = new CommentAdapter(commentList);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
+        // 데이터 초기화 및 어댑터 연결
+        communityList = new ArrayList<>();
+        communityList.add(new Community("고기먹으러 같이가요", "정릉역 1번출구...", "2024.10.31 · 58분 전 · 3/4"));
+        communityList.add(new Community("중식당 같이가요", "국민대 근처...", "2024.10.31 · 18시간 전 · 2/4"));
+        // 필요시 더 많은 데이터를 추가
 
-        buttonPostComment.setOnClickListener(new View.OnClickListener() {
+        communityAdapter = new CommunityAdapter(this, communityList);
+        postsRecyclerView.setAdapter(communityAdapter);
+
+        // BottomNavigationView 초기화
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
+        bottomNavigationView.setSelectedItemId(R.id.nav_community); // 세 번째 아이템 선택
+
+        // 네비게이션 아이템 선택 리스너 설정
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
-            public void onClick(View v) {
-                String newComment = editTextComment.getText().toString().trim();
-                if (!newComment.isEmpty()) {
-                    commentList.add(newComment);
-                    adapter.notifyItemInserted(commentList.size() - 1);
-                    editTextComment.setText("");
-                    recyclerView.scrollToPosition(commentList.size() - 1);
-                } else {
-                    Toast.makeText(CommentActivity.this, "Please enter a comment", Toast.LENGTH_SHORT).show();
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemId = item.getItemId();
+                if (itemId == R.id.nav_home) {
+                    // 메인 액티비티로 이동
+                    Intent homeIntent = new Intent(CommunityActivity.this, MainActivity.class);
+                    startActivity(homeIntent);
+                    overridePendingTransition(0, 0);
+                    return true;
+                } else if (itemId == R.id.nav_feed) {
+                    // 피드 액티비티로 이동
+                    Intent feedIntent = new Intent(CommunityActivity.this, Feed_MainActivity.class);
+                    startActivity(feedIntent);
+                    overridePendingTransition(0, 0);
+                    return true;
+                } else if (itemId == R.id.nav_community) {
+
+                    return true;
                 }
+                else if (itemId == R.id.nav_chat) {
+                    // 채팅 액티비티로 이동
+                    Intent feedIntent = new Intent(CommunityActivity.this, Chat_ChatlistActivity.class);
+                    startActivity(feedIntent);
+                    overridePendingTransition(0, 0);
+                    return true;
+                }
+                else if (itemId == R.id.nav_mypage) {
+                    // 마이페이지 액티비티로 이동
+                    Intent mypageIntent = new Intent(CommunityActivity.this, MyProfileActivity.class);
+                    startActivity(mypageIntent);
+                    overridePendingTransition(0, 0);
+                    return true;
+                }
+                return false;
             }
         });
     }
