@@ -23,32 +23,30 @@
         android:orientation="horizontal"
         android:paddingBottom="4dp">
 
-        <ImageButton
-            android:id="@+id/commentButton"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/feed_ic_comment"
-            android:contentDescription="@string/comment_button"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="4dp" />
-
-        <TextView
-            android:id="@+id/commentCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp" />
-
-        <ImageButton
+        <!-- 수정된 부분 -->
+        <ImageView
             android:id="@+id/reactionButton"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/feed_ic_reaction"
-            android:contentDescription="@string/reaction_button"
+            android:src="@drawable/reaction_default"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="4dp" />
 
         <TextView
             android:id="@+id/reactionCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp" />
+
+        <ImageView
+            android:id="@+id/commentButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_comment" />
+
+        <TextView
+            android:id="@+id/commentCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp" />
