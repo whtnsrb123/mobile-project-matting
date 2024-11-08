@@ -54,7 +54,7 @@
 
     <!-- BottomSheet-->
     <include
-        layout="@layout/bottom_sheet" />
+        layout="@layout/activity_main_bottom_sheet" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/info_fragment_container"
