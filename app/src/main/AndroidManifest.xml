@@ -30,6 +30,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".FollowersActivity" >
+        </activity>
+
+        <activity
             android:name=".CommunityActivity"
             android:exported="true">
         </activity>
