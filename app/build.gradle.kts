@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services")
 }
-
 android {
     namespace = "com.example.Matting"
     compileSdk = 34
@@ -49,6 +48,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-database:20.0.3")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

@@ -1,12 +1,24 @@
 package com.example.Matting;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.provider.MediaStore;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
+import android.view.MenuItem;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,20 +31,47 @@ import java.util.List;
 
 public class MyProfileActivity extends AppCompatActivity {
 
+    private static final String MEDIA_PERMISSION = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+            ? Manifest.permission.READ_MEDIA_IMAGES
+            : Manifest.permission.READ_EXTERNAL_STORAGE;
+
+    private static final String PREFS_NAME = "profile_prefs";
+    private static final String PROFILE_IMAGE_URI_KEY = "profile_image_uri";
+
+    private ImageView profileImage;
     private RecyclerView postRecyclerView;
     private PostAdapter postAdapter;
     private List<Post> postList;
+
+    // ActivityResultLauncher 선언
+    private final ActivityResultLauncher<Intent> galleryLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    Uri imageUri = result.getData().getData();
+                    saveProfileImageUri(imageUri); // 선택한 이미지 URI를 저장
+                    setProfileImage(imageUri); // 선택한 이미지 설정
+                }
+            });
+
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    openGallery();
+                } else {
+                    Toast.makeText(this, "갤러리에 접근 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_profile);
 
-        ImageView profileImage = findViewById(R.id.profileImage);
-        Glide.with(this)
-                .load(R.drawable.profile_image)
-                .circleCrop()
-                .into(profileImage);
+        profileImage = findViewById(R.id.profileImage);
+        loadProfileImage(); // 앱이 시작될 때 저장된 프로필 이미지 로드
+
+        Button editProfileButton = findViewById(R.id.editProfileButton);
+        editProfileButton.setOnClickListener(v -> checkPermissionAndOpenGallery());
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
@@ -94,6 +133,59 @@ public class MyProfileActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        postRecyclerView.setAdapter(postAdapter);
+    }
+
+    private void checkPermissionAndOpenGallery() {
+        if (ContextCompat.checkSelfPermission(this, MEDIA_PERMISSION) == PackageManager.PERMISSION_GRANTED) {
+            openGallery();
+        } else {
+            requestPermissionLauncher.launch(MEDIA_PERMISSION);
+        }
+    }
+
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*"); // 이미지 파일만 표시
+        galleryLauncher.launch(intent);
+    }
+
+    private void saveProfileImageUri(Uri imageUri) {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(PROFILE_IMAGE_URI_KEY, imageUri.toString()); // URI를 문자열로 저장
+        editor.apply();
+    }
+
+    private void loadProfileImage() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String imageUriString = sharedPreferences.getString(PROFILE_IMAGE_URI_KEY, null);
+        if (imageUriString != null) {
+            Uri imageUri = Uri.parse(imageUriString);
+            setProfileImage(imageUri); // 저장된 URI로 프로필 이미지 설정
+        } else {
+            // 기본 프로필 이미지 로드
+            Glide.with(this)
+                    .load(R.drawable.profile_image)
+                    .circleCrop()
+                    .into(profileImage);
+        }
+    }
+
+    private void setProfileImage(Uri imageUri) {
+        Glide.with(this)
+                .load(imageUri)
+                .circleCrop() // 이미지를 원형으로 자르기
+                .into(profileImage);
+    }
+
+    private void setupRecyclerView() {
+        postRecyclerView = findViewById(R.id.postRecyclerView);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
+        postRecyclerView.setLayoutManager(gridLayoutManager);
+
+        postList = PostData.getPostList();
+        postAdapter = new PostAdapter(this, postList, true);
         postRecyclerView.setAdapter(postAdapter);
     }
 }
