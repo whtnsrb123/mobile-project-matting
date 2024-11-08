@@ -19,11 +19,22 @@ public class FollowersActivity extends AppCompatActivity {
 
         // 더미 팔로워 데이터 생성
         List<Follower> followers = new ArrayList<>();
-        followers.add(new Follower("User1", "https://via.placeholder.com/48"));
-        followers.add(new Follower("User2", "https://via.placeholder.com/48"));
-        followers.add(new Follower("User3", "https://via.placeholder.com/48"));
-        followers.add(new Follower("User4", "https://via.placeholder.com/48"));
-        followers.add(new Follower("User5", "https://via.placeholder.com/48"));
+        followers.add(new Follower("User1"));
+        followers.add(new Follower("User2"));
+        followers.add(new Follower("User3"));
+        followers.add(new Follower("User4"));
+        followers.add(new Follower("User5"));
+        followers.add(new Follower("User1"));
+        followers.add(new Follower("User2"));
+        followers.add(new Follower("User3"));
+        followers.add(new Follower("User4"));
+        followers.add(new Follower("User5"));
+        followers.add(new Follower("User1"));
+        followers.add(new Follower("User2"));
+        followers.add(new Follower("User3"));
+        followers.add(new Follower("User4"));
+        followers.add(new Follower("User5"));
+
 
         // 어댑터 설정
         FollowersAdapter adapter = new FollowersAdapter(followers);
