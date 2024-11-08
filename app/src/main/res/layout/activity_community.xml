@@ -30,6 +30,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_alignParentEnd="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_launcher_background" />
 
         <ImageView
@@ -37,7 +38,9 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_launcher_background" />
+
     </LinearLayout>
 
     <!-- Posts List -->
