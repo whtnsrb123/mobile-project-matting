@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,6 +43,13 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
         setContentView(R.layout.chat_chatroom);
 
+        // 액션바 설정
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);// 뒤로가기 버튼 활성화
+        getSupportActionBar().setTitle(chatroomId);
+
+
         listViewMessages = findViewById(R.id.listViewMessages);
         editTextMessage = findViewById(R.id.editTextMessage);
         buttonSend = findViewById(R.id.buttonSend);
@@ -66,51 +74,15 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
         });
 
         receiveMessages();
-
-        // BottomNavigationView 초기화
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setSelectedItemId(R.id.nav_chat); // 세 번째 아이템 선택
-
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int itemId = item.getItemId();
-                if (itemId == R.id.nav_home) {
-                    // 메인 액티비티로 이동
-                    Intent homeIntent = new Intent(Chat_ChatroomActivity.this, MainActivity.class);
-                    startActivity(homeIntent);
-                    overridePendingTransition(0, 0);
-                    return true;
-                } else if (itemId == R.id.nav_feed) {
-                    // 피드 액티비티로 이동
-                    Intent feedIntent = new Intent(Chat_ChatroomActivity.this, Feed_MainActivity.class);
-                    startActivity(feedIntent);
-                    overridePendingTransition(0, 0);
-                    return true;
-                } else if (itemId == R.id.nav_chat) {
-                    // 채팅 액티비티로 이동
-                    Intent chatIntent = new Intent(Chat_ChatroomActivity.this, Chat_ChatlistActivity.class);
-                    startActivity(chatIntent);
-                    overridePendingTransition(0, 0);
-                    return true;
-                } else if (itemId == R.id.nav_community) {
-                    // 커뮤니티 액티비티로 이동
-                    Intent communityIntent = new Intent(Chat_ChatroomActivity.this, CommunityActivity.class);
-                    startActivity(communityIntent);
-                    overridePendingTransition(0, 0);
-                    return true;
-                } else if (itemId == R.id.nav_mypage) {
-                    // 마이페이지 액티비티로 이동
-                    Intent mypageIntent = new Intent(Chat_ChatroomActivity.this, MyProfileActivity.class);
-                    startActivity(mypageIntent);
-                    overridePendingTransition(0, 0);
-                    return true;
-                }
-                return false;
-            }
-        });
     }
 
+    @Override public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed(); // 뒤로가기 버튼 클릭 시 이전 액티비티로 이동
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
     private void sendMessage(String message) {
         String messageId = db.child("messages").push().getKey();
         Chat_Message chatMessageData = new Chat_Message(user.getUserId(), message, System.currentTimeMillis());
