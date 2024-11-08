@@ -1,5 +1,7 @@
 package com.example.Matting;
 
+import static com.example.Matting.Chat_Chatmanage.addNewChatRoom;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -31,13 +33,13 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
     private ListView listViewChatRooms;
     private List<String> chatRoomList;
     private ArrayAdapter<String> adapter;
-
+    private User user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);
         setContentView(R.layout.chat_chatroomlist);
-        User user = new User(this);
+         user = new User(this);
 
         listViewChatRooms = findViewById(R.id.listViewChatRooms);
         chatRoomList = new ArrayList<>();
@@ -123,11 +125,10 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
 
         final EditText input = new EditText(this);
         builder.setView(input);
-
         builder.setPositiveButton("OK", (dialog, which) -> {
             String newChatRoomId = input.getText().toString();
             if (!newChatRoomId.isEmpty()) {
-                addNewChatRoom(newChatRoomId);
+                addNewChatRoom(newChatRoomId, user);
             }
         });
 
@@ -136,34 +137,4 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private void addNewChatRoom(String chatRoomId) {
-        DatabaseReference db;
-        User user = new User(this);
-        db = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUserId());
-
-        // 기존 chats 목록을 가져와서 새로운 chatRoomId 추가
-        db.child("chats").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<String> chats = new ArrayList<>();
-                if (snapshot.exists()) {
-                    for (DataSnapshot chatSnapshot : snapshot.getChildren()) {
-                        String existingChatRoomId = chatSnapshot.getValue(String.class);
-                        if (existingChatRoomId != null) {
-                            chats.add(existingChatRoomId);
-                        }
-                    }
-                }
-                chats.add(chatRoomId);
-
-                // Firebase에 저장
-                db.child("chats").setValue(chats);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // 에러 처리
-            }
-        });
-    }
 }
