@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- 검색 기능을 위한 EditText -->
+    <EditText
+        android:id="@+id/searchEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Search followers"
+        android:padding="10dp"
+        android:layout_margin="10dp"
+        android:background="@android:drawable/edit_text" />
+
+    <!-- RecyclerView로 팔로워 목록 표시 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewFollowers"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>
