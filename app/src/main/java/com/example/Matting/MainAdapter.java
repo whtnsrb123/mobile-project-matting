@@ -35,6 +35,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
         holder.tvTitle.setText(main.getTitle());
         holder.tvCategory.setText(main.getCategory());
         holder.tvDescription.setText(main.getDescription());
+//        holder.tvLink.setText(main.getDescription());
         holder.tvRating.setText(String.valueOf(main.getRating()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -44,7 +45,10 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
                         main.getTitle(),
                         main.getCategory(),
                         main.getDescription(),
-                        main.getRating()
+                        main.getLink(),
+                        main.getRating(),
+                        main.getMapX(),
+                        main.getMapY()
                 );
 
                 // 전체 화면으로 InfoFragment 표시

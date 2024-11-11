@@ -12,16 +12,19 @@ import android.widget.TextView;
 
 
 public class InfoFragment extends Fragment {
-    private TextView tvTitle, tvCategory, tvDescription, tvRating;
+    private TextView tvTitle, tvCategory, tvDescription, tvLink, tvRating, tvMapX, tvMapY;
     private ImageView btnClose;
 
-    public static InfoFragment newInstance(String title, String category, String description, double rating) {
+    public static InfoFragment newInstance(String title, String category, String description, String link, double rating, int map_x, int map_y) {
         InfoFragment fragment = new InfoFragment();
         Bundle args = new Bundle();
         args.putString("title", title);
         args.putString("category", category);
         args.putString("description", description);
+        args.putString("link", link);
         args.putDouble("rating", rating);
+        args.putInt("map_x", map_x);
+        args.putInt("map_y", map_y);
         fragment.setArguments(args);
         return fragment;
     }
@@ -35,14 +38,20 @@ public class InfoFragment extends Fragment {
         tvTitle = view.findViewById(R.id.tvTitle);
         tvCategory = view.findViewById(R.id.tvCategory);
         tvDescription = view.findViewById(R.id.tvDescription);
+        tvLink = view.findViewById(R.id.tvLink);
         tvRating = view.findViewById(R.id.tvRating);
+        tvMapX = view.findViewById(R.id.tvMapX);
+        tvMapY = view.findViewById(R.id.tvMapY);
         btnClose = view.findViewById(R.id.btnClose);
 
         if (getArguments() != null) {
             tvTitle.setText(getArguments().getString("title"));
             tvCategory.setText(getArguments().getString("category"));
             tvDescription.setText(getArguments().getString("description"));
+            tvLink.setText(getArguments().getString("link"));
             tvRating.setText(String.valueOf(getArguments().getDouble("rating")));
+            tvMapX.setText(String.valueOf(getArguments().getInt("map_x")));
+            tvMapY.setText(String.valueOf(getArguments().getInt("map_y")));
         }
 
         // 닫기 버튼 설정
