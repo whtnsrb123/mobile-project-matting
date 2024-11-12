@@ -35,10 +35,12 @@
 
                 <!-- Subtitle -->
                 <TextView
-                    android:id="@+id/tvSubtitle"
+                    android:id="@+id/tvContent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="소제목"
+                    android:text="본문"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:textSize="14sp"
                     android:layout_marginTop="4dp" />
 
