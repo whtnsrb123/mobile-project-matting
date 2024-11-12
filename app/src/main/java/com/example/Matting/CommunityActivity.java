@@ -36,6 +36,15 @@ public class CommunityActivity extends AppCompatActivity {
         communityList.add(new Community("중식당 같이가요", "국민대 근처...", "2024.10.31 · 18시간 전 · 2/4"));
         // 필요시 더 많은 데이터를 추가
 
+        // 새로운 데이터가 있을 경우 추가
+        Intent intent = getIntent();
+        String newTitle = intent.getStringExtra("title");
+        String newContent = intent.getStringExtra("content");
+        String newLocation = intent.getStringExtra("location");
+        if (newTitle != null && newContent != null) {
+            communityList.add(new Community(newTitle, newContent, newLocation));
+        }
+
         communityAdapter = new CommunityAdapter(this, communityList);
         postsRecyclerView.setAdapter(communityAdapter);
 

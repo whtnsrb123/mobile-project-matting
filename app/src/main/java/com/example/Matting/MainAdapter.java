@@ -10,6 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+
 import java.util.List;
 
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder> {
@@ -51,8 +53,13 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
                         main.getMapY()
                 );
 
-                // 전체 화면으로 InfoFragment 표시
+                // Activity를 가져와서 BottomSheet 숨기기
                 AppCompatActivity activity = (AppCompatActivity) v.getContext();
+                BottomSheetBehavior<View> bottomSheetBehavior = BottomSheetBehavior.from(activity.findViewById(R.id.bottom_sheet_layout));
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+
+                // 전체 화면으로 InfoFragment 표시
                 activity.getSupportFragmentManager().beginTransaction()
                         .replace(R.id.info_fragment_container, infoFragment)
                         .addToBackStack(null)

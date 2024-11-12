@@ -32,17 +32,16 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
     public void onBindViewHolder(@NonNull CommunityViewHolder holder, int position) {
         Community community = communityList.get(position);
         holder.tvTitle.setText(community.getTitle());
-        holder.tvSubtitle.setText(community.getSubtitle());
+        holder.tvContent.setText(community.getContent());
         holder.tvInfo.setText(community.getInfo());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 팝업창 표시
-//                Toast.makeText(context, "토스트 메시지입니다.",Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(context, DetailActivity.class);
                 intent.putExtra("title", community.getTitle());
-                intent.putExtra("subtitle", community.getSubtitle());
+                intent.putExtra("content", community.getContent());
+                intent.putExtra("info", community.getInfo());
                 context.startActivity(intent);
             }
         });
@@ -54,12 +53,12 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
     }
 
     public static class CommunityViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvSubtitle, tvInfo;
+        TextView tvTitle, tvContent, tvInfo;
 
         public CommunityViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvSubtitle = itemView.findViewById(R.id.tvSubtitle);
+            tvContent = itemView.findViewById(R.id.tvContent);
             tvInfo = itemView.findViewById(R.id.tvInfo);
         }
     }

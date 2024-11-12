@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String CLIENT_ID = "WkJqg1dwU0AIZSFbQ4Ld"; // 네이버 애플리케이션 클라이언트 ID
     private static final String CLIENT_SECRET = "PvoSkMQnin"; // 네이버 애플리케이션 클라이언트 시크릿
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
