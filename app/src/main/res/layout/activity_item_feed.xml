@@ -1,21 +1,33 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="8dp">
 
+    <!-- 사용자 이름 -->
     <TextView
         android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textSize="16sp" />
 
+    <!-- 게시 시간 -->
+    <TextView
+        android:id="@+id/postTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:textColor="#808080"
+        android:paddingTop="4dp" />
+
+    <!-- 게시물 이미지 -->
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        android:layout_marginTop="8dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,7 +35,7 @@
         android:orientation="horizontal"
         android:paddingBottom="4dp">
 
-        <!-- 수정된 부분 -->
+        <!-- 반응 -->
         <ImageView
             android:id="@+id/reactionButton"
             android:layout_width="24dp"
@@ -38,6 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp" />
 
+        <!-- 댓글 -->
         <ImageView
             android:id="@+id/commentButton"
             android:layout_width="24dp"
@@ -52,6 +65,7 @@
             android:layout_marginStart="4dp" />
     </LinearLayout>
 
+    <!-- 게시물 내용 -->
     <TextView
         android:id="@+id/postContent"
         android:layout_width="wrap_content"
