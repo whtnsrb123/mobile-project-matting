@@ -1,57 +1,74 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
 
+    <!-- 사용자 이름 -->
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="16sp" />
 
+    <!-- 게시 시간 -->
+    <TextView
+        android:id="@+id/postTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:textColor="#808080"
+        android:paddingTop="4dp" />
 
-
+    <!-- 게시물 이미지 -->
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:layout_marginTop="8dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="53dp"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="4dp">
 
+        <!-- 반응 -->
+        <ImageView
+            android:id="@+id/reactionButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/reaction_default"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="4dp" />
 
+        <TextView
+            android:id="@+id/reactionCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp" />
 
+        <!-- 댓글 -->
+        <ImageView
+            android:id="@+id/commentButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_comment" />
 
-        <!-- 검색창 -->
-        <EditText
-            android:id="@+id/search_edit_text"
-            android:layout_width="290dp"
-            android:layout_height="54dp"
-            android:layout_marginBottom="10dp"
-            android:layout_weight="1"
-            android:hint="Search"
-            android:inputType="text"
-            android:padding="10dp" />
-
-
-        <!-- 돋보기 검색 버튼 -->
-        <ImageButton
-            android:id="@+id/search_button"
-            android:layout_width="74dp"
-            android:layout_height="54dp"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackground"
-            android:contentDescription="Search"
-            android:scaleType="fitCenter"
-            android:src="@drawable/search" />
-
+        <TextView
+            android:id="@+id/commentCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp" />
     </LinearLayout>
 
-    <!-- 검색 결과를 표시할 RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="16dp"/>
-
-
-
+    <!-- 게시물 내용 -->
+    <TextView
+        android:id="@+id/postContent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
 </LinearLayout>
