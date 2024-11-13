@@ -32,6 +32,9 @@
         <activity
             android:name=".FollowersActivity" >
         </activity>
+        <activity
+            android:name=".FollowingActivity" />
+
 
         <activity
             android:name=".CommunityActivity"
