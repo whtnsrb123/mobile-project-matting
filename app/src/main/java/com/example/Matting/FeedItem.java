@@ -4,9 +4,10 @@ public class FeedItem {
     private String username;
     private String postContent;
     private int imageResource;
-    private int commentCount; // 댓글 수
-    private int reactionCount; // 감정 수
-    private String timestamp; // 게시물 시간 추가
+    private int commentCount;
+    private int reactionCount;
+    private String timestamp;
+    private boolean isReacted; // 감정 상태 추가
 
     public FeedItem(String username, String postContent, int imageResource, int commentCount, int reactionCount, String timestamp) {
         this.username = username;
@@ -15,6 +16,7 @@ public class FeedItem {
         this.commentCount = commentCount;
         this.reactionCount = reactionCount;
         this.timestamp = timestamp;
+        this.isReacted = false; // 초기 상태: 반응 없음
     }
 
     public String getUsername() {
@@ -38,7 +40,15 @@ public class FeedItem {
     }
 
     public String getTimestamp() {
-        return timestamp; // Timestamp 반환
+        return timestamp;
+    }
+
+    public boolean toggleReaction() {
+        isReacted = !isReacted; // 상태 토글
+        return isReacted;
+    }
+
+    public boolean isReacted() {
+        return isReacted;
     }
 }
- 
