@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String CLIENT_ID = "WkJqg1dwU0AIZSFbQ4Ld"; // 네이버 애플리케이션 클라이언트 ID
     private static final String CLIENT_SECRET = "PvoSkMQnin"; // 네이버 애플리케이션 클라이언트 시크릿
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -313,12 +312,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String title = item.getString("title").replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", ""); // HTML 태그 제거
                 String category = item.getString("category");
                 String address = item.optString("address", item.optString("roadAddress", "주소 없음")); // address 우선, 없으면 roadAddress 사용
-
+                String link = item.getString("link");
                 // 예시 평점 (데이터에 따라 변경 가능)
                 double rating = 4.26;
-
+                int map_x = item.getInt("mapx");
+                int map_y = item.getInt("mapy");
                 // Main 객체를 생성하고 리스트에 추가
-                mainList.add(new Main(title, category, address, rating));
+                mainList.add(new Main(title, category, address, link, rating, map_x, map_y));
             }
 
             // RecyclerView에 데이터 갱신 알림

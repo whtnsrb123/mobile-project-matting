@@ -1,10 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@android:color/white"
     android:padding="16dp">
+
+    <!-- 상단 이미지 -->
+    <ImageView
+        android:id="@+id/imgMain"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_launcher_foreground" />
+
+    <LinearLayout
+        android:id="@+id/tvTitleLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imgMain"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp" >
+
+        <!-- 타이틀 -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="가게 이름"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_alignParentStart="true" />
+
+            <!-- Category -->
+            <TextView
+                android:id="@+id/tvCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="tvCategory"
+                android:layout_marginLeft="8dp"/>
+    </LinearLayout>
+
+    <!-- Description -->
+    <TextView
+        android:id="@+id/tvDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTitleLayout"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"/>
+
+    <!-- 별점 및 리뷰 수 -->
+    <LinearLayout
+        android:id="@+id/tvReview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvDescription"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⭐ "
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/tvRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4.9"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tvReviewCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" • 리뷰 724개"
+            android:textSize="16sp"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <!-- 식당 링크 -->
+    <LinearLayout
+        android:id="@+id/tvLinkLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvReview"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="link: "
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tvLink"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:autoLink="web"
+            android:padding="8dp"/>
+
+    </LinearLayout>
+
+
+    <!-- 네이버 지도 좌표 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvLinkLayout"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/tvMapX"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="X"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tvMapY"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Y"
+            android:textSize="16sp"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
 
     <!-- 닫기 버튼 -->
     <ImageView
@@ -15,37 +140,16 @@
         android:layout_gravity="end"
         android:contentDescription="Close" />
 
-    <!-- Title -->
-    <TextView
-        android:id="@+id/tvTitle"
+    <!-- 하단 예약 버튼 -->
+    <Button
+        android:id="@+id/btnReserve"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:padding="8dp"/>
-
-    <!-- Category -->
-    <TextView
-        android:id="@+id/tvCategory"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:text="맛팅 만들기"
+        android:layout_alignParentBottom="true"
+        android:textColor="@android:color/white"
         android:textSize="18sp"
-        android:padding="8dp"/>
+        android:layout_marginTop="16dp" />
+</RelativeLayout>
 
-    <!-- Description -->
-    <TextView
-        android:id="@+id/tvDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:padding="8dp"/>
 
-    <!-- Rating -->
-    <TextView
-        android:id="@+id/tvRating"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:padding="8dp"/>
-
-</LinearLayout>

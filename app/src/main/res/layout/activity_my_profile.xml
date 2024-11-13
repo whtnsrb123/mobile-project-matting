@@ -93,6 +93,7 @@
                     android:gravity="center"
                     android:orientation="vertical">
 
+                    <!-- 숫자 텍스트 -->
                     <TextView
                         android:id="@+id/followerCount"
                         android:layout_width="wrap_content"
@@ -100,16 +101,20 @@
                         android:fontFamily="sans-serif-medium"
                         android:text="167"
                         android:textColor="#000000"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:layout_marginBottom="0dp" /> <!-- 버튼과 간격을 좁히기 위해 marginBottom 사용 -->
 
-                    <TextView
-                        android:id="@+id/followerText"
+                    <!-- 팔로워 목록 버튼 -->
+                    <Button
+                        android:id="@+id/followersListButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
                         android:text="팔로워"
-                        android:textColor="#000000"
-                        android:textSize="14sp" />
+                        android:textColor="#000000" />
+
                 </LinearLayout>
+
 
                 <!-- 팔로잉 -->
                 <LinearLayout
@@ -126,15 +131,16 @@
                         android:fontFamily="sans-serif-medium"
                         android:text="144"
                         android:textColor="#000000"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:layout_marginBottom="0dp" />/>
 
-                    <TextView
-                        android:id="@+id/followingText"
+                    <Button
+                        android:id="@+id/followingListButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
                         android:text="팔로잉"
-                        android:textColor="#000000"
-                        android:textSize="14sp" />
+                        android:textColor="#000000" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

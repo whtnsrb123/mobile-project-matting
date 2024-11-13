@@ -10,6 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+
 import java.util.List;
 
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder> {
@@ -35,6 +37,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
         holder.tvTitle.setText(main.getTitle());
         holder.tvCategory.setText(main.getCategory());
         holder.tvDescription.setText(main.getDescription());
+//        holder.tvLink.setText(main.getDescription());
         holder.tvRating.setText(String.valueOf(main.getRating()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -44,11 +47,19 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
                         main.getTitle(),
                         main.getCategory(),
                         main.getDescription(),
-                        main.getRating()
+                        main.getLink(),
+                        main.getRating(),
+                        main.getMapX(),
+                        main.getMapY()
                 );
 
-                // 전체 화면으로 InfoFragment 표시
+                // Activity를 가져와서 BottomSheet 숨기기
                 AppCompatActivity activity = (AppCompatActivity) v.getContext();
+                BottomSheetBehavior<View> bottomSheetBehavior = BottomSheetBehavior.from(activity.findViewById(R.id.bottom_sheet_layout));
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+
+                // 전체 화면으로 InfoFragment 표시
                 activity.getSupportFragmentManager().beginTransaction()
                         .replace(R.id.info_fragment_container, infoFragment)
                         .addToBackStack(null)
