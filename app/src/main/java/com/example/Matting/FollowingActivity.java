@@ -13,33 +13,33 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FollowersActivity extends AppCompatActivity {
+public class FollowingActivity extends AppCompatActivity {
 
-    private RecyclerView followersRecyclerView;
-    private FollowersAdapter followersAdapter;
-    private List<Follower> followersList; // 팔로워 데이터
+    private RecyclerView followingRecyclerView;
+    private FollowersAdapter followingAdapter;
+    private List<Follower> followingList; // 팔로잉 데이터
     private List<Follower> filteredList; // 검색된 결과 리스트
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_followers_list);
+        setContentView(R.layout.activity_following_list);
 
         // RecyclerView 및 데이터 초기화
-        followersList = new ArrayList<>();
+        followingList = new ArrayList<>();
         filteredList = new ArrayList<>();
-        populateFollowersData();
+        populateFollowingData();
 
-        followersRecyclerView = findViewById(R.id.followersRecyclerView);
-        followersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        followingRecyclerView = findViewById(R.id.followingRecyclerView);
+        followingRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // 어댑터 설정
-        followersAdapter = new FollowersAdapter(filteredList);
-        followersAdapter.setOnItemClickListener(follower -> {
+        followingAdapter = new FollowersAdapter(filteredList);
+        followingAdapter.setOnItemClickListener(follower -> {
             // 클릭 효과: 사용자 이름을 Toast 메시지로 표시
-            Toast.makeText(FollowersActivity.this, follower.getUsername() + " 클릭됨", Toast.LENGTH_SHORT).show();
+            Toast.makeText(FollowingActivity.this, follower.getUsername() + " 클릭됨", Toast.LENGTH_SHORT).show();
         });
-        followersRecyclerView.setAdapter(followersAdapter);
+        followingRecyclerView.setAdapter(followingAdapter);
 
         // 검색창 처리
         EditText searchBar = findViewById(R.id.searchBar);
@@ -49,7 +49,7 @@ public class FollowersActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterFollowers(s.toString());
+                filterFollowing(s.toString());
             }
 
             @Override
@@ -57,29 +57,29 @@ public class FollowersActivity extends AppCompatActivity {
         });
 
         // 초기 필터링 (전체 리스트 표시)
-        filterFollowers("");
+        filterFollowing("");
     }
 
-    // 팔로워 데이터 초기화
-    private void populateFollowersData() {
-        followersList.add(new Follower("Follower1", "팔로워 설명 1", R.drawable.user));
-        followersList.add(new Follower("Follower2", "팔로워 설명 2", R.drawable.user));
-        followersList.add(new Follower("Follower3", "팔로워 설명 3", R.drawable.user));
+    // 팔로잉 데이터 초기화
+    private void populateFollowingData() {
+        followingList.add(new Follower("Following1", "팔로잉 설명 1", R.drawable.user));
+        followingList.add(new Follower("Following2", "팔로잉 설명 2", R.drawable.user));
+        followingList.add(new Follower("Following3", "팔로잉 설명 3", R.drawable.user));
         // 더 많은 데이터를 추가할 수 있습니다.
     }
 
     // 검색 필터링
-    private void filterFollowers(String query) {
+    private void filterFollowing(String query) {
         filteredList.clear();
         if (query.isEmpty()) {
-            filteredList.addAll(followersList);
+            filteredList.addAll(followingList);
         } else {
-            for (Follower follower : followersList) {
+            for (Follower follower : followingList) {
                 if (follower.getUsername().toLowerCase().contains(query.toLowerCase())) {
                     filteredList.add(follower);
                 }
             }
         }
-        followersAdapter.notifyDataSetChanged();
+        followingAdapter.notifyDataSetChanged();
     }
 }
