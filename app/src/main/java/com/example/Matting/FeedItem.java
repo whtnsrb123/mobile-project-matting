@@ -6,13 +6,15 @@ public class FeedItem {
     private int imageResource;
     private int commentCount; // 댓글 수
     private int reactionCount; // 감정 수
+    private String timestamp; // 게시물 시간 추가
 
-    public FeedItem(String username, String postContent, int imageResource, int commentCount, int reactionCount) {
+    public FeedItem(String username, String postContent, int imageResource, int commentCount, int reactionCount, String timestamp) {
         this.username = username;
         this.postContent = postContent;
         this.imageResource = imageResource;
         this.commentCount = commentCount;
         this.reactionCount = reactionCount;
+        this.timestamp = timestamp;
     }
 
     public String getUsername() {
@@ -33,5 +35,9 @@ public class FeedItem {
 
     public int getReactionCount() {
         return reactionCount;
+    }
+
+    public String getTimestamp() {
+        return timestamp; // Timestamp 반환
     }
 }
