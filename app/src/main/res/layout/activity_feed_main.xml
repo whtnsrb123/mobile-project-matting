@@ -1,74 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="8dp">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <!-- 사용자 이름 -->
-    <TextView
-        android:id="@+id/username"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="16sp" />
 
-    <!-- 게시 시간 -->
-    <TextView
-        android:id="@+id/postTimestamp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="12sp"
-        android:textColor="#808080"
-        android:paddingTop="4dp" />
-
-    <!-- 게시물 이미지 -->
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:scaleType="centerCrop"
-        android:layout_marginTop="8dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:orientation="horizontal"
-        android:paddingBottom="4dp">
+        android:background="#BB2649">
 
-        <!-- 반응 -->
         <ImageView
-            android:id="@+id/reactionButton"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/reaction_default"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="4dp" />
+            android:id="@+id/imageView2"
+            android:layout_width="132dp"
+            android:layout_height="54dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/feed_ic_matting" />
 
         <TextView
-            android:id="@+id/reactionCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp" />
+            android:id="@+id/textView"
+            android:layout_width="127dp"
+            android:layout_height="54dp"
+            android:layout_weight="1"
+            android:text=" "
+            android:visibility="invisible" />
 
-        <!-- 댓글 -->
-        <ImageView
-            android:id="@+id/commentButton"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="16dp"
-            android:src="@drawable/ic_comment" />
+        <ImageButton
+            android:id="@+id/imageButton7"
+            android:layout_width="70dp"
+            android:layout_height="54dp"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="@string/comment_button"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/search" />
 
-        <TextView
-            android:id="@+id/commentCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp" />
     </LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_above="@id/bottomNavigation"
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:padding="8dp" />
 
-    <!-- 게시물 내용 -->
-    <TextView
-        android:id="@+id/postContent"
-        android:layout_width="wrap_content"
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_alignParentBottom="true"
+        android:background="?android:attr/windowBackground"
+        app:menu="@menu/bottom_navigation_menu" />
+
 </LinearLayout>
