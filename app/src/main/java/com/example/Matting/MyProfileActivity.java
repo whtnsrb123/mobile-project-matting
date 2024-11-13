@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -70,15 +71,17 @@ public class MyProfileActivity extends AppCompatActivity {
         profileImage = findViewById(R.id.profileImage);
         loadProfileImage(); // 앱이 시작될 때 저장된 프로필 이미지 로드
 
+        // 프로필 수정 버튼
         Button editProfileButton = findViewById(R.id.editProfileButton);
         editProfileButton.setOnClickListener(v -> checkPermissionAndOpenGallery());
 
+        // 팔로워 버튼
         Button followersButton = findViewById(R.id.followersListButton);
-        followersButton.setOnClickListener(v -> {
-            // 팔로워 목록 액티비티로 이동
-            Intent intent = new Intent(MyProfileActivity.this, FollowersActivity.class);
-            startActivity(intent);
-        });
+        followersButton.setOnClickListener(this::openFollowersList); // 팔로워 화면 이동
+
+        // 팔로잉 버튼
+        Button followingButton = findViewById(R.id.followingListButton);
+        followingButton.setOnClickListener(this::openFollowingList); // 팔로잉 화면 이동
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
@@ -91,31 +94,26 @@ public class MyProfileActivity extends AppCompatActivity {
                 int itemId = item.getItemId();
 
                 if (itemId == R.id.nav_home) {
-                    // 메인 액티비티로 이동
                     Intent homeIntent = new Intent(MyProfileActivity.this, MainActivity.class);
                     startActivity(homeIntent);
                     overridePendingTransition(0, 0);
                     return true;
                 } else if (itemId == R.id.nav_feed) {
-                    // 피드 액티비티로 이동
                     Intent feedIntent = new Intent(MyProfileActivity.this, Feed_MainActivity.class);
                     startActivity(feedIntent);
                     overridePendingTransition(0, 0);
                     return true;
                 } else if (itemId == R.id.nav_chat) {
-                    // 채팅 액티비티로 이동
                     Intent chatIntent = new Intent(MyProfileActivity.this, Chat_ChatroomActivity.class);
                     startActivity(chatIntent);
                     overridePendingTransition(0, 0);
                     return true;
                 } else if (itemId == R.id.nav_community) {
-                    // 커뮤니티 액티비티로 이동
                     Intent communityIntent = new Intent(MyProfileActivity.this, CommunityActivity.class);
                     startActivity(communityIntent);
                     overridePendingTransition(0, 0);
                     return true;
                 } else if (itemId == R.id.nav_mypage) {
-                    // 현재 액티비티 그대로 유지
                     return true;
                 }
                 return false;
@@ -123,24 +121,19 @@ public class MyProfileActivity extends AppCompatActivity {
         });
 
         // RecyclerView 설정
-        postRecyclerView = findViewById(R.id.postRecyclerView);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
-        postRecyclerView.setLayoutManager(gridLayoutManager);
+        setupRecyclerView();
+    }
 
-        // **postList를 PostData.getPostList()로 초기화**
-        postList = PostData.getPostList();
+    // 팔로워 화면 이동 메서드
+    public void openFollowersList(View view) {
+        Intent intent = new Intent(MyProfileActivity.this, FollowersActivity.class);
+        startActivity(intent);
+    }
 
-        // 어댑터 설정
-        postAdapter = new PostAdapter(this, postList, true); // 이미지 전용 모드 활성화
-        postAdapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                Intent intent = new Intent(MyProfileActivity.this, PostViewerActivity.class);
-                intent.putExtra("position", position);
-                startActivity(intent);
-            }
-        });
-        postRecyclerView.setAdapter(postAdapter);
+    // 팔로잉 화면 이동 메서드
+    public void openFollowingList(View view) {
+        Intent intent = new Intent(MyProfileActivity.this, FollowingActivity.class);
+        startActivity(intent);
     }
 
     private void checkPermissionAndOpenGallery() {
@@ -171,7 +164,6 @@ public class MyProfileActivity extends AppCompatActivity {
             Uri imageUri = Uri.parse(imageUriString);
             setProfileImage(imageUri); // 저장된 URI로 프로필 이미지 설정
         } else {
-            // 기본 프로필 이미지 로드
             Glide.with(this)
                     .load(R.drawable.profile_image)
                     .circleCrop()
@@ -193,6 +185,14 @@ public class MyProfileActivity extends AppCompatActivity {
 
         postList = PostData.getPostList();
         postAdapter = new PostAdapter(this, postList, true);
+        postAdapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Intent intent = new Intent(MyProfileActivity.this, PostViewerActivity.class);
+                intent.putExtra("position", position);
+                startActivity(intent);
+            }
+        });
         postRecyclerView.setAdapter(postAdapter);
     }
 }
