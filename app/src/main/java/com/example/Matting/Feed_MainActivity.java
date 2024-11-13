@@ -22,7 +22,7 @@ public class Feed_MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private FeedAdapter feedAdapter;
     private List<FeedItem> feedItems;
-    private ImageButton searchButton;  // imageButton7을 위한 변수
+    private ImageButton searchButton; // imageButton7을 위한 변수
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,15 +35,13 @@ public class Feed_MainActivity extends AppCompatActivity {
 
         feedItems = new ArrayList<>();
 
-        // 피드 데이터 추가
-        feedItems.add(new FeedItem("user1", "첫 번째 게시물입니다.", R.drawable.feed_food_image1, 5, 10));
-        feedItems.add(new FeedItem("user2", "두 번째 게시물입니다.", R.drawable.feed_food_image2, 3, 7));
-        feedItems.add(new FeedItem("user3", "세 번째 게시물입니다.", R.drawable.feed_food_image3, 8, 12));
-        feedItems.add(new FeedItem("user4", "네 번째 게시물입니다.", R.drawable.feed_food_image4, 1, 2));
+        // 피드 데이터 추가 (Timestamp 포함)
+        feedItems.add(new FeedItem("user1", "첫 번째 게시물입니다.", R.drawable.feed_food_image1, 5, 10, "2시간 전"));
+        feedItems.add(new FeedItem("user2", "두 번째 게시물입니다.", R.drawable.feed_food_image2, 3, 7, "1일 전"));
+        feedItems.add(new FeedItem("user3", "세 번째 게시물입니다.", R.drawable.feed_food_image3, 8, 12, "3일 전"));
+        feedItems.add(new FeedItem("user4", "네 번째 게시물입니다.", R.drawable.feed_food_image4, 1, 2, "5분 전"));
 
-        // 예시 코드 - 댓글 버튼 클릭 이벤트
-
-
+        // 어댑터 설정
         feedAdapter = new FeedAdapter(feedItems);
         recyclerView.setAdapter(feedAdapter);
 
@@ -98,13 +96,5 @@ public class Feed_MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
-
-
-
-
-
-
     }
 }
