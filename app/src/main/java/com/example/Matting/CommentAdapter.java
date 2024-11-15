@@ -1,16 +1,15 @@
 package com.example.Matting;
 
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.List;
 
-public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHolder> {
+public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHolder> {
 
     private final List<Comment> commentList;
 
@@ -20,17 +19,25 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public CommentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_comment, parent, false);
-        return new ViewHolder(view);
+        return new CommentViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
         Comment comment = commentList.get(position);
-        holder.username.setText(comment.getUsername());
-        holder.content.setText(comment.getContent());
-        holder.timestamp.setText(comment.getTimestamp());
+
+        holder.usernameTextView.setText(comment.getUsername());
+        holder.contentTextView.setText(comment.getContent());
+
+        if (comment.getTimestamp() != null) {
+            holder.timestampTextView.setText(
+                    DateUtils.getRelativeTimeSpanString(comment.getTimestamp().getTime())
+            );
+        } else {
+            holder.timestampTextView.setText("Unknown Time");
+        }
     }
 
     @Override
@@ -38,14 +45,15 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         return commentList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView username, content, timestamp;
+    public static class CommentViewHolder extends RecyclerView.ViewHolder {
 
-        public ViewHolder(@NonNull View itemView) {
+        TextView usernameTextView, contentTextView, timestampTextView;
+
+        public CommentViewHolder(@NonNull View itemView) {
             super(itemView);
-            username = itemView.findViewById(R.id.commentUsername);
-            content = itemView.findViewById(R.id.commentContent);
-            timestamp = itemView.findViewById(R.id.commentTimestamp);
+            usernameTextView = itemView.findViewById(R.id.commentUsername);
+            contentTextView = itemView.findViewById(R.id.commentContent);
+            timestampTextView = itemView.findViewById(R.id.commentTimestamp);
         }
     }
 }
