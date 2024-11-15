@@ -5,18 +5,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.Matting.CommentAdapter;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -75,7 +76,7 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
 
         // 댓글 입력
         EditText editTextComment = view.findViewById(R.id.editTextComment);
-        Button buttonSubmit = view.findViewById(R.id.buttonSubmitComment);
+        ImageButton buttonSubmit = view.findViewById(R.id.buttonSubmitComment); // ImageButton으로 변경
         buttonSubmit.setOnClickListener(v -> {
             String content = editTextComment.getText().toString();
             if (!content.isEmpty()) {
@@ -86,7 +87,10 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
 
                 db.collection("posts").document(postId).collection("comments")
                         .add(comment)
-                        .addOnSuccessListener(docRef -> editTextComment.setText(""))
+                        .addOnSuccessListener(docRef -> {
+                            editTextComment.setText(""); // 입력 필드 초기화
+                            Log.d("Firestore", "Comment added successfully.");
+                        })
                         .addOnFailureListener(error -> Log.e("Firestore", "Error adding comment", error));
             }
         });
