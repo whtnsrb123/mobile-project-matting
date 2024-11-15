@@ -1,5 +1,6 @@
 package com.example.Matting;
 
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,47 +12,77 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.Matting.CommentBottomSheet;
+import com.example.Matting.FeedItem;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Date;
 import java.util.List;
 
-public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
+public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
 
-    private final List<FeedItem> feedList;
+    private final List<FeedItem> feedItems;
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance(); // Firestore 인스턴스
 
-    public FeedAdapter(List<FeedItem> feedList) {
-        this.feedList = feedList;
+    public FeedAdapter(List<FeedItem> feedItems) {
+        this.feedItems = feedItems;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public FeedViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_item_feed, parent, false);
-        return new ViewHolder(view);
+        return new FeedViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        FeedItem feedItem = feedList.get(position);
+    public void onBindViewHolder(@NonNull FeedViewHolder holder, int position) {
+        FeedItem feedItem = feedItems.get(position);
 
-        holder.username.setText(feedItem.getUsername());
-        holder.postTimestamp.setText(feedItem.getTimestamp());
-        holder.postContent.setText(feedItem.getPostContent());
+        holder.usernameTextView.setText(feedItem.getUsername());
+        holder.postContentTextView.setText(feedItem.getPostContent());
+        holder.reactionCountTextView.setText(String.valueOf(feedItem.getReactionCount()));
+        holder.commentCountTextView.setText(String.valueOf(feedItem.getCommentCount()));
 
-        Glide.with(holder.imageView.getContext())
-                .load(feedItem.getImageResource())
-                .into(holder.imageView);
+        // Timestamp를 상대적 시간으로 변환하여 표시
+        if (feedItem.getTimestamp() != null) {
+            CharSequence relativeTime = DateUtils.getRelativeTimeSpanString(feedItem.getTimestamp().getTime(), System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS);
+            holder.timestampTextView.setText(relativeTime);
+        } else {
+            holder.timestampTextView.setText("Unknown");
+        }
 
-        holder.commentCount.setText(String.valueOf(feedItem.getCommentCount()));
-        holder.reactionCount.setText(String.valueOf(feedItem.getReactionCount()));
+        // Glide로 이미지 로드
+        Glide.with(holder.itemView.getContext())
+                .load(feedItem.getImageUrl())
+                .into(holder.postImageView);
 
         // 감정 버튼 클릭 이벤트 처리
         holder.reactionButton.setOnClickListener(v -> {
-            boolean isReacted = feedItem.toggleReaction(); // 감정 상태를 토글
+            boolean isReacted = !feedItem.isReacted(); // 감정 상태를 반전
+            feedItem.setReacted(isReacted); // 상태 업데이트
+
             if (isReacted) {
+                feedItem.setReactionCount(feedItem.getReactionCount() + 1); // 최초 클릭 시 +1
                 holder.reactionButton.setImageResource(R.drawable.reaction_active); // 감정 반응 아이콘
             } else {
+                feedItem.setReactionCount(Math.max(feedItem.getReactionCount() - 1, 0)); // 다시 클릭 시 -1
                 holder.reactionButton.setImageResource(R.drawable.reaction_default); // 기본 아이콘
             }
+
+            holder.reactionCountTextView.setText(String.valueOf(feedItem.getReactionCount())); // UI 업데이트
+
+            // Firestore 업데이트
+            db.collection("posts")
+                    .document(feedItem.getDocumentId()) // 각 FeedItem의 문서 ID 필요
+                    .update("reactionCount", feedItem.getReactionCount(), "reacted", feedItem.isReacted())
+                    .addOnSuccessListener(aVoid -> {
+                        // 업데이트 성공
+                    })
+                    .addOnFailureListener(e -> {
+                        // 업데이트 실패
+                        e.printStackTrace();
+                    });
         });
 
         // 초기 상태에 따른 아이콘 설정
@@ -70,29 +101,37 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return feedList.size();
+        return feedItems.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView username;
-        TextView postTimestamp;
-        TextView postContent;
-        ImageView imageView;
-        ImageView reactionButton;
-        ImageView commentButton; // 댓글 버튼 추가
-        TextView commentCount;
-        TextView reactionCount;
+    public void updateFeedItems(List<FeedItem> newFeedItems) {
+        this.feedItems.clear();
+        this.feedItems.addAll(newFeedItems);
+        notifyDataSetChanged();
+    }
 
-        public ViewHolder(@NonNull View itemView) {
+    public static class FeedViewHolder extends RecyclerView.ViewHolder {
+
+        TextView usernameTextView;
+        TextView postContentTextView;
+        TextView reactionCountTextView;
+        TextView commentCountTextView;
+        TextView timestampTextView;
+        ImageView postImageView;
+        ImageView reactionButton;
+        ImageView commentButton;
+
+        public FeedViewHolder(@NonNull View itemView) {
             super(itemView);
-            username = itemView.findViewById(R.id.username);
-            postTimestamp = itemView.findViewById(R.id.postTimestamp);
-            postContent = itemView.findViewById(R.id.postContent);
-            imageView = itemView.findViewById(R.id.imageView);
+
+            usernameTextView = itemView.findViewById(R.id.username);
+            postContentTextView = itemView.findViewById(R.id.postContent);
+            reactionCountTextView = itemView.findViewById(R.id.reactionCount);
+            commentCountTextView = itemView.findViewById(R.id.commentCount);
+            timestampTextView = itemView.findViewById(R.id.postTimestamp);
+            postImageView = itemView.findViewById(R.id.imageView);
             reactionButton = itemView.findViewById(R.id.reactionButton);
-            commentButton = itemView.findViewById(R.id.commentButton); // 댓글 버튼 초기화
-            commentCount = itemView.findViewById(R.id.commentCount);
-            reactionCount = itemView.findViewById(R.id.reactionCount);
+            commentButton = itemView.findViewById(R.id.commentButton);
         }
     }
 }
