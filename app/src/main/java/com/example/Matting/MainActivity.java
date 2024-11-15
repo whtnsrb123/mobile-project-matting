@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,14 +24,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.navigation.NavigationBarView;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraPosition;
+import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
+import com.naver.maps.map.NaverMapOptions;
 import com.naver.maps.map.OnMapReadyCallback;
+import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.overlay.OverlayImage;
+import com.naver.maps.map.util.FusedLocationSource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -51,16 +58,20 @@ import org.json.JSONObject;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
+    private FusedLocationSource locationSource;
+
     private double cur_lat = 37.5665; // 초기값 (서울 예시)
     private double cur_lon = 126.9780;
     private NaverMap naverMap;
     private Marker marker = new Marker();
     LocationManager locationManager;
 
-
     private RecyclerView restaurantRecyclerView;
     private MainAdapter mainAdapter;
     private List<Main> mainList;
+
+    private BottomSheetBehavior<View> bottomSheetBehavior;
+    private ImageView showBottomSheetButton;
 
     private static final String CLIENT_ID = "WkJqg1dwU0AIZSFbQ4Ld"; // 네이버 애플리케이션 클라이언트 ID
     private static final String CLIENT_SECRET = "PvoSkMQnin"; // 네이버 애플리케이션 클라이언트 시크릿
@@ -70,10 +81,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
+
         // 위치 요청
         getLocation();
         // 지도 초기화
         initMap();
+
+        // BottomSheet View 초기화
+        View bottomSheet = findViewById(R.id.activity_main_bottom_sheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+
+        // 버튼 초기화
+        showBottomSheetButton = findViewById(R.id.infoIcon);
+
+        // 버튼 클릭 이벤트 설정
+        showBottomSheetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleBottomSheet();
+            }
+        });
 
         // RecyclerView 설정
         restaurantRecyclerView = findViewById(R.id.restaurantRecyclerView);
@@ -194,11 +222,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,  @NonNull int[] grantResults) {
+        if (locationSource.onRequestPermissionsResult(
+                requestCode, permissions, grantResults)) {
+            if (!locationSource.isActivated()) { // 권한 거부됨
+                naverMap.setLocationTrackingMode(LocationTrackingMode.None);
+            }
+            return;
+        }
+        super.onRequestPermissionsResult(
+                requestCode, permissions, grantResults);
+    }
+
     // 지도 로드 완료 시 호출되는 콜백
     @Override
     public void onMapReady(@NonNull NaverMap naverMap) {
         this.naverMap = naverMap;
-        Log.d("LocationDebug", "Naver map is ready");
+        naverMap.setLocationSource(locationSource);
+
         //배경 지도 선택
         naverMap.setMapType(NaverMap.MapType.Basic);
         //건물 표시
@@ -211,7 +254,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 0                           // 방향
         );
         naverMap.setCameraPosition(cameraPosition);
-        setMark(marker, R.drawable.baseline_place_24, 0);
+//        setMark(marker, R.drawable.baseline_place_24, 0);
+
+        UiSettings uiSettings = naverMap.getUiSettings();
+        uiSettings.setLocationButtonEnabled(true);
+        NaverMapOptions options = new NaverMapOptions().locationButtonEnabled(true);
+
+        naverMap.setLocationTrackingMode(LocationTrackingMode.NoFollow);
     }
 
     // 지도 마커
@@ -354,6 +403,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
             }
         }).start();
+    }
+
+    private void toggleBottomSheet() {
+        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
+            showBottomSheet();  // BottomSheet을 보이게 설정
+        } else {
+            hideBottomSheet();    // BottomSheet을 숨기기
+        }
+    }
+
+    // BottomSheet 숨기기
+    public void hideBottomSheet() {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+    }
+
+    // BottomSheet 보이기
+    public void showBottomSheet() {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+    }
+
+    public void showBottomSheetExpanded() {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
 }

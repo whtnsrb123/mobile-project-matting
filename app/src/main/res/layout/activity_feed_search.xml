@@ -40,7 +40,7 @@
             android:background="?attr/selectableItemBackground"
             android:contentDescription="Search"
             android:scaleType="fitCenter"
-            android:src="@drawable/feed" />
+            android:src="@drawable/search" />
 
     </LinearLayout>
 

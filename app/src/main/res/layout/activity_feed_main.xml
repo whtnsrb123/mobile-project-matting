@@ -7,10 +7,12 @@
     android:orientation="vertical">
 
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:background="#BB2649">
 
         <ImageView
             android:id="@+id/imageView2"
@@ -35,7 +37,7 @@
             android:background="?attr/selectableItemBackground"
             android:contentDescription="@string/comment_button"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/feed" />
+            app:srcCompat="@drawable/search" />
 
     </LinearLayout>
         <androidx.recyclerview.widget.RecyclerView

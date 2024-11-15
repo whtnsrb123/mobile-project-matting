@@ -3,33 +3,53 @@ package com.example.Matting;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
-public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.FollowerViewHolder> {
+public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.ViewHolder> {
 
-    private List<Follower> followers;
+    private final List<Follower> followers;
+    private OnItemClickListener onItemClickListener;
 
-    // 생성자 수정: Follower 객체 리스트를 받음
+    public interface OnItemClickListener {
+        void onItemClick(Follower follower);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.onItemClickListener = listener;
+    }
+
     public FollowersAdapter(List<Follower> followers) {
         this.followers = followers;
     }
 
+    @NonNull
     @Override
-    public FollowerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // 아이템 레이아웃을 inflating (팔로워 항목)
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_follower, parent, false);
-        return new FollowerViewHolder(itemView);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_follower, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(FollowerViewHolder holder, int position) {
-        // 팔로워 정보 바인딩
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Follower follower = followers.get(position);
-        holder.usernameTextView.setText(follower.getUsername());
-        // 이미지 URL을 사용할 경우 로딩 코드 추가 (예: Picasso 또는 Glide 사용)
+
+        holder.username.setText(follower.getUsername());
+        holder.subText.setText(follower.getSubText());
+        holder.profileImage.setImageResource(follower.getProfileImageRes());
+
+        // 클릭 이벤트 처리
+        holder.itemView.setOnClickListener(v -> {
+            if (onItemClickListener != null) {
+                onItemClickListener.onItemClick(follower);
+            }
+        });
     }
 
     @Override
@@ -37,21 +57,15 @@ public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.Foll
         return followers.size();
     }
 
-    // 리스트 업데이트 메서드
-    public void updateList(List<Follower> newList) {
-        followers = newList;
-        notifyDataSetChanged(); // 데이터 변경을 알리고 UI를 갱신
-    }
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView profileImage;
+        TextView username, subText;
 
-    public static class FollowerViewHolder extends RecyclerView.ViewHolder {
-
-        TextView usernameTextView;
-        ImageView profileImageView;
-
-        public FollowerViewHolder(View itemView) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            usernameTextView = itemView.findViewById(R.id.usernameTextView);
-            profileImageView = itemView.findViewById(R.id.profileImageView);
+            profileImage = itemView.findViewById(R.id.profileImage);
+            username = itemView.findViewById(R.id.username);
+            subText = itemView.findViewById(R.id.subText);
         }
     }
 }
