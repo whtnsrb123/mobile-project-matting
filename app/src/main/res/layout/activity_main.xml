@@ -43,13 +43,6 @@
             android:src="@drawable/info"
             app:tint="@color/white" />
 
-        <!--        <ImageView-->
-        <!--            android:id="@+id/chatIcon"-->
-        <!--            android:layout_width="24dp"-->
-        <!--            android:layout_height="24dp"-->
-        <!--            android:layout_marginStart="8dp"-->
-        <!--            android:background="?attr/selectableItemBackgroundBorderless"-->
-        <!--            android:src="@drawable/ic_launcher_background" />-->
     </LinearLayout>
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/map_coordinator_layout"
@@ -78,7 +71,7 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/info_fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="705dp" />
+        android:layout_height="match_parent" />
 
     <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView

@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,17 +65,33 @@ public class InfoFragment extends Fragment {
 
         // 닫기 버튼 설정
 //        btnClose.setOnClickListener(v -> getParentFragmentManager().popBackStack());
+//        btnClose.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // InfoFragment를 닫음
+//                getParentFragmentManager().popBackStack();
+//
+//                // BottomSheet 다시 나타내기
+//                BottomSheetBehavior<View> bottomSheetBehavior = BottomSheetBehavior.from(getActivity().findViewById(R.id.bottom_sheet_layout));
+//                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//            }
+//        });
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // InfoFragment를 닫음
                 getParentFragmentManager().popBackStack();
 
-                // BottomSheet 다시 나타내기
-                BottomSheetBehavior<View> bottomSheetBehavior = BottomSheetBehavior.from(getActivity().findViewById(R.id.bottom_sheet_layout));
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                // MainActivity의 메서드를 호출하여 BottomSheet 상태를 STATE_EXPANDED로 설정
+                AppCompatActivity activity = (AppCompatActivity) getActivity();
+                if (activity instanceof MainActivity) {
+                    ((MainActivity) activity).showBottomSheetExpanded();
+                } else {
+                    Log.e("BottomSheetDebug", "MainActivity instance not found");
+                }
             }
         });
+
 
         btnReserve = view.findViewById(R.id.btnReserve);
         btnReserve.setOnClickListener(new View.OnClickListener() {
