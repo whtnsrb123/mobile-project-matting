@@ -2,6 +2,7 @@ package com.example.Matting;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton; // ImageButton 추가
@@ -15,7 +16,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 
 public class Feed_MainActivity extends AppCompatActivity {
 
@@ -23,27 +28,45 @@ public class Feed_MainActivity extends AppCompatActivity {
     private FeedAdapter feedAdapter;
     private List<FeedItem> feedItems;
     private ImageButton searchButton; // imageButton7을 위한 변수
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed_main);
 
-        // RecyclerView 설정
+
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         feedItems = new ArrayList<>();
-
-        // 피드 데이터 추가 (Timestamp 포함)
-        feedItems.add(new FeedItem("user1", "첫 번째 게시물입니다.", R.drawable.feed_food_image1, 5, 10, "2시간 전"));
-        feedItems.add(new FeedItem("user2", "두 번째 게시물입니다.", R.drawable.feed_food_image2, 3, 7, "1일 전"));
-        feedItems.add(new FeedItem("user3", "세 번째 게시물입니다.", R.drawable.feed_food_image3, 8, 12, "3일 전"));
-        feedItems.add(new FeedItem("user4", "네 번째 게시물입니다.", R.drawable.feed_food_image4, 1, 2, "5분 전"));
-
-        // 어댑터 설정
         feedAdapter = new FeedAdapter(feedItems);
         recyclerView.setAdapter(feedAdapter);
+
+        db = FirebaseFirestore.getInstance();
+
+        // Firestore에서 데이터 가져오기
+        db.collection("posts")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String documentId = document.getId();
+                            String username = document.getString("username");
+                            String postContent = document.getString("postContent");
+                            String imageUrl = document.getString("imageResource");
+                            int reactionCount = document.getLong("reactionCount").intValue();
+                            int commentCount = document.getLong("commentCount").intValue();
+                            Date timestamp = document.getTimestamp("timestamp").toDate(); // Timestamp를 Date로 변환
+
+                            feedItems.add(new FeedItem(documentId, username, postContent, imageUrl, reactionCount, commentCount, timestamp));
+                        }
+                        feedAdapter.notifyDataSetChanged();
+                    } else {
+                        Log.w("Feed_MainActivity", "Error getting documents.", task.getException());
+                    }
+                });
+
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
