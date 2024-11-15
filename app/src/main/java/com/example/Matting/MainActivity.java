@@ -407,9 +407,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void toggleBottomSheet() {
         if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);  // BottomSheet을 보이게 설정
+            showBottomSheet();  // BottomSheet을 보이게 설정
         } else {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);    // BottomSheet을 숨기기
+            hideBottomSheet();    // BottomSheet을 숨기기
         }
     }
+
+    // BottomSheet 숨기기
+    public void hideBottomSheet() {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+    }
+
+    // BottomSheet 보이기
+    public void showBottomSheet() {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+    }
+
+    public void showBottomSheetExpanded() {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+
 }

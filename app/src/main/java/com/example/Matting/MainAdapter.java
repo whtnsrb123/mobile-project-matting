@@ -55,9 +55,9 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
 
                 // Activity를 가져와서 BottomSheet 숨기기
                 AppCompatActivity activity = (AppCompatActivity) v.getContext();
-                BottomSheetBehavior<View> bottomSheetBehavior = BottomSheetBehavior.from(activity.findViewById(R.id.bottom_sheet_layout));
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
+//                BottomSheetBehavior<View> bottomSheetBehavior = BottomSheetBehavior.from(activity.findViewById(R.id.bottom_sheet_layout));
+//                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                ((MainActivity) activity).hideBottomSheet();
 
                 // 전체 화면으로 InfoFragment 표시
                 activity.getSupportFragmentManager().beginTransaction()
