@@ -2,38 +2,41 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="16dp">
 
+    <!-- 댓글 입력 필드 -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/commentRecyclerView"
+        android:id="@+id/recyclerViewComments"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="8dp" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="8dp" />
+
+    <!-- 댓글 제출 버튼 -->
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="8dp">
+        android:layout_width="375dp"
+        android:layout_height="44dp"
+        android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/commentInput"
-            android:layout_width="0dp"
+            android:id="@+id/editTextComment"
+            android:layout_width="337dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_marginBottom="8dp"
             android:hint="댓글을 입력하세요..."
-            android:background="@android:color/white"
-            android:padding="8dp"
-            android:textSize="14sp" />
+
+            android:inputType="textMultiLine"
+            android:padding="8dp" />
 
         <ImageButton
-            android:id="@+id/sendButton"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_send"
-            android:contentDescription="Send"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="8dp" />
+            android:id="@+id/buttonSubmitComment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:contentDescription="Send Comment Button"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_send" />
+
     </LinearLayout>
+
 </LinearLayout>
