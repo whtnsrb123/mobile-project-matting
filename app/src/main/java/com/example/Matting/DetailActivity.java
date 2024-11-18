@@ -1,8 +1,11 @@
 package com.example.Matting;
-import android.Manifest;
+import static com.example.Matting.Chat_Chatmanage.addNewChatRoom;
 
+import android.Manifest;
+import com.example.Matting.User;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -75,6 +78,9 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         setupClickListenerForPopup(goRestaurant, "식당 정보", "식당 정보 페이지로 이동합니다.");
         setupClickListenerForPopup(goProgile, "아이디", "프로필 페이지로 이동합니다.");
         setupClickListenerForPopup(goChat, "채팅", "채팅 페이지로 이동합니다.");
+        goChat.setOnClickListener(v ->  newCommunityChat());
+
+
 
         // 게시글, 본문
         TextView restaurantName = findViewById(R.id.restaurant_name);
@@ -223,5 +229,18 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         });
 
         dialog.show();
+    }
+
+    //채팅방 연결
+    private void newCommunityChat(){
+        User user = new User(this);
+        TextView postTitle = findViewById(R.id.post_title);
+        addNewChatRoom(postTitle.getText().toString(),user);
+        Intent intent = new Intent(DetailActivity.this, Chat_ChatroomActivity.class);
+        intent.putExtra("chatRoomId", postTitle.getText().toString());
+        startActivity(intent);
+
+
+        return;
     }
 }

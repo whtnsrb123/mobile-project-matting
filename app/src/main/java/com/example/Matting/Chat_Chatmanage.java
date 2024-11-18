@@ -9,7 +9,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Chat_Chatmanage {
     static void addNewChatRoom(String chatRoomId, User user) {
@@ -20,19 +22,21 @@ public class Chat_Chatmanage {
         db.child("chats").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<String> chats = new ArrayList<>();
+                // Set으로 채팅방 ID 관리 (중복 방지)
+                Set<String> chatSet = new HashSet<>();
                 if (snapshot.exists()) {
                     for (DataSnapshot chatSnapshot : snapshot.getChildren()) {
                         String existingChatRoomId = chatSnapshot.getValue(String.class);
                         if (existingChatRoomId != null) {
-                            chats.add(existingChatRoomId);
+                            chatSet.add(existingChatRoomId);
                         }
                     }
                 }
-                chats.add(chatRoomId);
+                // 새로운 채팅방 ID 추가
+                chatSet.add(chatRoomId);
 
                 // Firebase에 저장
-                db.child("chats").setValue(chats);
+                db.child("chats").setValue(new ArrayList<>(chatSet)); // Firebase는 배열 형식으로 저장
             }
 
             @Override
@@ -41,4 +45,5 @@ public class Chat_Chatmanage {
             }
         });
     }
+
 }
