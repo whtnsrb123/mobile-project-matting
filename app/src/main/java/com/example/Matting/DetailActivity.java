@@ -51,6 +51,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
 
         String title = getIntent().getStringExtra("title");
         String content = getIntent().getStringExtra("content");
+        String restaurant = getIntent().getStringExtra("restaurant");
         String info = getIntent().getStringExtra("info");
         Toast.makeText(getApplicationContext(), info, Toast.LENGTH_LONG).show();
 
@@ -80,10 +81,9 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         TextView restaurantName = findViewById(R.id.restaurant_name);
         TextView postTitle = findViewById(R.id.post_title);
         TextView postContent = findViewById(R.id.post_content);
-        restaurantName.setText("식당 이름입니다.");
+        restaurantName.setText(restaurant);
         postTitle.setText(title);
         postContent.setText(content);
-
 
         // 뒤로가기
         ImageButton goBackButton = findViewById(R.id.go_back);

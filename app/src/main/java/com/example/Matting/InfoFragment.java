@@ -63,19 +63,6 @@ public class InfoFragment extends Fragment {
             tvMapY.setText(String.valueOf(getArguments().getInt("map_y")));
         }
 
-        // 닫기 버튼 설정
-//        btnClose.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-//        btnClose.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // InfoFragment를 닫음
-//                getParentFragmentManager().popBackStack();
-//
-//                // BottomSheet 다시 나타내기
-//                BottomSheetBehavior<View> bottomSheetBehavior = BottomSheetBehavior.from(getActivity().findViewById(R.id.bottom_sheet_layout));
-//                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//            }
-//        });
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,9 +84,17 @@ public class InfoFragment extends Fragment {
         btnReserve.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // CreateCommunityFragment로 InfoFragment를 대체하여 겹침 방지
+                // CreateCommunityFragment 인스턴스 생성
+                CreateCommunityFragment createCommunityFragment = new CreateCommunityFragment();
+
+                // 데이터 전달을 위한 Bundle 생성
+                Bundle bundle = new Bundle();
+                bundle.putString("restaurant", getArguments().getString("title")); // InfoFragment에서 받은 title 전달
+                createCommunityFragment.setArguments(bundle);
+
+                // Fragment 전환
                 FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                transaction.replace(R.id.info_fragment_container, new CreateCommunityFragment());
+                transaction.replace(R.id.info_fragment_container, createCommunityFragment);
                 transaction.addToBackStack(null); // 뒤로 가기 스택에 추가
                 transaction.commit();
             }

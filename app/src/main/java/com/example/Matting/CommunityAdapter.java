@@ -41,6 +41,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
                 Intent intent = new Intent(context, DetailActivity.class);
                 intent.putExtra("title", community.getTitle());
                 intent.putExtra("content", community.getContent());
+                intent.putExtra("restaurant", community.getRestaurant());
                 intent.putExtra("info", community.getInfo());
                 context.startActivity(intent);
             }
