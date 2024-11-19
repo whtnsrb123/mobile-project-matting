@@ -7,17 +7,20 @@ public class Community implements Parcelable {
     private String title;
     private String content;
     private String info;
+    private String restaurant;
 
-    public Community(String title, String content, String info) {
+    public Community(String title, String content, String info, String restaurant) {
         this.title = title;
         this.content = content;
         this.info = info;
+        this.restaurant = restaurant;
     }
 
     protected Community(Parcel in) {
         title = in.readString();
         content = in.readString();
         info = in.readString();
+        restaurant = in.readString();
     }
 
     public static final Creator<Community> CREATOR = new Creator<Community>() {
@@ -38,6 +41,10 @@ public class Community implements Parcelable {
 
     public String getContent() {
         return content;
+    }
+
+    public String getRestaurant() {
+        return restaurant;
     }
 
     public String getInfo() {
