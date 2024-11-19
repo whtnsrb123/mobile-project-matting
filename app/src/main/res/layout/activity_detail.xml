@@ -130,12 +130,12 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingTop="10dp"
-                android:weightSum="3">
+                android:weightSum="1">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2.5"
+                    android:layout_weight="1"
                     android:text="희망 만남 위치"
                     android:textColor="#333333"
                     android:textSize="16sp"
@@ -143,11 +143,10 @@
 
                 <ImageButton
                     android:id="@+id/btn_full_screen_map"
-                    android:layout_width="0dp"
-                    android:layout_height="24dp"
-                    android:layout_weight="0.5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_launcher_background"/>
+                    android:src="@drawable/zoom_out"/>
 
             </LinearLayout>
 
