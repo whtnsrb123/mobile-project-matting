@@ -84,16 +84,16 @@
                         android:textColor="#000000"
                         android:textSize="14sp" />
                 </LinearLayout>
-
                 <!-- 팔로워 -->
                 <LinearLayout
+                    android:id="@+id/followersLayout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:onClick="onFollowerClick">
 
-                    <!-- 숫자 텍스트 -->
                     <TextView
                         android:id="@+id/followerCount"
                         android:layout_width="wrap_content"
@@ -101,28 +101,26 @@
                         android:fontFamily="sans-serif-medium"
                         android:text="167"
                         android:textColor="#000000"
-                        android:textSize="16sp"
-                        android:layout_marginBottom="0dp" /> <!-- 버튼과 간격을 좁히기 위해 marginBottom 사용 -->
+                        android:textSize="16sp" />
 
-                    <!-- 팔로워 목록 버튼 -->
-                    <Button
-                        android:id="@+id/followersListButton"
+                    <TextView
+                        android:id="@+id/followerText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
                         android:text="팔로워"
-                        android:textColor="#000000" />
-
+                        android:textColor="#000000"
+                        android:textSize="14sp" />
                 </LinearLayout>
-
 
                 <!-- 팔로잉 -->
                 <LinearLayout
+                    android:id="@+id/followingLayout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:onClick="onFollowingClick">
 
                     <TextView
                         android:id="@+id/followingCount"
@@ -131,16 +129,15 @@
                         android:fontFamily="sans-serif-medium"
                         android:text="144"
                         android:textColor="#000000"
-                        android:textSize="16sp"
-                        android:layout_marginBottom="0dp" />/>
+                        android:textSize="16sp" />
 
-                    <Button
-                        android:id="@+id/followingListButton"
+                    <TextView
+                        android:id="@+id/followingText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
                         android:text="팔로잉"
-                        android:textColor="#000000" />
+                        android:textColor="#000000"
+                        android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
