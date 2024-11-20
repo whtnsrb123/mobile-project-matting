@@ -34,6 +34,8 @@ public class Chat_MessageAdapter extends ArrayAdapter<Chat_Message> {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.chat_message_item_left, parent, false);
             }
 
+            TextView textViewUserId = convertView.findViewById(R.id.userId);
+            textViewUserId.setText(chatMessage.getUserId());
             TextView textViewMessage = convertView.findViewById(R.id.textViewMessage);
             textViewMessage.setText(chatMessage.getMessage());
         }
