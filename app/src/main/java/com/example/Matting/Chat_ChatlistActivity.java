@@ -20,11 +20,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,12 +36,24 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
     private List<String> chatRoomList;
     private ArrayAdapter<String> adapter;
     private User user;
+    private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //로그인 확인
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            // 로그인 페이지로 이동하고 결과를 기다림
+            Intent loginIntent = new Intent(Chat_ChatlistActivity.this, User_LoginActivity.class);
+            startActivityForResult(loginIntent, 1001); // 1001은 요청 코드
+        }
+
+        //파이어베이스 초기화
         FirebaseApp.initializeApp(this);
         setContentView(R.layout.chat_chatroomlist);
-         user = new User(this);
+        user = new User(this);
 
         listViewChatRooms = findViewById(R.id.listViewChatRooms);
         chatRoomList = new ArrayList<>();
