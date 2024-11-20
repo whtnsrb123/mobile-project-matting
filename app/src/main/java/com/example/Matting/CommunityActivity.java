@@ -61,28 +61,6 @@ public class CommunityActivity extends AppCompatActivity {
             addPostToFirestore(newTitle, newContent, newLocation, newRestaurant);
         }
 
-//        // RecyclerView 설정
-//        postsRecyclerView = findViewById(R.id.postsRecyclerView);
-//        postsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-//
-//        // 데이터 초기화 및 어댑터 연결
-//        communityList = new ArrayList<>();
-//        communityList.add(new Community("고기먹으러 같이가요", "정릉역 1번출구...", "2024.10.31 · 58분 전 · 3/4"));
-//        communityList.add(new Community("중식당 같이가요", "국민대 근처...", "2024.10.31 · 18시간 전 · 2/4"));
-//        // 필요시 더 많은 데이터를 추가
-//
-//        // 새로운 데이터가 있을 경우 추가
-//        Intent intent = getIntent();
-//        String newTitle = intent.getStringExtra("title");
-//        String newContent = intent.getStringExtra("content");
-//        String newLocation = intent.getStringExtra("location");
-//        if (newTitle != null && newContent != null) {
-//            communityList.add(new Community(newTitle, newContent, newLocation));
-//        }
-//
-//        communityAdapter = new CommunityAdapter(this, communityList);
-//        postsRecyclerView.setAdapter(communityAdapter);
-
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_community); // 세 번째 아이템 선택
