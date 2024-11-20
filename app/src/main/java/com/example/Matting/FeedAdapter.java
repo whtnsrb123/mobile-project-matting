@@ -1,12 +1,17 @@
 package com.example.Matting;
 
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.text.format.DateUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -53,12 +58,23 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             holder.timestampTextView.setText("Unknown");
         }
 
-        // Glide로 이미지 로드
-        Glide.with(holder.itemView.getContext())
-                .load(feedItem.getImageUrl())
-                .placeholder(R.drawable.placeholder_image) // 로딩 중 기본 이미지
-                .error(R.drawable.error_image)             // 로드 실패 시 기본 이미지
-                .into(holder.postImageView);
+        // Base64 이미지 디코딩 후 출력
+        String image = feedItem.getImageUrl();
+        if (image != null && !image.isEmpty()) {
+            try {
+                // Base64 디코딩
+                byte[] decodedBytes = Base64.decode(image, Base64.DEFAULT);
+
+                // Bitmap 생성
+                Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+
+                // ImageView에 설정
+                holder.postImageView.setImageBitmap(bitmap);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+                Toast.makeText(holder.itemView.getContext(), "이미지를 디코딩하는 중 문제가 발생했습니다.", Toast.LENGTH_SHORT).show();
+            }
+        }
 
         // Firestore에서 댓글 개수 가져오기
         db.collection("posts")

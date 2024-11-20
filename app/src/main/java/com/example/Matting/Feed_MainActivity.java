@@ -6,13 +6,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton; // ImageButton 추가
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -23,7 +24,6 @@ import java.util.List;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-
 public class Feed_MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
@@ -31,6 +31,7 @@ public class Feed_MainActivity extends AppCompatActivity {
     private List<FeedItem> feedItems;
     private ImageButton searchButton; // imageButton7을 위한 변수
     private FirebaseFirestore db;
+    private SwipeRefreshLayout swipeRefreshLayout; // SwipeRefreshLayout 추가
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,34 +44,19 @@ public class Feed_MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout); // SwipeRefreshLayout 초기화
+
         feedItems = new ArrayList<>();
         feedAdapter = new FeedAdapter(feedItems);
         recyclerView.setAdapter(feedAdapter);
 
         db = FirebaseFirestore.getInstance();
 
-        // Firestore에서 데이터 가져오기
-        db.collection("posts")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            String documentId = document.getId();
-                            String username = document.getString("username");
-                            String postContent = document.getString("postContent");
-                            String imageUrl = document.getString("imageResource");
-                            int reactionCount = document.getLong("reactionCount").intValue();
-                            int commentCount = document.getLong("commentCount").intValue();
-                            Date timestamp = document.getTimestamp("timestamp").toDate(); // Timestamp를 Date로 변환
+        // 초기 데이터 로드
+        loadFeedData();
 
-                            feedItems.add(new FeedItem(documentId, username, postContent, imageUrl, reactionCount, commentCount, timestamp));
-                        }
-                        feedAdapter.notifyDataSetChanged();
-                    } else {
-                        Log.w("Feed_MainActivity", "Error getting documents.", task.getException());
-                    }
-                });
-
+        // SwipeRefreshLayout 새로고침 동작 설정
+        swipeRefreshLayout.setOnRefreshListener(() -> loadFeedData());
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
@@ -123,5 +109,40 @@ public class Feed_MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    // Firestore에서 데이터 가져오기
+    private void loadFeedData() {
+        // 새로고침 로딩 상태 시작
+        swipeRefreshLayout.setRefreshing(true);
+
+        db.collection("posts")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        feedItems.clear(); // 기존 데이터 초기화
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String documentId = document.getId();
+                            String username = document.getString("username");
+                            String postContent = document.getString("postContent");
+                            String imageUrl = document.getString("imageResource");
+                            int reactionCount = document.getLong("reactionCount").intValue();
+                            int commentCount = document.getLong("commentCount").intValue();
+                            Date timestamp = document.getTimestamp("timestamp").toDate();
+
+                            feedItems.add(new FeedItem(documentId, username, postContent, imageUrl, reactionCount, commentCount, timestamp));
+                        }
+                        feedAdapter.notifyDataSetChanged();
+                    } else {
+                        Log.w("Feed_MainActivity", "Error getting documents.", task.getException());
+                    }
+                    // 새로고침 로딩 상태 종료
+                    swipeRefreshLayout.setRefreshing(false);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Feed_MainActivity", "Error loading data", e);
+                    // 실패 시에도 새로고침 로딩 상태 종료
+                    swipeRefreshLayout.setRefreshing(false);
+                });
     }
 }

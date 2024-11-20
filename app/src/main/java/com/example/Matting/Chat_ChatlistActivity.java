@@ -1,5 +1,7 @@
 package com.example.Matting;
 
+import static com.example.Matting.Chat_Chatmanage.addNewChatRoom;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -18,11 +20,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,13 +35,26 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
     private ListView listViewChatRooms;
     private List<String> chatRoomList;
     private ArrayAdapter<String> adapter;
+    private User user;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //로그인 확인
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            // 로그인 페이지로 이동하고 결과를 기다림
+            Intent loginIntent = new Intent(Chat_ChatlistActivity.this, User_LoginActivity.class);
+            startActivityForResult(loginIntent, 1001); // 1001은 요청 코드
+        }
+
+        //파이어베이스 초기화
         FirebaseApp.initializeApp(this);
         setContentView(R.layout.chat_chatroomlist);
-        User user = new User(this);
+        user = new User(this);
 
         listViewChatRooms = findViewById(R.id.listViewChatRooms);
         chatRoomList = new ArrayList<>();
@@ -123,11 +140,10 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
 
         final EditText input = new EditText(this);
         builder.setView(input);
-
         builder.setPositiveButton("OK", (dialog, which) -> {
             String newChatRoomId = input.getText().toString();
             if (!newChatRoomId.isEmpty()) {
-                addNewChatRoom(newChatRoomId);
+                addNewChatRoom(newChatRoomId, user);
             }
         });
 
@@ -136,34 +152,4 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private void addNewChatRoom(String chatRoomId) {
-        DatabaseReference db;
-        User user = new User(this);
-        db = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUserId());
-
-        // 기존 chats 목록을 가져와서 새로운 chatRoomId 추가
-        db.child("chats").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<String> chats = new ArrayList<>();
-                if (snapshot.exists()) {
-                    for (DataSnapshot chatSnapshot : snapshot.getChildren()) {
-                        String existingChatRoomId = chatSnapshot.getValue(String.class);
-                        if (existingChatRoomId != null) {
-                            chats.add(existingChatRoomId);
-                        }
-                    }
-                }
-                chats.add(chatRoomId);
-
-                // Firebase에 저장
-                db.child("chats").setValue(chats);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // 에러 처리
-            }
-        });
-    }
 }

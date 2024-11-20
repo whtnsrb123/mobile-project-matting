@@ -5,7 +5,13 @@
     android:gravity="end"
     android:orientation="horizontal"
     android:padding="8dp">
-
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:id="@+id/userId"
+        android:visibility="gone"
+        />
     <TextView
         android:id="@+id/textViewMessage"
         android:layout_width="wrap_content"
@@ -14,4 +20,5 @@
         android:padding="12dp"
         android:textColor="#FFFFFF"
         android:textSize="16sp" />
+
 </LinearLayout>
