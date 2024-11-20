@@ -2,7 +2,9 @@ package com.example.Matting;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,11 +13,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CommunityActivity extends AppCompatActivity {
+
+    private static final String TAG = "CommunityActivity";
+    private FirebaseFirestore db;
+    private CollectionReference communityRef;
 
     private RecyclerView postsRecyclerView;
     private CommunityAdapter communityAdapter;
@@ -26,27 +37,29 @@ public class CommunityActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_community);
 
-        // RecyclerView 설정
+        db = FirebaseFirestore.getInstance();
+        communityRef = db.collection("community"); // Firebase Firestore의 "community" 컬렉션 참조
+
         postsRecyclerView = findViewById(R.id.postsRecyclerView);
         postsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // 데이터 초기화 및 어댑터 연결
         communityList = new ArrayList<>();
-        communityList.add(new Community("고기먹으러 같이가요", "정릉역 1번출구...", "2024.10.31 · 58분 전 · 3/4"));
-        communityList.add(new Community("중식당 같이가요", "국민대 근처...", "2024.10.31 · 18시간 전 · 2/4"));
-        // 필요시 더 많은 데이터를 추가
+        communityAdapter = new CommunityAdapter(this, communityList);
+        postsRecyclerView.setAdapter(communityAdapter);
 
-        // 새로운 데이터가 있을 경우 추가
+        // Firestore에서 데이터를 불러오는 메소드 호출
+        loadPostsFromFirestore();
+
+        // Intent에서 새로운 게시물 데이터 가져오기
         Intent intent = getIntent();
         String newTitle = intent.getStringExtra("title");
         String newContent = intent.getStringExtra("content");
         String newLocation = intent.getStringExtra("location");
-        if (newTitle != null && newContent != null) {
-            communityList.add(new Community(newTitle, newContent, newLocation));
-        }
+        String newRestaurant = intent.getStringExtra("restaurant");
 
-        communityAdapter = new CommunityAdapter(this, communityList);
-        postsRecyclerView.setAdapter(communityAdapter);
+        if (newTitle != null && newContent != null) {
+            addPostToFirestore(newTitle, newContent, newLocation, newRestaurant);
+        }
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
@@ -90,5 +103,40 @@ public class CommunityActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private void addPostToFirestore(String title, String content, String location, String restaurant) {
+        Map<String, Object> post = new HashMap<>();
+        post.put("title", title);
+        post.put("content", content);
+        post.put("location", location);
+        post.put("restaurant", restaurant);
+
+        communityRef.add(post)
+                .addOnSuccessListener(documentReference -> {
+                    Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
+                    loadPostsFromFirestore();
+                })
+                .addOnFailureListener(e -> Log.w(TAG, "Error adding document", e));
+    }
+
+    private void loadPostsFromFirestore() {
+        communityRef.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        communityList.clear(); // 기존 리스트 비우기
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String title = document.getString("title");
+                            String content = document.getString("content");
+                            String location = document.getString("location");
+                            String restaurant = document.getString("restaurant");
+                            communityList.add(new Community(title, content, location, restaurant)); // Firestore에서 불러온 데이터를 리스트에 추가
+                        }
+                        communityAdapter.notifyDataSetChanged(); // RecyclerView 업데이트
+                    } else {
+                        Log.w(TAG, "Error getting documents.", task.getException());
+                        Toast.makeText(this, "게시물을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
