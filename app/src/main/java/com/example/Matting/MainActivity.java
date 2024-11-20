@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
         // 위치 요청
-        getLocation();
+//        getLocation();
         // 지도 초기화
         initMap();
 
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         restaurantRecyclerView.setAdapter(mainAdapter);
 
         // 디폴트 검색어로 초기 API 호출
-        callNaverSearchAPI("서울 성북구");
+//        callNaverSearchAPI("서울 성북구");
 
         // 버튼들을 가져오기
         AppCompatButton category1 = findViewById(R.id.category1);
@@ -175,33 +175,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    // 위치 가져오기 메서드
-    private void getLocation() {
-        Log.d("LocationDebug", "getLocation");
-        // 위치 권한이 있는지 확인
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            Log.d("LocationDebug", "권한있음");
-            Location loc_Current = (locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) != null)
-                    ? locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-                    : locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            if (loc_Current != null) {
-                cur_lat = loc_Current.getLatitude();
-                cur_lon = loc_Current.getLongitude();
-                Log.d("LocationDebug", "Location updated in onLocationChanged: lat = " + cur_lat + ", lon = " + cur_lon);
-                updateMapLocation();
-            } else {
-                Log.d("LocationDebug", "위치 못가져옴");
-                // 위치를 가져올 수 없는 경우의 처리
-                cur_lat = 37.5665; // 기본값 (서울)
-                cur_lon = 126.9780;
-            }
-        } else {
-            // 권한이 없을 경우 사용자에게 요청
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-        }
-    }
-
     // 맵 위치 업데이트 메서드
     private void updateMapLocation() {
         if (naverMap != null) {
@@ -223,48 +196,80 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,  @NonNull int[] grantResults) {
-        if (locationSource.onRequestPermissionsResult(
-                requestCode, permissions, grantResults)) {
-            if (!locationSource.isActivated()) { // 권한 거부됨
-                naverMap.setLocationTrackingMode(LocationTrackingMode.None);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (locationSource.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
+            if (locationSource.isActivated()) {
+                getLastKnownLocationAndUpdateMap(); // 권한 승인 후 위치 가져오기
+            } else {
+                Toast.makeText(this, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
             }
             return;
         }
-        super.onRequestPermissionsResult(
-                requestCode, permissions, grantResults);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    // 지도 로드 완료 시 호출되는 콜백
     @Override
     public void onMapReady(@NonNull NaverMap naverMap) {
         this.naverMap = naverMap;
         naverMap.setLocationSource(locationSource);
 
-        //배경 지도 선택
-        naverMap.setMapType(NaverMap.MapType.Basic);
-        //건물 표시
-        naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_BUILDING, true);
-        //위치 및 각도 조정
-        CameraPosition cameraPosition = new CameraPosition(
-                new LatLng(cur_lat, cur_lon),   // 위치 지정
-                15,                           // 줌 레벨
-                0,                          // 기울임 각도
-                0                           // 방향
-        );
-        naverMap.setCameraPosition(cameraPosition);
-//        setMark(marker, R.drawable.baseline_place_24, 0);
-
+        // 위치 버튼 활성화
         UiSettings uiSettings = naverMap.getUiSettings();
         uiSettings.setLocationButtonEnabled(true);
-        NaverMapOptions options = new NaverMapOptions().locationButtonEnabled(true);
 
+        // 위치 추적 모드 설정
         naverMap.setLocationTrackingMode(LocationTrackingMode.NoFollow);
+
+        // 현재 위치 가져오기 및 지도 중심 이동
+        getLastKnownLocationAndUpdateMap();
     }
 
+    private void getLastKnownLocationAndUpdateMap() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+            // GPS_PROVIDER가 없으면 NETWORK_PROVIDER 사용
+            if (lastKnownLocation == null) {
+                lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            }
+
+            if (lastKnownLocation != null) {
+                double latitude = lastKnownLocation.getLatitude();
+                double longitude = lastKnownLocation.getLongitude();
+                Log.d("LocationDebug", "현재 위치: lat = " + latitude + ", lon = " + longitude);
+
+                // 현재 위치로 지도 중심 이동
+                updateMapCenter(latitude, longitude);
+            } else {
+                Log.d("LocationDebug", "현재 위치를 가져올 수 없음. 기본 위치(서울)로 설정");
+                // 서울 중심 좌표로 지도 설정
+                updateMapCenter(37.5665, 126.9780); // 서울 중심 좌표
+            }
+        } else {
+            // 권한 요청
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    private void updateMapCenter(double latitude, double longitude) {
+        if (naverMap != null) {
+            CameraPosition cameraPosition = new CameraPosition(
+                    new LatLng(latitude, longitude), // 위치 지정
+                    15,                             // 줌 레벨
+                    0,                              // 기울임 각도
+                    0                               // 방향
+            );
+            naverMap.setCameraPosition(cameraPosition);
+
+            // 선택적으로 마커를 표시
+//            setMark(marker, R.drawable.baseline_place_24, 0, latitude, longitude);
+        }
+    }
+
+
     // 지도 마커
-    private void setMark(Marker marker, int resourceID, int zIndex)
+    private void setMark(Marker marker, int resourceID, int zIndex, double lat, double lon)
     {
         //원근감 표시
         marker.setIconPerspectiveEnabled(true);
@@ -273,7 +278,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //마커의 투명도
         marker.setAlpha(0.8f);
         //마커 위치
-        marker.setPosition(new LatLng(cur_lat, cur_lon));
+        marker.setPosition(new LatLng(lat, lon));
         //마커 우선순위
         marker.setZIndex(zIndex);
         //마커 표시
