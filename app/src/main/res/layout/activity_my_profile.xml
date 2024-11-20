@@ -163,18 +163,18 @@
             android:weightSum="2">
 
             <Button
+                android:id="@+id/uploadPostButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="게시글 업로드" />
+
+            <Button
                 android:id="@+id/editProfileButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="프로필 편집" />
-
-            <Button
-                android:id="@+id/shareProfileButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="프로필 공유" />
         </LinearLayout>
 
         <!-- 그리드 뷰 (게시물) -->

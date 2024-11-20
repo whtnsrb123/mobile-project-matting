@@ -9,11 +9,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
-import android.view.MenuItem;
-import android.view.View;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -27,7 +27,6 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MyProfileActivity extends AppCompatActivity {
@@ -40,10 +39,6 @@ public class MyProfileActivity extends AppCompatActivity {
     private static final String PROFILE_IMAGE_URI_KEY = "profile_image_uri";
 
     private ImageView profileImage;
-    private RecyclerView postRecyclerView;
-    private PostAdapter postAdapter;
-    private List<Post> postList;
-
     // ActivityResultLauncher 선언
     private final ActivityResultLauncher<Intent> galleryLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -53,7 +48,6 @@ public class MyProfileActivity extends AppCompatActivity {
                     setProfileImage(imageUri); // 선택한 이미지 설정
                 }
             });
-
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
@@ -62,6 +56,9 @@ public class MyProfileActivity extends AppCompatActivity {
                     Toast.makeText(this, "갤러리에 접근 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
                 }
             });
+    private RecyclerView postRecyclerView;
+    private PostAdapter postAdapter;
+    private List<Post> postList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +70,18 @@ public class MyProfileActivity extends AppCompatActivity {
 
         // 프로필 수정 버튼
         Button editProfileButton = findViewById(R.id.editProfileButton);
-        editProfileButton.setOnClickListener(v -> checkPermissionAndOpenGallery());
+        editProfileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MyProfileActivity.this, User_EditProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
+        // 게시글 업로드
+        Button uploadPostButton = findViewById(R.id.uploadPostButton);
+        uploadPostButton.setOnClickListener(v -> checkPermissionAndOpenGallery());
 
         // 팔로워 버튼
         Button followersButton = findViewById(R.id.followersListButton);
