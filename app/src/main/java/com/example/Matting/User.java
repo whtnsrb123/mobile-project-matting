@@ -1,34 +1,36 @@
 package com.example.Matting;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-
-import java.util.UUID;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 
 public class User {
     private String userId;
     private Context context;
+    private String email;
 
     // Context를 생성자로 받아서 초기화합니다.
     public User(Context context) {
         this.context = context;
-        this.userId = make_user();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // Name, email address, and profile photo Url
+            this.email = user.getEmail();
+
+            // Check if user's email is verified
+            boolean emailVerified = user.isEmailVerified();
+
+            // The user's ID, unique to the Firebase project. Do NOT use this value to
+            // authenticate with your backend server, if you have one. Use
+            // FirebaseUser.getIdToken() instead.
+            this.userId = user.getUid();
+        }
     }
 
-    public String make_user() {
-        // SharedPreferences를 사용하여 userId 불러오기
-        SharedPreferences sharedPreferences = context.getSharedPreferences("com.example.Matting.PREFERENCES", Context.MODE_PRIVATE);
-        String userId = sharedPreferences.getString("userId", null);
-        if (userId == null) {
-            userId = "user_temp_" + UUID.randomUUID().toString();
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("userId", userId);
-            editor.apply();
-        }
-        return userId;
-    }
+    public String getEmail() { return this.email; }
 
     public String getUserId() {
-        return userId;
+        return this.userId;
     }
 }
