@@ -3,6 +3,7 @@ package com.example.Matting;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -81,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ImageView imageView = findViewById(R.id.logo);
+        imageView.setColorFilter(Color.WHITE);
+
         locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
         // 위치 요청
@@ -113,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         restaurantRecyclerView.setAdapter(mainAdapter);
 
         // 디폴트 검색어로 초기 API 호출
-//        callNaverSearchAPI("서울 성북구");
+        callNaverSearchAPI("서울 성북구");
 
         // 버튼들을 가져오기
         AppCompatButton category1 = findViewById(R.id.category1);
@@ -175,12 +179,34 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    // 맵 위치 업데이트 메서드
-    private void updateMapLocation() {
-        if (naverMap != null) {
-            CameraPosition cameraPosition = new CameraPosition(new LatLng(cur_lat, cur_lon), 13);
-            naverMap.setCameraPosition(cameraPosition);
-        }
+    private void getReverseGeocode(double latitude, double longitude) {
+        String apiUrl = "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?coords=" + longitude + "," + latitude + "&output=json&orders=roadaddr";
+        Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put("X-NCP-APIGW-API-KEY-ID", CLIENT_ID);
+        requestHeaders.put("X-NCP-APIGW-API-KEY", CLIENT_SECRET);
+
+        new Thread(() -> {
+            String responseBody = get(apiUrl, requestHeaders);
+            try {
+                JSONObject jsonObject = new JSONObject(responseBody);
+                JSONArray resultsArray = jsonObject.getJSONArray("results");
+                if (resultsArray.length() > 0) {
+                    JSONObject firstResult = resultsArray.getJSONObject(0);
+                    JSONObject region = firstResult.getJSONObject("region");
+                    String area1 = region.getJSONObject("area1").getString("name");
+                    String area2 = region.getJSONObject("area2").getString("name");
+                    String defaultKeyword = area1 + " " + area2;
+
+                    runOnUiThread(() -> callNaverSearchAPI(defaultKeyword));
+                    Toast.makeText(this, defaultKeyword, Toast.LENGTH_SHORT).show();
+                } else {
+                    runOnUiThread(() -> Toast.makeText(this, "주소 변환 실패", Toast.LENGTH_SHORT).show());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                runOnUiThread(() -> Toast.makeText(this, "API 응답 처리 중 오류 발생", Toast.LENGTH_SHORT).show());
+            }
+        }).start();
     }
 
     // 지도 초기화 메서드
@@ -262,6 +288,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             );
             naverMap.setCameraPosition(cameraPosition);
 
+//            getReverseGeocode(latitude, longitude);
             // 선택적으로 마커를 표시
 //            setMark(marker, R.drawable.baseline_place_24, 0, latitude, longitude);
         }
