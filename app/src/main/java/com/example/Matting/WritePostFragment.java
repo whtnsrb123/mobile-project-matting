@@ -1,9 +1,13 @@
 package com.example.Matting;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +24,8 @@ import androidx.fragment.app.Fragment;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -83,12 +89,18 @@ public class WritePostFragment extends Fragment {
             Toast.makeText(requireContext(), "모든 필드를 입력하세요.", Toast.LENGTH_SHORT).show();
             return;
         }
+        String encodedImage = encodeImageToBase64(selectedImageUri);
+
+        if (encodedImage == null) {
+            Toast.makeText(requireContext(), "이미지 인코딩에 실패했습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // Firestore 데이터 준비
         Map<String, Object> postMap = new HashMap<>();
         postMap.put("username", "사용자"); // 실제 사용자 이름으로 변경 필요
         postMap.put("postContent", content);
-        postMap.put("imageResource", selectedImageUri.toString()); // Base64가 아니라 URI를 사용
+        postMap.put("imageResource", encodedImage); // Base64가 아니라 URI를 사용
         postMap.put("timestamp", FieldValue.serverTimestamp());
         postMap.put("commentCount", 0);
         postMap.put("reactionCount", 0);
@@ -111,5 +123,22 @@ public class WritePostFragment extends Fragment {
 
     public interface OnPostUploadedListener {
         void onPostUploaded(Map<String, Object> newPost);
+    }
+
+    private String encodeImageToBase64(Uri imageUri) {
+        try {
+            ContentResolver contentResolver = requireContext().getContentResolver();
+            InputStream inputStream = contentResolver.openInputStream(imageUri);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+            byte[] imageBytes = byteArrayOutputStream.toByteArray();
+
+            return Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

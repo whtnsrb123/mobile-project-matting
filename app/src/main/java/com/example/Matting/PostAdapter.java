@@ -46,8 +46,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         Post post = postList.get(position);
 
-
-
         if (imageOnlyMode) {
             // 이미지 전용 모드에서는 이미지만 표시
             if (post.getImageResource() != null) {
