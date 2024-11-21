@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -79,10 +81,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
+
         locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
-        // 위치 요청
-//        getLocation();
         // 지도 초기화
         initMap();
 
@@ -110,8 +112,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mainAdapter = new MainAdapter(this, mainList);
         restaurantRecyclerView.setAdapter(mainAdapter);
 
-        // 디폴트 검색어로 초기 API 호출
-//        callNaverSearchAPI("서울 성북구");
+        ImageButton searchButton = findViewById(R.id.search_button);
+        EditText searchEditText = findViewById(R.id.search_edit_text);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String query = searchEditText.getText().toString().trim();
+                Log.d("search_bottom", "Query: " + query);
+                bottomNavigationView.setVisibility(View.VISIBLE);
+                callNaverSearchAPI(query + "맛집");
+            }
+        });
 
         // 버튼들을 가져오기
         AppCompatButton category1 = findViewById(R.id.category1);
@@ -119,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         AppCompatButton category3 = findViewById(R.id.category3);
         AppCompatButton category4 = findViewById(R.id.category4);
 
-        // 공통 리스너 설정
+        // 카테고리 공통 리스너 설정
         View.OnClickListener searchClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -140,8 +151,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         category4.setOnClickListener(searchClickListener);
 
         // BottomNavigationView 초기화
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_home); // 세 번째 아이템 선택
+
+        searchEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    // EditText에 포커스가 있을 때 BottomNavigation 숨기기
+                    bottomNavigationView.setVisibility(View.GONE);
+                } else {
+                    // EditText 포커스를 잃을 때 BottomNavigation 보이기
+                    bottomNavigationView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
         // 네비게이션 아이템 선택 리스너 설정
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -218,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     currentAddress = defaultSearchKeyword;
                     if (defaultSearchKeyword != null) {
                         // UI 스레드에서 디폴트 검색어로 API 호출
-                        runOnUiThread(() -> callNaverSearchAPI(defaultSearchKeyword+" 식당"));
+                        runOnUiThread(() -> callNaverSearchAPI(defaultSearchKeyword+" 맛집"));
                     }
 
                     bufferedReader.close();
