@@ -1,20 +1,48 @@
 package com.example.Matting;
 
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class PostData {
 
-    // 게시글 리스트 반환 메서드
-    public static List<Post> getPostList() {
-        List<Post> postList = new ArrayList<>();
+    public static void fetchPosts(FirebaseFirestore db, List<Post> postList, Runnable onComplete) {
+        if (postList == null) {
+            throw new IllegalArgumentException("postList cannot be null");
+        }
 
-        // 예시 게시글 데이터 추가 (작성자 이름, 설명, 이미지 리소스, 게시 날짜)
-        postList.add(new Post("khkgogo", "맛있는 디저트를 먹었어요!", R.drawable.chick, "1시간 전"));
-        postList.add(new Post("khkgogo", "즐거운 하루!", R.drawable.choi, "2시간 전"));
-        postList.add(new Post("khkgogo", "멋진 풍경을 담았습니다.", R.drawable.dongpa, "어제"));
-        postList.add(new Post("khkgogo", "여행 중 만난 특별한 장소!", R.drawable.mosu, "3일 전"));
+        db.collection("posts")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    postList.clear(); // postList가 null이 아님을 보장
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        try {
+                            String username = document.getString("username");
+                            String postContent = document.getString("postContent");
+                            String imageResource = document.getString("imageResource");
+                            Timestamp timestampObject = document.getTimestamp("timestamp");
+                            String timestamp = timestampObject != null
+                                    ? new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(timestampObject.toDate())
+                                    : "Unknown";
+                            int commentCount = document.contains("commentCount") ? document.getLong("commentCount").intValue() : 0;
+                            int reactionCount = document.contains("reactionCount") ? document.getLong("reactionCount").intValue() : 0;
+                            boolean reacted = document.contains("reacted") ? document.getBoolean("reacted") : false;
 
-        return postList;
+                            postList.add(new Post(username, postContent, imageResource, timestampObject, commentCount, reactionCount, reacted));
+                        } catch (Exception e) {
+                            e.printStackTrace(); // 데이터 변환 오류 처리
+                        }
+                    }
+                    onComplete.run(); // 완료 콜백 실행
+                })
+                .addOnFailureListener(e -> {
+                    e.printStackTrace(); // Firestore 오류 처리
+                });
     }
 }
+

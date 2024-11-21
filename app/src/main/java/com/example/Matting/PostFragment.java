@@ -36,9 +36,10 @@ public class PostFragment extends Fragment {
 
         // 게시글 데이터 설정
         username.setText(post.getUsername());  // 사용자 이름 설정
-        Glide.with(this).load(post.getImageResId()).into(postImage); // 게시글 이미지 설정
-        postDescription.setText(post.getDescription()); // 게시글 본문 설정
-        postTimestamp.setText(post.getTimestamp()); // 게시글 시간 설정
+        Glide.with(this).load(post.getImageResource()).into(postImage); // 게시글 이미지 설정
+        postDescription.setText(post.getPostContent()); // 게시글 본문 설정
+        // Post 클래스의 메서드로 Timestamp 변환
+        postTimestamp.setText(post.getFormattedTimestamp());
 
         // 좋아요 버튼과 댓글 버튼은 여기서 기능을 추가할 수도 있음
 
