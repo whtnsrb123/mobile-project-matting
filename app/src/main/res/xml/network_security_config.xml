@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<network-security-config>
+<!--    <base-config cleartextTrafficPermitted="true">-->
+<!--        <trust-anchors>-->
+<!--            <certificates src="system" />-->
+<!--        </trust-anchors>-->
+<!--    </base-config>-->
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">naveropenapi.apigw.ntruss.com</domain>
+    </domain-config>
+</network-security-config>
