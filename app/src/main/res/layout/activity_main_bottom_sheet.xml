@@ -23,12 +23,45 @@
         android:layout_margin="10dp"
         android:textSize="20dp" />
 
+    <!--  검색  -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="53dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <!-- 검색창 -->
+        <EditText
+            android:id="@+id/search_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Search"
+            android:inputType="text"
+            android:layout_marginLeft="8dp"/>
+
+
+        <!-- 돋보기 검색 버튼 -->
+        <ImageButton
+            android:id="@+id/search_button"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="검색어를 입력하세요"
+            android:scaleType="fitCenter"
+            android:src="@drawable/search"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="8dp"/>
+
+    </LinearLayout>
+
     <TableLayout
         android:id="@+id/categoryTable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:stretchColumns="*"
-        android:padding="16dp">
+        android:padding="8dp">
 
         <!-- 첫 번째 줄 -->
         <TableRow
