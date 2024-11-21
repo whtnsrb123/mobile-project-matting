@@ -1,5 +1,7 @@
 package com.example.Matting;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,9 +19,11 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.Calendar;
+
 public class CreateCommunityFragment extends Fragment {
-    private EditText etTitle, etContent, etLocation, etRestaurant;
-    private Button btnCreatePost;
+    private EditText etTitle, etContent, etLocation, etRestaurant, etDate, etTime;
+    private Button btnCreatePost, dateButton, timeButton;
     private ImageButton closeButton;
 
     @Nullable
@@ -33,6 +37,14 @@ public class CreateCommunityFragment extends Fragment {
         etRestaurant = view.findViewById(R.id.etRestaurant);
         btnCreatePost = view.findViewById(R.id.btnCreatePost);
         closeButton = view.findViewById(R.id.btnClose);
+        etDate = view.findViewById(R.id.etdate);
+        etTime = view.findViewById(R.id.ettime);
+        dateButton = view.findViewById(R.id.dateButton);
+        timeButton = view.findViewById(R.id.timeButton);
+
+        // 날짜/시간 변경 버튼 클릭 이벤트
+        dateButton.setOnClickListener(v -> showDatePickerDialog());
+        timeButton.setOnClickListener(v -> showTimePickerDialog());
 
         // 전달받은 데이터 수신
         Bundle arguments = getArguments();
@@ -79,6 +91,39 @@ public class CreateCommunityFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void showDatePickerDialog() {
+        // 현재 날짜 가져오기
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // DatePickerDialog 생성 및 표시
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), (view, selectedYear, selectedMonth, selectedDay) -> {
+            String formattedDate = selectedYear + "년 " + (selectedMonth + 1) + "월 " + selectedDay + "일";
+            etDate.setText(formattedDate); // 선택한 날짜를 EditText에 설정
+        }, year, month, day);
+
+        datePickerDialog.show();
+    }
+
+    private void showTimePickerDialog() {
+        // 현재 시간 가져오기
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        // TimePickerDialog 생성 및 표시
+        TimePickerDialog timePickerDialog = new TimePickerDialog(requireContext(), (view, selectedHour, selectedMinute) -> {
+            String period = selectedHour < 12 ? "오전" : "오후";
+            int adjustedHour = selectedHour % 12 == 0 ? 12 : selectedHour % 12; // 12시 형식 처리
+            String formattedTime = period + " " + adjustedHour + "시 " + selectedMinute + "분";
+            etTime.setText(formattedTime); // 선택한 시간을 EditText에 설정
+        }, hour, minute, false);
+
+        timePickerDialog.show();
     }
 
     @Override
