@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -21,7 +20,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -31,7 +29,6 @@ import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
-import com.naver.maps.map.NaverMapOptions;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.Marker;
@@ -60,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
     private FusedLocationSource locationSource;
 
+    private String currentAddress = "서울특별시 중구 태평로1가"; // 초기값
     private double cur_lat = 37.5665; // 초기값 (서울 예시)
     private double cur_lon = 126.9780;
     private NaverMap naverMap;
@@ -127,7 +125,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View view) {
                 AppCompatButton button = (AppCompatButton) view;
                 String keyword = button.getText().toString(); // 버튼의 텍스트를 검색어로 사용
-                callNaverSearchAPI(keyword); // 클릭한 버튼의 텍스트로 API 호출
+
+                // 현재 주소와 키워드 조합
+                String combinedKeyword = currentAddress + " " + keyword;
+
+                callNaverSearchAPI(combinedKeyword); // 클릭한 버튼의 텍스트로 API 호출
             }
         };
 
@@ -175,12 +177,83 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    // 맵 위치 업데이트 메서드
-    private void updateMapLocation() {
-        if (naverMap != null) {
-            CameraPosition cameraPosition = new CameraPosition(new LatLng(cur_lat, cur_lon), 13);
-            naverMap.setCameraPosition(cameraPosition);
+    private void getReverseGeocode(final double latitude, final double longitude) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String query = "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?coords="
+                            + longitude + "," + latitude
+                            + "&orders=roadaddr&output=json";
+
+                    URL url = new URL(query);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setConnectTimeout(5000);
+                    conn.setReadTimeout(5000);
+                    conn.setRequestMethod("GET");
+                    conn.setRequestProperty("X-NCP-APIGW-API-KEY-ID", "7f3g9xuc1m");
+                    conn.setRequestProperty("X-NCP-APIGW-API-KEY", "ISZs61UO1NxiPScknj1dN4Mgp6aq7kZrJBFL2oFd");
+
+                    int responseCode = conn.getResponseCode();
+                    Log.d("ReverseGeocode", "Response Code: " + responseCode);
+
+                    BufferedReader bufferedReader;
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    } else {
+                        bufferedReader = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+                    }
+
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String line;
+                    while ((line = bufferedReader.readLine()) != null) {
+                        stringBuilder.append(line).append("\n");
+                    }
+
+                    String res = stringBuilder.toString();
+                    Log.d("ReverseGeocode", "Response: " + res);
+
+                    // JSON 응답에서 주소를 추출하고 검색어로 사용
+                    String defaultSearchKeyword = parseAddressForSearch(res);
+                    currentAddress = defaultSearchKeyword;
+                    if (defaultSearchKeyword != null) {
+                        // UI 스레드에서 디폴트 검색어로 API 호출
+                        runOnUiThread(() -> callNaverSearchAPI(defaultSearchKeyword+" 식당"));
+                    }
+
+                    bufferedReader.close();
+                    conn.disconnect();
+                } catch (MalformedURLException e) {
+                    Log.e("ReverseGeocode", "URL 형식 오류: " + e.getMessage());
+                } catch (IOException e) {
+                    Log.e("ReverseGeocode", "네트워크 통신 오류: " + e.getMessage());
+                } catch (Exception e) {
+                    Log.e("ReverseGeocode", "기타 오류: " + e);
+                }
+            }
+        }).start();
+    }
+
+    private String parseAddressForSearch(String jsonResponse) {
+        try {
+            JSONObject jsonObject = new JSONObject(jsonResponse);
+            JSONArray resultsArray = jsonObject.getJSONArray("results");
+
+            if (resultsArray.length() > 0) {
+                JSONObject firstResult = resultsArray.getJSONObject(0);
+                JSONObject region = firstResult.getJSONObject("region");
+
+                // 지역명 추출 (예: "서울특별시 중구 태평로1가")
+                String area1 = region.getJSONObject("area1").getString("name"); // "서울특별시"
+                String area2 = region.getJSONObject("area2").getString("name"); // "중구"
+                String area3 = region.getJSONObject("area3").getString("name"); // "태평로1가"
+
+                return area1 + " " + area2 + " " + area3; // 디폴트 검색어로 반환
+            }
+        } catch (Exception e) {
+            Log.e("ParseError", "JSON 파싱 오류", e);
         }
+        return null; // 주소를 가져오지 못한 경우
     }
 
     // 지도 초기화 메서드
@@ -241,6 +314,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 // 현재 위치로 지도 중심 이동
                 updateMapCenter(latitude, longitude);
+
+                getReverseGeocode(latitude, longitude);
             } else {
                 Log.d("LocationDebug", "현재 위치를 가져올 수 없음. 기본 위치(서울)로 설정");
                 // 서울 중심 좌표로 지도 설정
@@ -262,6 +337,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             );
             naverMap.setCameraPosition(cameraPosition);
 
+//            getReverseGeocode(latitude, longitude);
             // 선택적으로 마커를 표시
 //            setMark(marker, R.drawable.baseline_place_24, 0, latitude, longitude);
         }
@@ -269,8 +345,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     // 지도 마커
-    private void setMark(Marker marker, int resourceID, int zIndex, double lat, double lon)
-    {
+    private void setMark(Marker marker, int resourceID, int zIndex, double lat, double lon) {
         //원근감 표시
         marker.setIconPerspectiveEnabled(true);
         //아이콘 지정
@@ -421,13 +496,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     // BottomSheet 숨기기
     public void hideBottomSheet() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
     }
 
     // BottomSheet 보이기
     public void showBottomSheet() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
     }
 
     public void showBottomSheetExpanded() {

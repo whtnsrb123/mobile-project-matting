@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -83,13 +84,13 @@ public class MyProfileActivity extends AppCompatActivity {
         Button uploadPostButton = findViewById(R.id.uploadPostButton);
         uploadPostButton.setOnClickListener(v -> checkPermissionAndOpenGallery());
 
-        // 팔로워 버튼
-        Button followersButton = findViewById(R.id.followersListButton);
-        followersButton.setOnClickListener(this::openFollowersList); // 팔로워 화면 이동
+        // 팔로워 버튼 영역
+        LinearLayout followersLayout = findViewById(R.id.followersLayout);
+        followersLayout.setOnClickListener(this::openFollowersList); // 팔로워 화면 이동
 
-        // 팔로잉 버튼
-        Button followingButton = findViewById(R.id.followingListButton);
-        followingButton.setOnClickListener(this::openFollowingList); // 팔로잉 화면 이동
+        // 팔로잉 버튼 영역
+        LinearLayout followingLayout = findViewById(R.id.followingLayout);
+        followingLayout.setOnClickListener(this::openFollowingList); // 팔로잉 화면 이동
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
