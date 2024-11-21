@@ -34,6 +34,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
         holder.tvTitle.setText(community.getTitle());
         holder.tvContent.setText(community.getContent());
         holder.tvInfo.setText(community.getInfo());
+        holder.tvRestaurant.setText(community.getRestaurant());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,13 +57,14 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
     }
 
     public static class CommunityViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvContent, tvInfo;
+        TextView tvTitle, tvContent, tvInfo, tvRestaurant;
 
         public CommunityViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
             tvContent = itemView.findViewById(R.id.tvContent);
             tvInfo = itemView.findViewById(R.id.tvInfo);
+            tvRestaurant = itemView.findViewById(R.id.tvRestaurant);
         }
     }
 }
