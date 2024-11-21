@@ -3,15 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="start"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:padding="8dp">
 
     <TextView
+        android:id="@+id/userId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="12sp"
-        android:id="@+id/userId"
-        />
+        android:textSize="12sp" />
+
     <TextView
         android:id="@+id/textViewMessage"
         android:layout_width="wrap_content"
