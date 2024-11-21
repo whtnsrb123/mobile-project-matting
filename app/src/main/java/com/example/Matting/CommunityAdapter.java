@@ -43,6 +43,8 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
                 intent.putExtra("content", community.getContent());
                 intent.putExtra("restaurant", community.getRestaurant());
                 intent.putExtra("info", community.getInfo());
+                intent.putExtra("date", community.getDate());
+                intent.putExtra("time", community.getTime());
                 context.startActivity(intent);
             }
         });
