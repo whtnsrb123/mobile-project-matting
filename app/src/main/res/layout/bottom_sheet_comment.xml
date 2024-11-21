@@ -20,7 +20,7 @@
 
         <EditText
             android:id="@+id/editTextComment"
-            android:layout_width="337dp"
+            android:layout_width="350dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:hint="댓글을 입력하세요..."
