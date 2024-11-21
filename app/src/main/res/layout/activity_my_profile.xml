@@ -167,11 +167,12 @@
                 android:text="프로필 편집" />
 
             <Button
-                android:id="@+id/shareProfileButton"
+                android:id="@+id/writePostButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="프로필 공유" />
+                android:text="게시글 작성"
+                android:onClick="onWritePostClick"/>
         </LinearLayout>
 
         <!-- 그리드 뷰 (게시물) -->
@@ -193,5 +194,12 @@
     android:background="?android:attr/windowBackground"
     android:layout_alignParentBottom="true"
     app:menu="@menu/bottom_navigation_menu" />
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottomNavigation" />
+
 
 </RelativeLayout>
