@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ public class CreateCommunityFragment extends Fragment {
     private EditText etTitle, etContent, etLocation, etRestaurant, etDate, etTime;
     private Button btnCreatePost, dateButton, timeButton;
     private ImageButton closeButton;
+    private String mapx, mapy;
 
     @Nullable
     @Override
@@ -50,6 +52,9 @@ public class CreateCommunityFragment extends Fragment {
         Bundle arguments = getArguments();
         if (arguments != null) {
             String restaurant = arguments.getString("restaurant");
+            mapx = arguments.getString("mapx");
+            mapy = arguments.getString("mapy");
+            Log.d("mapxy", "putExtra"+mapx+mapy);
             if (restaurant != null) {
                 etRestaurant.setText(restaurant); // 전달받은 title 값을 EditText에 설정
             }
@@ -75,6 +80,10 @@ public class CreateCommunityFragment extends Fragment {
                     intent.putExtra("restaurant", restaurant);
                     intent.putExtra("date", date);
                     intent.putExtra("time", time);
+                    intent.putExtra("mapx", mapx);
+                    intent.putExtra("mapy", mapy);
+
+                    Log.d("mapxy", "putExtra"+mapx+mapy);
 
                     // 스택을 초기화하고 새로운 액티비티를 시작하기 위한 플래그 설정
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
