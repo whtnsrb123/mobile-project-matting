@@ -3,14 +3,12 @@ package com.example.Matting;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -22,7 +20,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -32,7 +29,6 @@ import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
-import com.naver.maps.map.NaverMapOptions;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.Marker;
@@ -81,9 +77,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        ImageView imageView = findViewById(R.id.logo);
-        imageView.setColorFilter(Color.WHITE);
 
         locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
@@ -296,8 +289,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     // 지도 마커
-    private void setMark(Marker marker, int resourceID, int zIndex, double lat, double lon)
-    {
+    private void setMark(Marker marker, int resourceID, int zIndex, double lat, double lon) {
         //원근감 표시
         marker.setIconPerspectiveEnabled(true);
         //아이콘 지정
@@ -448,13 +440,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     // BottomSheet 숨기기
     public void hideBottomSheet() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
     }
 
     // BottomSheet 보이기
     public void showBottomSheet() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
     }
 
     public void showBottomSheetExpanded() {
