@@ -17,6 +17,7 @@
             android:layout_width="132dp"
             android:layout_height="54dp"
             app:srcCompat="@drawable/feed_ic_matting"
+            app:tint="@color/white"
             android:layout_gravity="left" />
 
         <View
@@ -27,12 +28,12 @@
         <ImageButton
             android:id="@+id/imageButton7"
             android:layout_width="24dp"
-            android:layout_height="54dp"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:background="?attr/selectableItemBackground"
             android:contentDescription="@string/comment_button"
-            android:scaleType="fitCenter"
+            app:tint="@color/white"
             android:layout_gravity="left"
+            android:layout_marginRight="16dp"
             app:srcCompat="@drawable/search" />
     </LinearLayout>
 
