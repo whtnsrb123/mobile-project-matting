@@ -62,8 +62,10 @@ public class CreateCommunityFragment extends Fragment {
                 String content = etContent.getText().toString();
                 String location = etLocation.getText().toString();
                 String restaurant = etRestaurant.getText().toString();
+                String date = etDate.getText().toString();
+                String time = etTime.getText().toString();
 
-                if (!title.isEmpty() && !content.isEmpty()) {
+                if (!title.isEmpty() && !content.isEmpty() && !date.isEmpty() && !time.isEmpty()) {
                     // CommunityActivity로 데이터 전달
                     Intent intent = new Intent(getActivity(), CommunityActivity.class);
 
@@ -71,13 +73,15 @@ public class CreateCommunityFragment extends Fragment {
                     intent.putExtra("content", content);
                     intent.putExtra("location", location);
                     intent.putExtra("restaurant", restaurant);
+                    intent.putExtra("date", date);
+                    intent.putExtra("time", time);
 
                     // 스택을 초기화하고 새로운 액티비티를 시작하기 위한 플래그 설정
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 } else {
                     // 제목 또는 내용이 비어있을 경우 메시지 표시
-                    Toast.makeText(getActivity(), "제목과 내용을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "제목, 내용, 날짜, 시간은 필수 입력 사항입니다.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
