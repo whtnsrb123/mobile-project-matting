@@ -56,9 +56,11 @@ public class CommunityActivity extends AppCompatActivity {
         String newContent = intent.getStringExtra("content");
         String newLocation = intent.getStringExtra("location");
         String newRestaurant = intent.getStringExtra("restaurant");
+        String newDate = intent.getStringExtra("date");
+        String newTime = intent.getStringExtra("time");
 
         if (newTitle != null && newContent != null) {
-            addPostToFirestore(newTitle, newContent, newLocation, newRestaurant);
+            addPostToFirestore(newTitle, newContent, newLocation, newRestaurant, newDate, newTime);
         }
 
         // BottomNavigationView 초기화
@@ -105,12 +107,14 @@ public class CommunityActivity extends AppCompatActivity {
         });
     }
 
-    private void addPostToFirestore(String title, String content, String location, String restaurant) {
+    private void addPostToFirestore(String title, String content, String location, String restaurant, String date, String time) {
         Map<String, Object> post = new HashMap<>();
         post.put("title", title);
         post.put("content", content);
         post.put("location", location);
         post.put("restaurant", restaurant);
+        post.put("date", date);
+        post.put("time", time);
 
         communityRef.add(post)
                 .addOnSuccessListener(documentReference -> {
@@ -130,7 +134,9 @@ public class CommunityActivity extends AppCompatActivity {
                             String content = document.getString("content");
                             String location = document.getString("location");
                             String restaurant = document.getString("restaurant");
-                            communityList.add(new Community(title, content, location, restaurant)); // Firestore에서 불러온 데이터를 리스트에 추가
+                            String date = document.getString("date");
+                            String time = document.getString("time");
+                            communityList.add(new Community(title, content, location, restaurant, date, time)); // Firestore에서 불러온 데이터를 리스트에 추가
                         }
                         communityAdapter.notifyDataSetChanged(); // RecyclerView 업데이트
                     } else {

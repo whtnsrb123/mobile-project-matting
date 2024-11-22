@@ -8,12 +8,16 @@ public class Community implements Parcelable {
     private String content;
     private String info;
     private String restaurant;
+    private String date;
+    private String time;
 
-    public Community(String title, String content, String info, String restaurant) {
+    public Community(String title, String content, String info, String restaurant, String date, String time) {
         this.title = title;
         this.content = content;
         this.info = info;
         this.restaurant = restaurant;
+        this.date = date;
+        this.time = time;
     }
 
     protected Community(Parcel in) {
@@ -21,6 +25,8 @@ public class Community implements Parcelable {
         content = in.readString();
         info = in.readString();
         restaurant = in.readString();
+        date = in.readString();
+        time = in.readString();
     }
 
     public static final Creator<Community> CREATOR = new Creator<Community>() {
@@ -49,6 +55,14 @@ public class Community implements Parcelable {
 
     public String getInfo() {
         return info;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getTime() {
+        return time;
     }
 
     @Override

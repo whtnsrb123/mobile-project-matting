@@ -24,6 +24,16 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical">
+                <!-- Subtitle -->
+                <TextView
+                    android:id="@+id/tvRestaurant"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="식당"
+                    android:textSize="12sp"
+                    android:layout_marginTop="4dp"
+                    android:textColor="#757575"/>
+
                 <!-- Title -->
                 <TextView
                     android:id="@+id/tvTitle"
@@ -44,27 +54,21 @@
                     android:textSize="14sp"
                     android:layout_marginTop="4dp" />
 
-                <!-- Info (Location, Time, Views) -->
+                <!-- Info -->
                 <TextView
                     android:id="@+id/tvInfo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="공릉1동 · 58분 전 · 조회 39"
+                    android:text="희망 만남 위치"
                     android:textSize="12sp"
                     android:layout_marginTop="4dp"
                     android:textColor="#757575" />
             </LinearLayout>
+
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:src="@drawable/ic_launcher_background" />
         </LinearLayout>
-
-<!--        &lt;!&ndash; Separator &ndash;&gt;-->
-<!--        <View-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="1dp"-->
-<!--            android:background="#E0E0E0"-->
-<!--            android:layout_marginTop="8dp" />-->
     </LinearLayout>
 </androidx.cardview.widget.CardView>

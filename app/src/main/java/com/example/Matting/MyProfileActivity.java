@@ -27,10 +27,33 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.util.List;
+import java.util.Map;
 
-public class MyProfileActivity extends AppCompatActivity {
+public class MyProfileActivity extends AppCompatActivity implements WritePostFragment.OnPostUploadedListener {
+
+    @Override
+    public void onPostUploaded(Map<String, Object> newPost) {
+        // 새로운 게시글 데이터를 postList에 추가
+        Post post = new Post(
+                (String) newPost.get("username"),
+                (String) newPost.get("postContent"),
+                (String) newPost.get("imageResource"),
+                (Timestamp) newPost.get("timestamp"),
+                ((Long) newPost.get("commentCount")).intValue(),
+                ((Long) newPost.get("reactionCount")).intValue(),
+                (Boolean) newPost.get("reacted")
+        );
+
+        postList.add(0, post); // 가장 최신 게시글을 맨 위에 추가
+        postAdapter.notifyItemInserted(0); // RecyclerView 업데이트
+        postRecyclerView.scrollToPosition(0); // RecyclerView를 맨 위로 스크롤
+    }
 
     private static final String MEDIA_PERMISSION = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
             ? Manifest.permission.READ_MEDIA_IMAGES
@@ -61,10 +84,23 @@ public class MyProfileActivity extends AppCompatActivity {
     private PostAdapter postAdapter;
     private List<Post> postList;
 
-    @Override
+//    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_profile);
+
+        // postList 초기화
+        postList = new ArrayList<>();
+        setupRecyclerView();
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Firestore에서 게시글 로드
+        PostData.fetchPosts(db, postList, () -> {
+            if (postAdapter != null) {
+                postAdapter.notifyDataSetChanged();
+            }
+        });
 
         profileImage = findViewById(R.id.profileImage);
         loadProfileImage(); // 앱이 시작될 때 저장된 프로필 이미지 로드
@@ -189,19 +225,51 @@ public class MyProfileActivity extends AppCompatActivity {
 
     private void setupRecyclerView() {
         postRecyclerView = findViewById(R.id.postRecyclerView);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
-        postRecyclerView.setLayoutManager(gridLayoutManager);
+        postRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
 
-        postList = PostData.getPostList();
+        postList = new ArrayList<>();
         postAdapter = new PostAdapter(this, postList, true);
-        postAdapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                Intent intent = new Intent(MyProfileActivity.this, PostViewerActivity.class);
-                intent.putExtra("position", position);
-                startActivity(intent);
-            }
-        });
         postRecyclerView.setAdapter(postAdapter);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("posts")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    postList.clear();
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        try {
+                            String username = document.getString("username");
+                            String postContent = document.getString("postContent");
+                            String imageResource = document.getString("imageResource");
+
+                            // Timestamp를 그대로 사용
+                            Timestamp timestampObject = document.getTimestamp("timestamp");
+
+                            int commentCount = document.contains("commentCount") ? document.getLong("commentCount").intValue() : 0;
+                            int reactionCount = document.contains("reactionCount") ? document.getLong("reactionCount").intValue() : 0;
+                            boolean reacted = document.contains("reacted") ? document.getBoolean("reacted") : false;
+
+                            // Timestamp 객체를 그대로 전달
+                            postList.add(new Post(username, postContent, imageResource, timestampObject, commentCount, reactionCount, reacted));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    postAdapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "데이터를 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show());
+    }
+
+
+
+
+    public void onWritePostClick(View view) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, new WritePostFragment()) // `fragment_container`는 프래그먼트를 담을 뷰 ID
+                .addToBackStack(null) // 뒤로 가기 지원
+                .commit();
     }
 }

@@ -70,6 +70,13 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp" />
     </LinearLayout>
+    <!-- 구분선 -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="#D3D3D3" /> <!-- 회색 선 -->
 
-    <!-- 게시물 내용 -->
+
 </LinearLayout>

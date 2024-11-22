@@ -56,6 +56,8 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         String content = getIntent().getStringExtra("content");
         String restaurant = getIntent().getStringExtra("restaurant");
         String info = getIntent().getStringExtra("info");
+        String date = getIntent().getStringExtra("date");
+        String time = getIntent().getStringExtra("time");
         Toast.makeText(getApplicationContext(), info, Toast.LENGTH_LONG).show();
 
         // 지도 초기화
@@ -82,14 +84,17 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         goChat.setOnClickListener(v ->  newCommunityChat());
 
 
-
         // 게시글, 본문
         TextView restaurantName = findViewById(R.id.restaurant_name);
         TextView postTitle = findViewById(R.id.post_title);
         TextView postContent = findViewById(R.id.post_content);
+        TextView meetDate = findViewById(R.id.date);
+        TextView meetTime = findViewById(R.id.time);
         restaurantName.setText(restaurant);
         postTitle.setText(title);
         postContent.setText(content);
+        meetDate.setText(date);
+        meetTime.setText(time);
 
         // 뒤로가기
         ImageButton goBackButton = findViewById(R.id.go_back);
