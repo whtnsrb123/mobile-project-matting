@@ -15,14 +15,19 @@ import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
+import com.naver.maps.map.overlay.Marker;
 
 public class FullScreenMapFragment extends Fragment implements OnMapReadyCallback {
     private double cur_lat, cur_lon;
+    private String restaurant;
+
+    private Marker marker = new Marker();
     private NaverMap naverMap;
 
-    public FullScreenMapFragment(double latitude, double longitude) {
+    public FullScreenMapFragment(double latitude, double longitude, String restaurant) {
         this.cur_lat = latitude;
         this.cur_lon = longitude;
+        this.restaurant = restaurant;
     }
 
     @Nullable
@@ -55,8 +60,11 @@ public class FullScreenMapFragment extends Fragment implements OnMapReadyCallbac
     public void onMapReady(@NonNull NaverMap naverMap) {
         this.naverMap = naverMap;
         naverMap.setMapType(NaverMap.MapType.Basic);
-        CameraPosition cameraPosition = new CameraPosition(new LatLng(cur_lat, cur_lon), 13);
+        CameraPosition cameraPosition = new CameraPosition(new LatLng(cur_lat, cur_lon), 15);
         naverMap.setCameraPosition(cameraPosition);
+        marker.setPosition(new LatLng(cur_lat, cur_lon));
+        marker.setMap(naverMap);
+        marker.setCaptionText(restaurant);
     }
 }
 

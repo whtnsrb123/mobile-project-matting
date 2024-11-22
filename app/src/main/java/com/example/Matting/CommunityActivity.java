@@ -58,9 +58,11 @@ public class CommunityActivity extends AppCompatActivity {
         String newRestaurant = intent.getStringExtra("restaurant");
         String newDate = intent.getStringExtra("date");
         String newTime = intent.getStringExtra("time");
+        String newMapX = intent.getStringExtra("mapx");
+        String newMapY = intent.getStringExtra("mapy");
 
         if (newTitle != null && newContent != null) {
-            addPostToFirestore(newTitle, newContent, newLocation, newRestaurant, newDate, newTime);
+            addPostToFirestore(newTitle, newContent, newLocation, newRestaurant, newDate, newTime, newMapX, newMapY);
         }
 
         // BottomNavigationView 초기화
@@ -107,7 +109,7 @@ public class CommunityActivity extends AppCompatActivity {
         });
     }
 
-    private void addPostToFirestore(String title, String content, String location, String restaurant, String date, String time) {
+    private void addPostToFirestore(String title, String content, String location, String restaurant, String date, String time, String mapx, String mapy) {
         Map<String, Object> post = new HashMap<>();
         post.put("title", title);
         post.put("content", content);
@@ -115,6 +117,11 @@ public class CommunityActivity extends AppCompatActivity {
         post.put("restaurant", restaurant);
         post.put("date", date);
         post.put("time", time);
+        post.put("mapx", mapx);
+        post.put("mapy", mapy);
+
+
+        Log.d("mapxy", "loadPostsFromFirestore"+mapx+mapy);
 
         communityRef.add(post)
                 .addOnSuccessListener(documentReference -> {
@@ -136,7 +143,10 @@ public class CommunityActivity extends AppCompatActivity {
                             String restaurant = document.getString("restaurant");
                             String date = document.getString("date");
                             String time = document.getString("time");
-                            communityList.add(new Community(title, content, location, restaurant, date, time)); // Firestore에서 불러온 데이터를 리스트에 추가
+                            String mapx = document.getString("mapx");
+                            String mapy = document.getString("mapy");
+                            Log.d("mapxy", "loadPostsFromFirestore");
+                            communityList.add(new Community(title, content, location, restaurant, date, time, mapx, mapy)); // Firestore에서 불러온 데이터를 리스트에 추가
                         }
                         communityAdapter.notifyDataSetChanged(); // RecyclerView 업데이트
                     } else {

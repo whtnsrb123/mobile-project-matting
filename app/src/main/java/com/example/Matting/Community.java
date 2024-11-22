@@ -4,20 +4,17 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Community implements Parcelable {
-    private String title;
-    private String content;
-    private String info;
-    private String restaurant;
-    private String date;
-    private String time;
+    private String title, content, info, restaurant, date, time, mapx, mapy;
 
-    public Community(String title, String content, String info, String restaurant, String date, String time) {
+    public Community(String title, String content, String info, String restaurant, String date, String time, String mapx, String mapy) {
         this.title = title;
         this.content = content;
         this.info = info;
         this.restaurant = restaurant;
         this.date = date;
         this.time = time;
+        this.mapx = mapx;
+        this.mapy = mapy;
     }
 
     protected Community(Parcel in) {
@@ -27,6 +24,8 @@ public class Community implements Parcelable {
         restaurant = in.readString();
         date = in.readString();
         time = in.readString();
+        mapx = in.readString();
+        mapy = in.readString();
     }
 
     public static final Creator<Community> CREATOR = new Creator<Community>() {
@@ -63,6 +62,14 @@ public class Community implements Parcelable {
 
     public String getTime() {
         return time;
+    }
+
+    public String getMapX() {
+        return mapx;
+    }
+
+    public String getMapY() {
+        return mapy;
     }
 
     @Override
