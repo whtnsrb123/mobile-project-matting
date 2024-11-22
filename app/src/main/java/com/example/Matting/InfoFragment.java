@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,7 @@ public class InfoFragment extends Fragment {
         tvMapX = view.findViewById(R.id.tvMapX);
         tvMapY = view.findViewById(R.id.tvMapY);
         reviewRecyclerView = view.findViewById(R.id.reviewRecyclerView);
-        btnClose = view.findViewById(R.id.btnClose); // 뒤로가기 버튼 초기화
+        btnClose = view.findViewById(R.id.btnClose); // 닫기 버튼 초기화
 
         // Firestore 초기화
         firestore = FirebaseFirestore.getInstance();
@@ -83,14 +84,14 @@ public class InfoFragment extends Fragment {
         // Firestore에서 리뷰 데이터 가져오기
         fetchReviewsFromFirestore();
 
-        // 뒤로가기 버튼 설정
+        // 닫기 버튼 동작
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Fragment 백스택 제거
-                requireActivity().getSupportFragmentManager().popBackStack();
+                // InfoFragment를 닫음
+                getParentFragmentManager().popBackStack();
 
-                // MainActivity의 BottomSheet 상태를 STATE_EXPANDED로 설정 (선택 사항)
+                // MainActivity의 메서드를 호출하여 BottomSheet 상태를 STATE_EXPANDED로 설정
                 AppCompatActivity activity = (AppCompatActivity) getActivity();
                 if (activity instanceof MainActivity) {
                     ((MainActivity) activity).showBottomSheetExpanded();
@@ -99,6 +100,7 @@ public class InfoFragment extends Fragment {
                 }
             }
         });
+
 
         return view;
     }
@@ -118,5 +120,28 @@ public class InfoFragment extends Fragment {
                         Log.e("FirestoreError", "리뷰 데이터를 가져오는 데 실패했습니다.");
                     }
                 });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // MainActivity의 BottomNavigationView 숨기기
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            BottomNavigationView bottomNavigationView = activity.findViewById(R.id.bottomNavigation);
+            bottomNavigationView.setVisibility(View.GONE);
+        }
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // InfoFragment가 화면을 떠날 때 BottomNavigationView 다시 표시
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            BottomNavigationView bottomNavigationView = activity.findViewById(R.id.bottomNavigation);
+            bottomNavigationView.setVisibility(View.VISIBLE);
+        }
     }
 }
