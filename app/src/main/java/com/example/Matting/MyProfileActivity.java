@@ -32,36 +32,17 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class MyProfileActivity extends AppCompatActivity implements WritePostFragment.OnPostUploadedListener {
 
-    @Override
-    public void onPostUploaded(Map<String, Object> newPost) {
-        // 새로운 게시글 데이터를 postList에 추가
-        Post post = new Post(
-                (String) newPost.get("username"),
-                (String) newPost.get("postContent"),
-                (String) newPost.get("imageResource"),
-                (Timestamp) newPost.get("timestamp"),
-                ((Long) newPost.get("commentCount")).intValue(),
-                ((Long) newPost.get("reactionCount")).intValue(),
-                (Boolean) newPost.get("reacted")
-        );
-
-        postList.add(0, post); // 가장 최신 게시글을 맨 위에 추가
-        postAdapter.notifyItemInserted(0); // RecyclerView 업데이트
-        postRecyclerView.scrollToPosition(0); // RecyclerView를 맨 위로 스크롤
-    }
-
     private static final String MEDIA_PERMISSION = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
             ? Manifest.permission.READ_MEDIA_IMAGES
             : Manifest.permission.READ_EXTERNAL_STORAGE;
-
     private static final String PREFS_NAME = "profile_prefs";
     private static final String PROFILE_IMAGE_URI_KEY = "profile_image_uri";
-
     private ImageView profileImage;
     // ActivityResultLauncher 선언
     private final ActivityResultLauncher<Intent> galleryLauncher =
@@ -84,7 +65,25 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
     private PostAdapter postAdapter;
     private List<Post> postList;
 
-//    @Override
+    @Override
+    public void onPostUploaded(Map<String, Object> newPost) {
+        // 새로운 게시글 데이터를 postList에 추가
+        Post post = new Post(
+                (String) newPost.get("username"),
+                (String) newPost.get("postContent"),
+                (String) newPost.get("imageResource"),
+                (Timestamp) newPost.get("timestamp"),
+                ((Long) newPost.get("commentCount")).intValue(),
+                ((Long) newPost.get("reactionCount")).intValue(),
+                (Boolean) newPost.get("reacted")
+        );
+
+        postList.add(0, post); // 가장 최신 게시글을 맨 위에 추가
+        postAdapter.notifyItemInserted(0); // RecyclerView 업데이트
+        postRecyclerView.scrollToPosition(0); // RecyclerView를 맨 위로 스크롤
+    }
+
+    //    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_profile);
@@ -261,8 +260,6 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "데이터를 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show());
     }
-
-
 
 
     public void onWritePostClick(View view) {
