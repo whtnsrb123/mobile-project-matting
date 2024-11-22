@@ -114,11 +114,6 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
             }
         });
 
-
-        // 게시글 업로드
-        Button uploadPostButton = findViewById(R.id.uploadPostButton);
-        uploadPostButton.setOnClickListener(v -> checkPermissionAndOpenGallery());
-
         // 팔로워 버튼 영역
         LinearLayout followersLayout = findViewById(R.id.followersLayout);
         followersLayout.setOnClickListener(this::openFollowersList); // 팔로워 화면 이동
