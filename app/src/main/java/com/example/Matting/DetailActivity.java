@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -32,36 +33,44 @@ import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
+import com.naver.maps.map.overlay.Marker;
+import com.naver.maps.map.overlay.OverlayImage;
 
 import java.util.ArrayList;
 
 
 public class DetailActivity extends AppCompatActivity implements OnMapReadyCallback{
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
-    LocationManager locationManager;
-    private double cur_lat = 37.59056; // 초기값 (서울 예시)
-    private double cur_lon = 127.03639;
+
+    private double cur_lat, cur_lon;
     private NaverMap naverMap;
 
     private RecyclerView mRecyclerView;
     private ArrayList<RecyclerViewItem> mList;
     private DetailRecyclerViewAdapter mDetailRecyclerViewAdapter;
 
+    private String title, content, restaurant, info, date, time;
+
+    private Marker marker = new Marker();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        String title = getIntent().getStringExtra("title");
-        String content = getIntent().getStringExtra("content");
-        String restaurant = getIntent().getStringExtra("restaurant");
-        String info = getIntent().getStringExtra("info");
-        String date = getIntent().getStringExtra("date");
-        String time = getIntent().getStringExtra("time");
+        title = getIntent().getStringExtra("title");
+        content = getIntent().getStringExtra("content");
+        restaurant = getIntent().getStringExtra("restaurant");
+        info = getIntent().getStringExtra("info");
+        date = getIntent().getStringExtra("date");
+        time = getIntent().getStringExtra("time");
+        cur_lon = Double.parseDouble(getIntent().getStringExtra("mapx")) / 10_000_000.0;
+        cur_lat = Double.parseDouble(getIntent().getStringExtra("mapy")) / 10_000_000.0;
+
         Toast.makeText(getApplicationContext(), info, Toast.LENGTH_LONG).show();
 
         // 지도 초기화
         initMap();
+//        updateMapLocation();
 
         ImageButton fullScreenMapButton = findViewById(R.id.btn_full_screen_map);
         fullScreenMapButton.setOnClickListener(new View.OnClickListener() {
@@ -82,7 +91,6 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         setupClickListenerForPopup(goProgile, "아이디", "프로필 페이지로 이동합니다.");
         setupClickListenerForPopup(goChat, "채팅", "채팅 페이지로 이동합니다.");
         goChat.setOnClickListener(v ->  newCommunityChat());
-
 
         // 게시글, 본문
         TextView restaurantName = findViewById(R.id.restaurant_name);
@@ -151,11 +159,15 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 0                           // 방향
         );
         naverMap.setCameraPosition(cameraPosition);
+
+        marker.setPosition(new LatLng(cur_lat, cur_lon));
+        marker.setMap(naverMap);
+        marker.setCaptionText(restaurant);
     }
 
     // 전체 화면 지도 표시 메서드
     private void showFullScreenMap() {
-        FullScreenMapFragment fullScreenMapFragment = new FullScreenMapFragment(cur_lat, cur_lon);
+        FullScreenMapFragment fullScreenMapFragment = new FullScreenMapFragment(cur_lat, cur_lon, restaurant);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(android.R.id.content, fullScreenMapFragment)  // 현재 화면 전체를 덮도록 설정
@@ -244,8 +256,6 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         Intent intent = new Intent(DetailActivity.this, Chat_ChatroomActivity.class);
         intent.putExtra("chatRoomId", postTitle.getText().toString());
         startActivity(intent);
-
-
         return;
     }
 }
