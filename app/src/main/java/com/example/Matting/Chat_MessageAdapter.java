@@ -35,8 +35,15 @@ public class Chat_MessageAdapter extends ArrayAdapter<Chat_Message> {
             }
 
             TextView textViewUserId = convertView.findViewById(R.id.userId);
-            textViewUserId.setText(chatMessage.getUserId());
             TextView textViewMessage = convertView.findViewById(R.id.textViewMessage);
+
+            // 메시지와 닉네임 설정
+            chatMessage.getUserNickname(new Chat_Message.NicknameCallback() {
+                @Override
+                public void onCallback(String nickName) {
+                    textViewUserId.setText(nickName);
+                }
+            });
             textViewMessage.setText(chatMessage.getMessage());
         }
 

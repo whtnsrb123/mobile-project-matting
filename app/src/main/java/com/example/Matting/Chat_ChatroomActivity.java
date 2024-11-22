@@ -6,16 +6,11 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
-import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,7 +20,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class Chat_ChatroomActivity extends AppCompatActivity {
     private ListView listViewMessages;
@@ -76,13 +70,15 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
         receiveMessages();
     }
 
-    @Override public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed(); // 뒤로가기 버튼 클릭 시 이전 액티비티로 이동
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
     private void sendMessage(String message) {
         String messageId = db.child("messages").push().getKey();
         Chat_Message chatMessageData = new Chat_Message(user.getUserId(), message, System.currentTimeMillis());
