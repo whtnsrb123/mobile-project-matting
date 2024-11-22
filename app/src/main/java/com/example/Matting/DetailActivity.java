@@ -48,7 +48,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
     private ArrayList<RecyclerViewItem> mList;
     private DetailRecyclerViewAdapter mDetailRecyclerViewAdapter;
 
-    private String title, content, restaurant, info, date, time;
+    private String title, content, restaurant, location, date, time;
 
     private Marker marker = new Marker();
 
@@ -60,13 +60,11 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         title = getIntent().getStringExtra("title");
         content = getIntent().getStringExtra("content");
         restaurant = getIntent().getStringExtra("restaurant");
-        info = getIntent().getStringExtra("info");
+        location = getIntent().getStringExtra("info");
         date = getIntent().getStringExtra("date");
         time = getIntent().getStringExtra("time");
         cur_lon = Double.parseDouble(getIntent().getStringExtra("mapx")) / 10_000_000.0;
         cur_lat = Double.parseDouble(getIntent().getStringExtra("mapy")) / 10_000_000.0;
-
-        Toast.makeText(getApplicationContext(), info, Toast.LENGTH_LONG).show();
 
         // 지도 초기화
         initMap();
@@ -98,11 +96,13 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         TextView postContent = findViewById(R.id.post_content);
         TextView meetDate = findViewById(R.id.date);
         TextView meetTime = findViewById(R.id.time);
+        TextView tvLocation = findViewById(R.id.tvLocation);
         restaurantName.setText(restaurant);
         postTitle.setText(title);
         postContent.setText(content);
         meetDate.setText(date);
         meetTime.setText(time);
+        tvLocation.setText(location);
 
         // 뒤로가기
         ImageButton goBackButton = findViewById(R.id.go_back);

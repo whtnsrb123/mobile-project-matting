@@ -129,17 +129,24 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingTop="10dp"
+                android:paddingTop="32dp"
                 android:weightSum="1">
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="희망 만남 위치"
+                    android:text="희망 만남 위치:  "
                     android:textColor="#333333"
                     android:textSize="16sp"
                     android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/tvLocation"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="가게 앞"
+                    android:textColor="#333333"
+                    android:textSize="16sp"/>
 
                 <ImageButton
                     android:id="@+id/btn_full_screen_map"
