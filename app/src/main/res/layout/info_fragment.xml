@@ -106,32 +106,6 @@
 
     </LinearLayout>
 
-
-    <!-- 네이버 지도 좌표 -->
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tvLinkLayout"
-        android:orientation="horizontal"
-        android:layout_marginTop="8dp">
-
-        <TextView
-            android:id="@+id/tvMapX"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="X"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/tvMapY"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Y"
-            android:textSize="16sp"
-            android:layout_marginStart="8dp" />
-    </LinearLayout>
-
-
     <!-- 닫기 버튼 -->
 
     <androidx.recyclerview.widget.RecyclerView
