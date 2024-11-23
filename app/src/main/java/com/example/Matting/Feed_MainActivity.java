@@ -105,16 +105,17 @@ public class Feed_MainActivity extends AppCompatActivity {
             }
         });
     }
-
     // Firestore에서 데이터 가져오기
     private void loadFeedData() {
         // 새로고침 로딩 상태 시작
         swipeRefreshLayout.setRefreshing(true);
 
         db.collection("posts")
+                .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING) // timestamp를 내림차순으로 정렬
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        feedItems.clear(); // 기존 데이터 초기화
                         feedItems.clear(); // 기존 데이터 초기화
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String documentId = document.getId();

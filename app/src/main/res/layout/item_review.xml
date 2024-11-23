@@ -1,0 +1,31 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!-- 작성자 이름 -->
+    <TextView
+        android:id="@+id/tvReviewerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="작성자 이름"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <!-- 리뷰 내용 -->
+    <TextView
+        android:id="@+id/tvReviewContent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="리뷰 내용"
+        android:textSize="14sp" />
+
+    <!-- 별점 -->
+    <TextView
+        android:id="@+id/tvReviewRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="평점: 5.0"
+        android:textSize="14sp" />
+</LinearLayout>

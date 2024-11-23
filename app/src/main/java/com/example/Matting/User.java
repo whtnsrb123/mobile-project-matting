@@ -1,34 +1,57 @@
 package com.example.Matting;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
-import java.util.UUID;
+import androidx.annotation.NonNull;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class User {
     private String userId;
     private Context context;
+    private String email;
+    private String nickName;
 
     // Context를 생성자로 받아서 초기화합니다.
     public User(Context context) {
         this.context = context;
-        this.userId = make_user();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // 이메일 주소 및 ID 설정
+            this.email = user.getEmail();
+            this.userId = user.getUid();
+
+            // 사용자 닉네임 설정
+            DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("users").child(this.userId).child("nicknames");
+            dbRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    nickName = snapshot.getValue(String.class);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    // 에러 처리
+                }
+            });
+        }
     }
 
-    public String make_user() {
-        // SharedPreferences를 사용하여 userId 불러오기
-        SharedPreferences sharedPreferences = context.getSharedPreferences("com.example.Matting.PREFERENCES", Context.MODE_PRIVATE);
-        String userId = sharedPreferences.getString("userId", null);
-        if (userId == null) {
-            userId = "user_temp_" + UUID.randomUUID().toString();
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("userId", userId);
-            editor.apply();
-        }
-        return userId;
+    public String getEmail() {
+        return this.email;
     }
 
     public String getUserId() {
-        return userId;
+        return this.userId;
+    }
+
+    public String getNickName() {
+        return this.nickName;
     }
 }

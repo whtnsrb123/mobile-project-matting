@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MyProfileActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,11 +23,11 @@
                 android:id="@+id/account_id"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:layout_weight="1"
                 android:text="khkgogo"
                 android:textColor="#000000"
-                android:textSize="17sp"
-                android:layout_marginEnd="8dp"/>
+                android:textSize="17sp" />
 
             <!-- 게시글 추가 버튼 (+ 아이콘) -->
             <ImageView
@@ -91,8 +92,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:orientation="vertical"
-                    android:onClick="onFollowerClick">
+                    android:onClick="onFollowerClick"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/followerCount"
@@ -119,8 +120,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:orientation="vertical"
-                    android:onClick="onFollowingClick">
+                    android:onClick="onFollowingClick"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/followingCount"
@@ -146,20 +147,21 @@
             android:id="@+id/user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:text="박현성"
             android:textColor="#000000"
-            android:textSize="14sp"
-            android:layout_marginStart="8dp"/>
+            android:textSize="14sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
             android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal"
             android:weightSum="2">
 
             <Button
+
                 android:id="@+id/editProfileButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -167,12 +169,13 @@
                 android:text="프로필 편집" />
 
             <Button
-                android:id="@+id/writePostButton"
+                android:id="@+id/uploadPostButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="게시글 작성"
-                android:onClick="onWritePostClick"/>
+                android:onClick="onWritePostClick"
+                android:text="게시글 작성" />
+
         </LinearLayout>
 
         <!-- 그리드 뷰 (게시물) -->
@@ -184,16 +187,15 @@
             android:scrollbars="vertical" />
 
 
-
     </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-    android:id="@+id/bottomNavigation"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?android:attr/windowBackground"
-    android:layout_alignParentBottom="true"
-    app:menu="@menu/bottom_navigation_menu" />
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="?android:attr/windowBackground"
+        app:menu="@menu/bottom_navigation_menu" />
 
     <FrameLayout
         android:id="@+id/fragment_container"
