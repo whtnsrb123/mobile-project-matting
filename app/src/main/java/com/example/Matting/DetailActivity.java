@@ -28,6 +28,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.MapFragment;
@@ -68,7 +70,6 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
 
         // 지도 초기화
         initMap();
-//        updateMapLocation();
 
         ImageButton fullScreenMapButton = findViewById(R.id.btn_full_screen_map);
         fullScreenMapButton.setOnClickListener(new View.OnClickListener() {
@@ -79,7 +80,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         });
 
         // 같은 식당의 다른 모임 글
-        initRecyclerView();
+        otherMatting();
 
         // 페이지 이동 버튼
         TextView goRestaurant = findViewById(R.id.go_restaurant);
@@ -176,19 +177,41 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     // 같은 식당의 다른 모임 글
-    // RecyclerView 초기화 메서드
-    private void initRecyclerView() {
+    private void otherMatting() {
+        // Firestore 인스턴스 가져오기
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
         mRecyclerView = findViewById(R.id.recyclerView);
         mList = new ArrayList<>();
 
-        for (int i = 0; i < 5; i++) {
-            addItem("iconName", "게시글 제목"+i, "2024년 00월 00일");
-        }
+        // 현재 게시물의 documentId 가져오기 (Intent로 전달받았다고 가정)
+//        String currentTitle = getIntent().getStringExtra("documentId");
 
-        mDetailRecyclerViewAdapter = new DetailRecyclerViewAdapter(mList, this);
-        mRecyclerView.setAdapter(mDetailRecyclerViewAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+        // Firestore에서 "restaurant" 필드가 현재 식당 이름과 일치하는 문서 가져오기
+        firestore.collection("community")
+                .whereEqualTo("restaurant", restaurant) // "restaurant" 필드와 일치하는 데이터만 가져오기
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        mList.clear(); // 기존 데이터 초기화
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            // Firestore 데이터를 RecyclerViewItem으로 변환
+                            String otherTitle = document.getString("title");
+                            if (!otherTitle.equals(title)) { // 현재 게시물 제목과 다른 경우만 추가
+                                String date = document.getString("date");
+                                addItem("iconName", otherTitle, date); // 데이터 추가
+                            } // 데이터 추가
+                        }
+                        // 어댑터에 변경 알림
+                        mDetailRecyclerViewAdapter = new DetailRecyclerViewAdapter(mList, this);
+                        mRecyclerView.setAdapter(mDetailRecyclerViewAdapter);
+                        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+                    } else {
+                        Log.e("FirestoreError", "데이터 가져오기 실패: " + task.getException());
+                    }
+                });
     }
+
 
     // RecyclerView 항목 추가 메서드
     public void addItem(String imgName, String mainText, String subText){
