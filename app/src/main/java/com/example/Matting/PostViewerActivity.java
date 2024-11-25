@@ -18,11 +18,13 @@ public class PostViewerActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private PostAdapter postAdapter;
     private List<Post> postList;
+    private int startPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_viewer);
+        startPosition = getIntent().getIntExtra("position", 0);
 
         // RecyclerView 설정
         recyclerView = findViewById(R.id.recyclerView);
@@ -35,10 +37,6 @@ public class PostViewerActivity extends AppCompatActivity {
 
         // Firestore에서 게시글 데이터를 가져옵니다.
         fetchPostsFromFirestore();
-
-        // 클릭한 게시글 위치로 이동
-        int startPosition = getIntent().getIntExtra("position", 0);
-        recyclerView.scrollToPosition(startPosition);
     }
 
     private void fetchPostsFromFirestore() {
@@ -68,6 +66,8 @@ public class PostViewerActivity extends AppCompatActivity {
                         }
                     });
                     postAdapter.notifyDataSetChanged(); // RecyclerView 갱신
+
+                    recyclerView.scrollToPosition(startPosition);
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "게시글 데이터를 가져오는 데 실패했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
