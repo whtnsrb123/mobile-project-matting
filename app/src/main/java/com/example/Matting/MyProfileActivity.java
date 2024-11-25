@@ -161,6 +161,7 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
 
         // RecyclerView 설정
         setupRecyclerView();
+
     }
 
     // 팔로워 화면 이동 메서드
@@ -223,6 +224,14 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
 
         postList = new ArrayList<>();
         postAdapter = new PostAdapter(this, postList, true);
+
+        // 클릭 리스너 설정
+        postAdapter.setOnPostClickListener(post -> {
+            int position = postList.indexOf(post);
+            Intent intent = new Intent(MyProfileActivity.this, PostViewerActivity.class);
+            intent.putExtra("position", position);
+            startActivity(intent);
+        });
         postRecyclerView.setAdapter(postAdapter);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();

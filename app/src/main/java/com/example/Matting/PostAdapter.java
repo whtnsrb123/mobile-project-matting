@@ -42,9 +42,25 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return new PostViewHolder(view, imageOnlyMode);
     }
 
+    public interface OnPostClickListener {
+        void onPostClick(Post post);
+    }
+
+    private OnPostClickListener onPostClickListener;
+
+    public void setOnPostClickListener(OnPostClickListener listener) {
+        this.onPostClickListener = listener;
+    }
+
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         Post post = postList.get(position);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (onPostClickListener != null) {
+                onPostClickListener.onPostClick(post);
+            }
+        });
 
         if (imageOnlyMode) {
             // 이미지 전용 모드에서는 이미지만 표시
