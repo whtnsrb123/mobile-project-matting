@@ -50,6 +50,7 @@ public class PostViewerActivity extends AppCompatActivity {
                     queryDocumentSnapshots.forEach(document -> {
                         try {
                             // Firestore 문서에서 필드 가져오기
+                            String documentId = document.getId();
                             String username = document.getString("username");
                             String postContent = document.getString("postContent"); // 필드 이름 확인 필요
                             String imageResource = document.getString("imageResource");
@@ -59,7 +60,7 @@ public class PostViewerActivity extends AppCompatActivity {
                             boolean reacted = document.contains("reacted") ? document.getBoolean("reacted") : false;
 
                             // Post 객체 생성
-                            Post post = new Post(username, postContent, imageResource, timestamp, commentCount, reactionCount, reacted);
+                            Post post = new Post(documentId,username, postContent, imageResource, timestamp, commentCount, reactionCount, reacted);
                             postList.add(post);
                         } catch (Exception e) {
                             e.printStackTrace(); // 데이터 변환 중 오류 처리

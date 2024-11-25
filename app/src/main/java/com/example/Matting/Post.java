@@ -2,9 +2,11 @@ package com.example.Matting;
 
 import com.google.firebase.Timestamp;
 
+import java.util.Date;
 
 
 public class Post {
+    private String documentId;
     private String username;
     private String postContent;
     private String imageResource; // Base64 이미지 또는 URI
@@ -13,7 +15,8 @@ public class Post {
     private int reactionCount;
     private boolean reacted;
 
-    public Post(String username, String postContent, String imageResource, Timestamp timestamp, int commentCount, int reactionCount, boolean reacted) {
+    public Post(String documentId,String username, String postContent, String imageResource, Timestamp timestamp, int commentCount, int reactionCount, boolean reacted) {
+        this.documentId = documentId;
         this.username = username;
         this.postContent = postContent;
         this.imageResource = imageResource;
@@ -55,5 +58,16 @@ public class Post {
         return timestamp != null
                 ? new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(timestamp.toDate())
                 : "Unknown Time";
+    }
+
+    public void setReacted(boolean reacted) {
+        this.reacted = reacted;
+    }
+
+    public void setReactionCount(int reactionCount) {
+        this.reactionCount = reactionCount;
+    }
+    public String getDocumentId() {
+        return documentId;
     }
 }

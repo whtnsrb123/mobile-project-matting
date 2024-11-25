@@ -69,6 +69,7 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
     public void onPostUploaded(Map<String, Object> newPost) {
         // 새로운 게시글 데이터를 postList에 추가
         Post post = new Post(
+                (String) newPost.get("documentId"),
                 (String) newPost.get("username"),
                 (String) newPost.get("postContent"),
                 (String) newPost.get("imageResource"),
@@ -243,6 +244,7 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
                     postList.clear();
                     for (DocumentSnapshot document : queryDocumentSnapshots) {
                         try {
+                            String documentId = document.getString("documentId");
                             String username = document.getString("username");
                             String postContent = document.getString("postContent");
                             String imageResource = document.getString("imageResource");
@@ -255,7 +257,7 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
                             boolean reacted = document.contains("reacted") ? document.getBoolean("reacted") : false;
 
                             // Timestamp 객체를 그대로 전달
-                            postList.add(new Post(username, postContent, imageResource, timestampObject, commentCount, reactionCount, reacted));
+                            postList.add(new Post(documentId,username, postContent, imageResource, timestampObject, commentCount, reactionCount, reacted));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
