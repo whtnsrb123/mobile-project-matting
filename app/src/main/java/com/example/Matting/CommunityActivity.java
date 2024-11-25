@@ -89,15 +89,13 @@ public class CommunityActivity extends AppCompatActivity {
                 } else if (itemId == R.id.nav_community) {
 
                     return true;
-                }
-                else if (itemId == R.id.nav_chat) {
+                } else if (itemId == R.id.nav_chat) {
                     // 채팅 액티비티로 이동
                     Intent feedIntent = new Intent(CommunityActivity.this, Chat_ChatlistActivity.class);
                     startActivity(feedIntent);
                     overridePendingTransition(0, 0);
                     return true;
-                }
-                else if (itemId == R.id.nav_mypage) {
+                } else if (itemId == R.id.nav_mypage) {
                     // 마이페이지 액티비티로 이동
                     Intent mypageIntent = new Intent(CommunityActivity.this, MyProfileActivity.class);
                     startActivity(mypageIntent);
@@ -111,7 +109,7 @@ public class CommunityActivity extends AppCompatActivity {
 
     private void addPostToFirestore(String title, String content, String location, String restaurant, String date, String time, String mapx, String mapy) {
         Map<String, Object> post = new HashMap<>();
-        post.put("title", title);
+        post.put("title", title.trim());
         post.put("content", content);
         post.put("location", location);
         post.put("restaurant", restaurant);
@@ -121,7 +119,7 @@ public class CommunityActivity extends AppCompatActivity {
         post.put("mapy", mapy);
 
 
-        Log.d("mapxy", "loadPostsFromFirestore"+mapx+mapy);
+        Log.d("mapxy", "loadPostsFromFirestore" + mapx + mapy);
 
         communityRef.add(post)
                 .addOnSuccessListener(documentReference -> {
