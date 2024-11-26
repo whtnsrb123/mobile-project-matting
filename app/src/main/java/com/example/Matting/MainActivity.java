@@ -26,6 +26,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.LocationTrackingMode;
@@ -37,6 +39,9 @@ import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.util.FusedLocationSource;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,35 +51,29 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
+    private static final String CLIENT_ID = "WkJqg1dwU0AIZSFbQ4Ld"; // 네이버 애플리케이션 클라이언트 ID
+    private static final String CLIENT_SECRET = "PvoSkMQnin"; // 네이버 애플리케이션 클라이언트 시크릿
+    LocationManager locationManager;
     private FusedLocationSource locationSource;
-
     private String currentAddress = "서울특별시 중구 태평로1가"; // 초기값
     private double cur_lat = 37.5665; // 초기값 (서울 예시)
     private double cur_lon = 126.9780;
     private NaverMap naverMap;
     private Marker marker = new Marker();
-    LocationManager locationManager;
-
     private RecyclerView restaurantRecyclerView;
     private MainAdapter mainAdapter;
     private List<Main> mainList;
-
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private ImageView showBottomSheetButton;
-
-    private static final String CLIENT_ID = "WkJqg1dwU0AIZSFbQ4Ld"; // 네이버 애플리케이션 클라이언트 ID
-    private static final String CLIENT_SECRET = "PvoSkMQnin"; // 네이버 애플리케이션 클라이언트 시크릿
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +81,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
+
+
+        //로그인 확인
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            // 로그인 페이지로 이동하고 결과를 기다림
+            Intent loginIntent = new Intent(MainActivity.this, User_LoginActivity.class);
+            startActivityForResult(loginIntent, 1001); // 1001은 요청 코드
+        }
+
 
         locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
@@ -182,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     startActivity(communityIntent);
                     overridePendingTransition(0, 0);
                     return true;
-                }else if (itemId == R.id.nav_chat) {
+                } else if (itemId == R.id.nav_chat) {
                     // 챗 액티비티로 이동
                     Intent communityIntent = new Intent(MainActivity.this, Chat_ChatlistActivity.class);
                     startActivity(communityIntent);
@@ -241,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     currentAddress = defaultSearchKeyword;
                     if (defaultSearchKeyword != null) {
                         // UI 스레드에서 디폴트 검색어로 API 호출
-                        runOnUiThread(() -> callNaverSearchAPI(defaultSearchKeyword+" 맛집"));
+                        runOnUiThread(() -> callNaverSearchAPI(defaultSearchKeyword + " 맛집"));
                     }
 
                     bufferedReader.close();
