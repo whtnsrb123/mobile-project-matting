@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -84,6 +91,8 @@ public class WritePostFragment extends Fragment {
     private void uploadPost() {
         String title = postTitle.getText().toString().trim();
         String content = postContent.getText().toString().trim();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        String userId = (auth.getCurrentUser() != null) ? auth.getCurrentUser().getUid() : "anonymous"; // 로그인된 사용자 ID 또는 기본값
 
         if (title.isEmpty() || content.isEmpty() || selectedImageUri == null) {
             Toast.makeText(requireContext(), "모든 필드를 입력하세요.", Toast.LENGTH_SHORT).show();
@@ -98,7 +107,7 @@ public class WritePostFragment extends Fragment {
 
         // Firestore 데이터 준비
         Map<String, Object> postMap = new HashMap<>();
-        postMap.put("username", "사용자"); // 실제 사용자 이름으로 변경 필요
+        postMap.put("username", userId); // 실제 사용자 이름으로 변경 필요
         postMap.put("postContent", content);
         postMap.put("imageResource", encodedImage); // Base64가 아니라 URI를 사용
         postMap.put("timestamp", FieldValue.serverTimestamp());
@@ -117,6 +126,7 @@ public class WritePostFragment extends Fragment {
                     getParentFragmentManager().popBackStack();
                 })
                 .addOnFailureListener(e -> {
+                    Log.e("WritePostFragment", "Upload failed", e);
                     Toast.makeText(getContext(), "게시글 업로드 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }

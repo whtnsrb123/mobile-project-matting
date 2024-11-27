@@ -1,13 +1,20 @@
 package com.example.Matting;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -51,7 +58,7 @@ public class PostViewerActivity extends AppCompatActivity {
                         try {
                             // Firestore 문서에서 필드 가져오기
                             String documentId = document.getId();
-                            String username = document.getString("username");
+                            String userId  = document.getString("username");
                             String postContent = document.getString("postContent"); // 필드 이름 확인 필요
                             String imageResource = document.getString("imageResource");
                             Timestamp timestamp = document.getTimestamp("timestamp"); // 문자열로 저장된 시간
@@ -59,9 +66,15 @@ public class PostViewerActivity extends AppCompatActivity {
                             int reactionCount = document.contains("reactionCount") ? document.getLong("reactionCount").intValue() : 0;
                             boolean reacted = document.contains("reacted") ? document.getBoolean("reacted") : false;
 
-                            // Post 객체 생성
-                            Post post = new Post(documentId,username, postContent, imageResource, timestamp, commentCount, reactionCount, reacted);
-                            postList.add(post);
+                            // UserID를 기반으로 닉네임 가져오기
+                            fetchNicknameFromRealtimeDatabase(userId, nickname -> {
+                                // 닉네임으로 Post 객체 생성
+                                Post post = new Post(documentId, nickname, postContent, imageResource, timestamp, commentCount, reactionCount, reacted);
+                                postList.add(post);
+
+                                // RecyclerView 업데이트
+                                postAdapter.notifyDataSetChanged();
+                            });
                         } catch (Exception e) {
                             e.printStackTrace(); // 데이터 변환 중 오류 처리
                         }
@@ -73,5 +86,28 @@ public class PostViewerActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "게시글 데이터를 가져오는 데 실패했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+    }
+
+
+    // Realtime Database에서 nicknames 가져오기
+    private void fetchNicknameFromRealtimeDatabase(String userId, OnNicknameFetchedListener listener) {
+        DatabaseReference realtimeDbRef = FirebaseDatabase.getInstance().getReference();
+        realtimeDbRef.child("users").child(userId).child("nicknames")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String nickname = snapshot.exists() ? snapshot.getValue(String.class) : "Unknown User";
+                        listener.onNicknameFetched(nickname);
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("RealtimeDB", "Error fetching nicknames for userId: " + userId, error.toException());
+                        listener.onNicknameFetched("Unknown User"); // 기본값 설정
+                    }
+                });
+    }
+    // 닉네임 데이터 콜백을 처리하기 위한 인터페이스
+    public interface OnNicknameFetchedListener {
+        void onNicknameFetched(String nickname);
     }
 }

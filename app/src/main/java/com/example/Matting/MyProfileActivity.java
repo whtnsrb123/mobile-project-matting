@@ -12,8 +12,10 @@ import android.provider.MediaStore;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -28,6 +30,13 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -64,9 +73,14 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
     private RecyclerView postRecyclerView;
     private PostAdapter postAdapter;
     private List<Post> postList;
+    private TextView accountIdTextView;
+    private TextView userNameTextView;
+
+
+    private FirebaseAuth mAuth;
 
     @Override
-    public void onPostUploaded(Map<String, Object> newPost) {
+        public void onPostUploaded(Map<String, Object> newPost) {
         // 새로운 게시글 데이터를 postList에 추가
         Post post = new Post(
                 (String) newPost.get("documentId"),
@@ -88,6 +102,40 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_profile);
+
+
+        //로그인 확인
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            // 로그인 페이지로 이동하고 결과를 기다림
+            Intent loginIntent = new Intent(MyProfileActivity.this, User_LoginActivity.class);
+            startActivityForResult(loginIntent, 1001); // 1001은 요청 코드
+        }
+
+        // TextView 초기화
+        accountIdTextView = findViewById(R.id.account_id);
+        userNameTextView = findViewById(R.id.user_name);
+
+        // FirebaseAuth에서 이메일 및 UserId 가져오기
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() != null) {
+            String email = auth.getCurrentUser().getEmail();
+            String userId = auth.getCurrentUser().getUid();
+
+            // ID 설정 (이메일에서 '@' 뒤 제거)
+            if (email != null) {
+                String id = extractIdFromEmail(email);
+                accountIdTextView.setText(id);
+            }
+
+            // 닉네임 설정
+            fetchNickname(userId);
+        } else {
+            // 로그인 상태가 아닐 경우 기본값 설정
+            accountIdTextView.setText("Unknown ID");
+            userNameTextView.setText("Unknown User");
+        }
 
         // postList 초기화
         postList = new ArrayList<>();
@@ -114,6 +162,20 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
                 startActivity(intent);
             }
         });
+
+        // 로그아웃 버튼
+        ImageButton logoutButton = findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAuth.signOut();
+                Intent intent = new Intent(MyProfileActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            }
+        });
+
 
         // 팔로워 버튼 영역
         LinearLayout followersLayout = findViewById(R.id.followersLayout);
@@ -144,7 +206,7 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
                     overridePendingTransition(0, 0);
                     return true;
                 } else if (itemId == R.id.nav_chat) {
-                    Intent chatIntent = new Intent(MyProfileActivity.this, Chat_ChatroomActivity.class);
+                    Intent chatIntent = new Intent(MyProfileActivity.this, Chat_ChatlistActivity.class);
                     startActivity(chatIntent);
                     overridePendingTransition(0, 0);
                     return true;
@@ -257,7 +319,7 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
                             boolean reacted = document.contains("reacted") ? document.getBoolean("reacted") : false;
 
                             // Timestamp 객체를 그대로 전달
-                            postList.add(new Post(documentId,username, postContent, imageResource, timestampObject, commentCount, reactionCount, reacted));
+                            postList.add(new Post(documentId, username, postContent, imageResource, timestampObject, commentCount, reactionCount, reacted));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -274,5 +336,36 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
                 .replace(R.id.fragment_container, new WritePostFragment()) // `fragment_container`는 프래그먼트를 담을 뷰 ID
                 .addToBackStack(null) // 뒤로 가기 지원
                 .commit();
+    }
+
+    // 이메일에서 '@' 뒤 제거
+    private String extractIdFromEmail(String email) {
+        if (email.contains("@")) {
+            return email.split("@")[0];
+        }
+        return email; // '@'가 없는 경우 원본 반환
+    }
+
+    // Realtime Database에서 닉네임 가져오기
+    private void fetchNickname(String userId) {
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
+        databaseRef.child("users").child(userId).child("nicknames")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            String nickname = snapshot.getValue(String.class);
+                            userNameTextView.setText(nickname); // 닉네임 표시
+                        } else {
+                            userNameTextView.setText("Unknown User"); // 닉네임이 없을 경우 기본값
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(MyProfileActivity.this, "닉네임을 가져오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                        userNameTextView.setText("Unknown User");
+                    }
+                });
     }
 }

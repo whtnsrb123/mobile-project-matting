@@ -15,10 +15,16 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,14 +38,11 @@ public class Feed_MainActivity extends AppCompatActivity {
     private ImageButton searchButton; // imageButton7을 위한 변수
     private FirebaseFirestore db;
     private SwipeRefreshLayout swipeRefreshLayout; // SwipeRefreshLayout 추가
-
     private FirebaseAuth mAuth;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed_main);
-
 
         //로그인 확인
         mAuth = FirebaseAuth.getInstance();
@@ -49,7 +52,6 @@ public class Feed_MainActivity extends AppCompatActivity {
             Intent loginIntent = new Intent(Feed_MainActivity.this, User_LoginActivity.class);
             startActivityForResult(loginIntent, 1001); // 1001은 요청 코드
         }
-
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -120,9 +122,9 @@ public class Feed_MainActivity extends AppCompatActivity {
             }
         });
     }
+
     // Firestore에서 데이터 가져오기
     private void loadFeedData() {
-        // 새로고침 로딩 상태 시작
         swipeRefreshLayout.setRefreshing(true);
 
         db.collection("posts")
@@ -130,30 +132,56 @@ public class Feed_MainActivity extends AppCompatActivity {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        feedItems.clear(); // 기존 데이터 초기화
-                        feedItems.clear(); // 기존 데이터 초기화
+                        feedItems.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String documentId = document.getId();
-                            String username = document.getString("username");
+                            String userId = document.getString("username"); // Firestore에서 username 가져오기
                             String postContent = document.getString("postContent");
                             String imageUrl = document.getString("imageResource");
                             int reactionCount = document.getLong("reactionCount").intValue();
                             int commentCount = document.getLong("commentCount").intValue();
                             Date timestamp = document.getTimestamp("timestamp").toDate();
 
-                            feedItems.add(new FeedItem(documentId, username, postContent, imageUrl, reactionCount, commentCount, timestamp));
+                            // Realtime Database에서 nicknames 가져오기
+                            fetchNicknameFromRealtimeDatabase(userId, nicknames -> {
+                                // FeedItem 생성 및 추가
+                                feedItems.add(new FeedItem(documentId, nicknames, postContent, imageUrl, reactionCount, commentCount, timestamp));
+                                feedAdapter.notifyDataSetChanged();
+                            });
                         }
-                        feedAdapter.notifyDataSetChanged();
                     } else {
                         Log.w("Feed_MainActivity", "Error getting documents.", task.getException());
                     }
-                    // 새로고침 로딩 상태 종료
                     swipeRefreshLayout.setRefreshing(false);
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Feed_MainActivity", "Error loading data", e);
-                    // 실패 시에도 새로고침 로딩 상태 종료
                     swipeRefreshLayout.setRefreshing(false);
                 });
+    }
+
+    // Realtime Database에서 nicknames 가져오기
+    private void fetchNicknameFromRealtimeDatabase(String userId, OnNicknameFetchedListener listener) {
+        DatabaseReference realtimeDbRef = FirebaseDatabase.getInstance().getReference();
+
+        realtimeDbRef.child("users").child(userId).child("nicknames")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String nickname = snapshot.exists() ? snapshot.getValue(String.class) : "Unknown User";
+                        listener.onNicknameFetched(nickname);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("RealtimeDB", "Error fetching nicknames for userId: " + userId, error.toException());
+                        listener.onNicknameFetched("Unknown User"); // 기본값 설정
+                    }
+                });
+    }
+
+    // 닉네임 데이터 콜백을 처리하기 위한 인터페이스
+    public interface OnNicknameFetchedListener {
+        void onNicknameFetched(String nickname);
     }
 }
