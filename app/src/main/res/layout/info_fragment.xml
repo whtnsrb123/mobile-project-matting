@@ -114,13 +114,28 @@
         android:layout_alignParentStart="true"
         android:padding="8dp"/>
 
-    <ImageView
-        android:id="@+id/btnClose"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_close"
-        android:layout_gravity="end"
-        android:contentDescription="Close" />
+        android:weightSum="1">
+        <ImageView
+            android:id="@+id/btnClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_close"
+            android:layout_gravity="end"
+            android:contentDescription="Close" />
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+        <ImageView
+            android:id="@+id/btnReview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_reviews"
+            android:layout_gravity="end" />
+    </LinearLayout>
 
     <!-- 하단 예약 버튼 -->
     <Button
