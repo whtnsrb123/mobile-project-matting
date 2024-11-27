@@ -39,7 +39,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, DetailActivity.class);
+                Intent intent = new Intent(context, Community_DetailActivity.class);
                 intent.putExtra("title", community.getTitle());
                 intent.putExtra("content", community.getContent());
                 intent.putExtra("restaurant", community.getRestaurant());

@@ -10,8 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-
 import java.util.List;
 
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder> {
@@ -42,7 +40,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                InfoFragment infoFragment = InfoFragment.newInstance(
+                Main_InfoFragment mainInfoFragment = Main_InfoFragment.newInstance(
                         main.getTitle(),
                         main.getCategory(),
                         main.getAddress(),
@@ -60,7 +58,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
 
                 // 전체 화면으로 InfoFragment 표시
                 activity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.info_fragment_container, infoFragment)
+                        .replace(R.id.info_fragment_container, mainInfoFragment)
                         .addToBackStack(null)
                         .commit();
             }

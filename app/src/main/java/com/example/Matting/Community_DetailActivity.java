@@ -1,14 +1,9 @@
 package com.example.Matting;
 import static com.example.Matting.Chat_Chatmanage.addNewChatRoom;
 
-import android.Manifest;
-import com.example.Matting.User;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,13 +12,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,19 +28,18 @@ import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.overlay.Marker;
-import com.naver.maps.map.overlay.OverlayImage;
 
 import java.util.ArrayList;
 
 
-public class DetailActivity extends AppCompatActivity implements OnMapReadyCallback{
+public class Community_DetailActivity extends AppCompatActivity implements OnMapReadyCallback{
 
     private double cur_lat, cur_lon;
     private NaverMap naverMap;
 
     private RecyclerView mRecyclerView;
     private ArrayList<RecyclerViewItem> mList;
-    private DetailRecyclerViewAdapter mDetailRecyclerViewAdapter;
+    private Community_DetailRecyclerViewAdapter mCommunityDetailRecyclerViewAdapter;
 
     private String title, content, restaurant, location, date, time;
 
@@ -203,8 +194,8 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                             } // 데이터 추가
                         }
                         // 어댑터에 변경 알림
-                        mDetailRecyclerViewAdapter = new DetailRecyclerViewAdapter(mList, this);
-                        mRecyclerView.setAdapter(mDetailRecyclerViewAdapter);
+                        mCommunityDetailRecyclerViewAdapter = new Community_DetailRecyclerViewAdapter(mList, this);
+                        mRecyclerView.setAdapter(mCommunityDetailRecyclerViewAdapter);
                         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
                     } else {
                         Log.e("FirestoreError", "데이터 가져오기 실패: " + task.getException());
@@ -230,7 +221,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
             @Override
             public void onClick(View v) {
                 // AlertDialog 생성 및 설정
-                AlertDialog.Builder builder = new AlertDialog.Builder(DetailActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(Community_DetailActivity.this);
                 builder.setTitle(title);
                 builder.setMessage(message);
 
@@ -276,7 +267,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         User user = new User(this);
         TextView postTitle = findViewById(R.id.post_title);
         addNewChatRoom(postTitle.getText().toString(),user);
-        Intent intent = new Intent(DetailActivity.this, Chat_ChatroomActivity.class);
+        Intent intent = new Intent(Community_DetailActivity.this, Chat_ChatroomActivity.class);
         intent.putExtra("chatRoomId", postTitle.getText().toString());
         startActivity(intent);
         return;

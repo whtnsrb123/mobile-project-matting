@@ -2,14 +2,14 @@ package com.example.Matting;
 
 import com.google.firebase.Timestamp;
 
-public class Review {
+public class Main_Review {
     private String address;
     private String content;
     private String username;
     private double rating;
     private Timestamp date; // Firestore의 Timestamp 형식 사용
 
-    public Review(String address, String content, Timestamp date, float rating, String username) {
+    public Main_Review(String address, String content, Timestamp date, float rating, String username) {
         this.address = address;
         this.content = content;
         this.date = date;
@@ -18,7 +18,7 @@ public class Review {
     }
 
     // 기본 생성자 (Firestore에서 객체 생성 시 필요)
-    public Review() {}
+    public Main_Review() {}
 
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }

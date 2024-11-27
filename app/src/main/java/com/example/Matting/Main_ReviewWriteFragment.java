@@ -1,7 +1,5 @@
 package com.example.Matting;
 
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,31 +17,43 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
-public class ReviewWriteFragment extends Fragment {
+public class Main_ReviewWriteFragment extends Fragment {
     private EditText etReviewContent;
     private Button btnSubmit;
     private ImageButton btnClose;
     private TextView tvRestaurant;
-    private String address;
+    private String address, email, username;
     private RatingBar ratingBar;
+
+    private FirebaseAuth mAuth;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.review_fragment, container, false);
+
+        // FirebaseAuth 객체 생성
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            // 로그인되지 않은 경우, 로그인 페이지로 이동
+            Intent loginIntent = new Intent(getActivity(), User_LoginActivity.class);
+            startActivity(loginIntent);
+        } else {
+            // 로그인된 사용자 정보 사용
+            email = currentUser.getEmail();
+//            String userId = currentUser.getUid();
+            if (email != null) {
+                username = extractIdFromEmail(email);
+            }
+        }
 
         btnSubmit = view.findViewById(R.id.btnSubmit);
         btnClose = view.findViewById(R.id.btnClose);
@@ -75,7 +84,7 @@ public class ReviewWriteFragment extends Fragment {
                     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
                     db.collection("review")
-                            .add(new Review(address, content, Timestamp.now(), rating, "tmp_id")) // username은 예시로 고정값 설정
+                            .add(new Main_Review(address, content, Timestamp.now(), rating, username)) // username은 예시로 고정값 설정
                             .addOnSuccessListener(documentReference -> {
                                 Toast.makeText(getActivity(), "리뷰가 저장되었습니다", Toast.LENGTH_SHORT).show();
 
@@ -104,7 +113,12 @@ public class ReviewWriteFragment extends Fragment {
         return view;
     }
 
-
+    private String extractIdFromEmail(String email) {
+        if (email.contains("@")) {
+            return email.split("@")[0];
+        }
+        return email; // '@'가 없는 경우 원본 반환
+    }
 
     @Override
     public void onResume() {

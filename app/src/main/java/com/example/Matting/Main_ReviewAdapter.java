@@ -7,11 +7,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
-public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder> {
-    private List<Review> reviewList;
+public class Main_ReviewAdapter extends RecyclerView.Adapter<Main_ReviewAdapter.ReviewViewHolder> {
+    private List<Main_Review> mainReviewList;
 
-    public ReviewAdapter(List<Review> reviewList) {
-        this.reviewList = reviewList;
+    public Main_ReviewAdapter(List<Main_Review> mainReviewList) {
+        this.mainReviewList = mainReviewList;
     }
 
     @NonNull
@@ -23,15 +23,15 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
     @Override
     public void onBindViewHolder(@NonNull ReviewViewHolder holder, int position) {
-        Review review = reviewList.get(position);
-        holder.tvReviewerName.setText(review.getUsername());
-        holder.tvReviewContent.setText(review.getContent());
-        holder.tvReviewRating.setText("평점: " + review.getRating());
+        Main_Review mainReview = mainReviewList.get(position);
+        holder.tvReviewerName.setText(mainReview.getUsername());
+        holder.tvReviewContent.setText(mainReview.getContent());
+        holder.tvReviewRating.setText("평점: " + mainReview.getRating());
     }
 
     @Override
     public int getItemCount() {
-        return reviewList.size();
+        return mainReviewList.size();
     }
 
     public static class ReviewViewHolder extends RecyclerView.ViewHolder {

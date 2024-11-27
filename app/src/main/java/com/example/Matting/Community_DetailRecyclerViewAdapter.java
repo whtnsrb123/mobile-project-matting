@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class DetailRecyclerViewAdapter extends RecyclerView.Adapter<DetailRecyclerViewAdapter.ViewHolder> {
+public class Community_DetailRecyclerViewAdapter extends RecyclerView.Adapter<Community_DetailRecyclerViewAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imgView_item;
         TextView txt_main;
@@ -33,7 +33,7 @@ public class DetailRecyclerViewAdapter extends RecyclerView.Adapter<DetailRecycl
     private ArrayList<RecyclerViewItem> mList = null;
     private Context mContext;
 
-    public DetailRecyclerViewAdapter(ArrayList<RecyclerViewItem> mList, Context context) {
+    public Community_DetailRecyclerViewAdapter(ArrayList<RecyclerViewItem> mList, Context context) {
         this.mList = mList;
         this.mContext = context;
     }
@@ -46,13 +46,13 @@ public class DetailRecyclerViewAdapter extends RecyclerView.Adapter<DetailRecycl
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View view = inflater.inflate(R.layout.activity_detail_recycler_item, parent, false);
-        DetailRecyclerViewAdapter.ViewHolder vh = new DetailRecyclerViewAdapter.ViewHolder(view);
+        Community_DetailRecyclerViewAdapter.ViewHolder vh = new Community_DetailRecyclerViewAdapter.ViewHolder(view);
         return vh;
     }
 
     // position에 해당하는 데이터를 뷰홀더의 아이템뷰에 표시
     @Override
-    public void onBindViewHolder(@NonNull DetailRecyclerViewAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull Community_DetailRecyclerViewAdapter.ViewHolder holder, int position) {
         RecyclerViewItem item = mList.get(position);
 
         holder.imgView_item.setImageResource(R.drawable.food);   // 사진 없어서 기본 파일로 이미지 띄움
