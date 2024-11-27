@@ -9,19 +9,30 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:background="?attr/colorPrimary"
+
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="132dp"
+            android:layout_height="54dp"
+            android:src="@drawable/feed_ic_matting"
+            app:tint="@color/white"
+            android:layout_gravity="left"/>
 
         <!-- 우측에 추가될 ImageButton -->
         <ImageButton
             android:id="@+id/btn_add_chat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/addbutton"
+            android:src="@drawable/plus_circle"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Add Chat"
-            android:layout_gravity="end" /> <!-- 우측 정렬 -->
+            app:tint="@color/white"
+            android:layout_gravity="end"
+            android:layout_marginRight="16dp" /> <!-- 우측 정렬 -->
 
     </androidx.appcompat.widget.Toolbar>
     <!-- 채팅방 리스트 -->

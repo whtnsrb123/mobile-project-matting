@@ -90,6 +90,9 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
 
         ImageButton addButton = findViewById(R.id.btn_add_chat);
         addButton.setOnClickListener(v -> showAddChatRoomDialog());
