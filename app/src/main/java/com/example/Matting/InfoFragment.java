@@ -57,9 +57,7 @@ public class InfoFragment extends Fragment {
         tvCategory = view.findViewById(R.id.tvCategory);
         tvAddress = view.findViewById(R.id.tvAddress);
         tvLink = view.findViewById(R.id.tvLink);
-//        tvRating = view.findViewById(R.id.tvRating);
-//        tvMapX = view.findViewById(R.id.tvMapX);
-//        tvMapY = view.findViewById(R.id.tvMapY);
+        tvRating = view.findViewById(R.id.tvRating);
         reviewRecyclerView = view.findViewById(R.id.reviewRecyclerView);
         btnClose = view.findViewById(R.id.btnClose); // 닫기 버튼 초기화
         btnReserve = view.findViewById(R.id.btnReserve);
@@ -79,9 +77,6 @@ public class InfoFragment extends Fragment {
             tvCategory.setText(getArguments().getString("category"));
             tvAddress.setText(getArguments().getString("address"));
             tvLink.setText(getArguments().getString("link"));
-//            tvRating.setText(String.valueOf(getArguments().getDouble("rating")));
-//            tvMapX.setText(String.valueOf(getArguments().getInt("map_x")));
-//            tvMapY.setText(String.valueOf(getArguments().getInt("map_y")));
         } else {
             Log.e("InfoFragment", "getArguments() returned null");
         }
@@ -155,11 +150,31 @@ public class InfoFragment extends Fragment {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         reviewList.clear();
+
+                        int reviewCount = 0;
+                        float totalRating = 0;
+
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Review review = document.toObject(Review.class);
                             reviewList.add(review);
+
+                            // 평점 계산
+                            Double rating = document.getDouble("rating");
+                            if (rating != null) {
+                                totalRating += rating;
+                            }
+                            reviewCount++;
                         }
+
+                        // 평균 평점 계산
+                        float averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+
                         reviewAdapter.notifyDataSetChanged();
+
+                        // 필요하다면 텍스트뷰에 결과 표시
+                        if (tvRating != null) {
+                            tvRating.setText(String.format("평점: %.1f (%d개)", averageRating, reviewCount));
+                        }
                     } else {
                         Log.e("FirestoreError", "리뷰 데이터를 가져오는 데 실패했습니다.");
                     }
