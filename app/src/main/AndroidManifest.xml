@@ -37,7 +37,7 @@
             android:name=".CommunityActivity"
             android:exported="true" />
         <activity
-            android:name=".DetailActivity"
+            android:name=".Community_DetailActivity"
             android:exported="true" />
         <activity
             android:name=".Chat_ChatroomActivity"

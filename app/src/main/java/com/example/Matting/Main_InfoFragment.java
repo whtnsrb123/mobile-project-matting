@@ -24,17 +24,17 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InfoFragment extends Fragment {
+public class Main_InfoFragment extends Fragment {
     private TextView tvTitle, tvCategory, tvAddress, tvLink, tvRating, tvMapX, tvMapY;
     private RecyclerView reviewRecyclerView;
-    private ReviewAdapter reviewAdapter;
-    private List<Review> reviewList = new ArrayList<>();
+    private Main_ReviewAdapter mainReviewAdapter;
+    private List<Main_Review> mainReviewList = new ArrayList<>();
     private FirebaseFirestore firestore;
     private ImageView btnClose, btnReview;
     private Button btnReserve;
 
-    public static InfoFragment newInstance(String title, String category, String address, String link, double rating, int map_x, int map_y) {
-        InfoFragment fragment = new InfoFragment();
+    public static Main_InfoFragment newInstance(String title, String category, String address, String link, double rating, int map_x, int map_y) {
+        Main_InfoFragment fragment = new Main_InfoFragment();
         Bundle args = new Bundle();
         args.putString("title", title);
         args.putString("category", category);
@@ -67,9 +67,9 @@ public class InfoFragment extends Fragment {
         firestore = FirebaseFirestore.getInstance();
 
         // RecyclerView 설정
-        reviewAdapter = new ReviewAdapter(reviewList);
+        mainReviewAdapter = new Main_ReviewAdapter(mainReviewList);
         reviewRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        reviewRecyclerView.setAdapter(reviewAdapter);
+        reviewRecyclerView.setAdapter(mainReviewAdapter);
 
         // Arguments 확인
         if (getArguments() != null) {
@@ -105,16 +105,16 @@ public class InfoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // CreateCommunityFragment 인스턴스 생성
-                ReviewWriteFragment reviewWriteFragment = new ReviewWriteFragment();
+                Main_ReviewWriteFragment mainReviewWriteFragment = new Main_ReviewWriteFragment();
                 // 데이터 전달을 위한 Bundle 생성
                 Bundle bundle = new Bundle();
                 bundle.putString("restaurant", getArguments().getString("title")); // InfoFragment에서 받은 title 전달
                 bundle.putString("address", getArguments().getString("address"));
-                reviewWriteFragment.setArguments(bundle);
+                mainReviewWriteFragment.setArguments(bundle);
 
                 // Fragment 전환
                 FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                transaction.replace(R.id.info_fragment_container, reviewWriteFragment);
+                transaction.replace(R.id.info_fragment_container, mainReviewWriteFragment);
                 transaction.addToBackStack(null); // 뒤로 가기 스택에 추가
                 transaction.commit();
             }
@@ -124,17 +124,17 @@ public class InfoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // CreateCommunityFragment 인스턴스 생성
-                CreateCommunityFragment createCommunityFragment = new CreateCommunityFragment();
+                Main_CreateMattingFragment mainCreateMattingFragment = new Main_CreateMattingFragment();
                 // 데이터 전달을 위한 Bundle 생성
                 Bundle bundle = new Bundle();
                 bundle.putString("restaurant", getArguments().getString("title")); // InfoFragment에서 받은 title 전달
                 bundle.putString("mapx", String.valueOf(getArguments().getInt("map_x")));
                 bundle.putString("mapy", String.valueOf(getArguments().getInt("map_y")));
                 Log.d("mapxy", "Info"+getArguments().getInt("map_x")+getArguments().getInt("map_y"));
-                createCommunityFragment.setArguments(bundle);
+                mainCreateMattingFragment.setArguments(bundle);
                 // Fragment 전환
                 FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                transaction.replace(R.id.info_fragment_container, createCommunityFragment);
+                transaction.replace(R.id.info_fragment_container, mainCreateMattingFragment);
                 transaction.addToBackStack(null); // 뒤로 가기 스택에 추가
                 transaction.commit();
             }
@@ -149,14 +149,14 @@ public class InfoFragment extends Fragment {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        reviewList.clear();
+                        mainReviewList.clear();
 
                         int reviewCount = 0;
                         float totalRating = 0;
 
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            Review review = document.toObject(Review.class);
-                            reviewList.add(review);
+                            Main_Review mainReview = document.toObject(Main_Review.class);
+                            mainReviewList.add(mainReview);
 
                             // 평점 계산
                             Double rating = document.getDouble("rating");
@@ -169,7 +169,7 @@ public class InfoFragment extends Fragment {
                         // 평균 평점 계산
                         float averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
 
-                        reviewAdapter.notifyDataSetChanged();
+                        mainReviewAdapter.notifyDataSetChanged();
 
                         // 필요하다면 텍스트뷰에 결과 표시
                         if (tvRating != null) {

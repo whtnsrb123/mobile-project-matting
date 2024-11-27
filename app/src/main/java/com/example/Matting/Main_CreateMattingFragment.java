@@ -22,7 +22,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Calendar;
 
-public class CreateCommunityFragment extends Fragment {
+public class Main_CreateMattingFragment extends Fragment {
     private EditText etTitle, etContent, etLocation, etRestaurant, etDate, etTime;
     private Button btnCreatePost, dateButton, timeButton;
     private ImageButton closeButton;
