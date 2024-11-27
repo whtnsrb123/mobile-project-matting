@@ -31,18 +31,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".FollowersActivity"></activity>
+        <activity android:name=".FollowersActivity" />
         <activity android:name=".FollowingActivity" />
         <activity
             android:name=".CommunityActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".DetailActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".Chat_ChatroomActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize|stateHidden"></activity>
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity android:name=".User_LoginActivity" />
         <activity android:name=".User_SignUpActivity" />
         <activity android:name=".User_EditProfileActivity" />
