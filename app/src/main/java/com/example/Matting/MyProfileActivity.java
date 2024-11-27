@@ -174,7 +174,7 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
                     overridePendingTransition(0, 0);
                     return true;
                 } else if (itemId == R.id.nav_chat) {
-                    Intent chatIntent = new Intent(MyProfileActivity.this, Chat_ChatroomActivity.class);
+                    Intent chatIntent = new Intent(MyProfileActivity.this, Chat_ChatlistActivity.class);
                     startActivity(chatIntent);
                     overridePendingTransition(0, 0);
                     return true;
