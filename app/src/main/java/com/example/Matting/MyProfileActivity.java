@@ -12,6 +12,7 @@ import android.provider.MediaStore;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -28,6 +29,8 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -65,6 +68,9 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
     private PostAdapter postAdapter;
     private List<Post> postList;
 
+
+    private FirebaseAuth mAuth;
+
     @Override
     public void onPostUploaded(Map<String, Object> newPost) {
         // 새로운 게시글 데이터를 postList에 추가
@@ -88,6 +94,16 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_profile);
+
+
+        //로그인 확인
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            // 로그인 페이지로 이동하고 결과를 기다림
+            Intent loginIntent = new Intent(MyProfileActivity.this, User_LoginActivity.class);
+            startActivityForResult(loginIntent, 1001); // 1001은 요청 코드
+        }
 
         // postList 초기화
         postList = new ArrayList<>();
@@ -114,6 +130,20 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
                 startActivity(intent);
             }
         });
+
+        // 로그아웃 버튼
+        ImageButton logoutButton = findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAuth.signOut();
+                Intent intent = new Intent(MyProfileActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            }
+        });
+
 
         // 팔로워 버튼 영역
         LinearLayout followersLayout = findViewById(R.id.followersLayout);
@@ -257,7 +287,7 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
                             boolean reacted = document.contains("reacted") ? document.getBoolean("reacted") : false;
 
                             // Timestamp 객체를 그대로 전달
-                            postList.add(new Post(documentId,username, postContent, imageResource, timestampObject, commentCount, reactionCount, reacted));
+                            postList.add(new Post(documentId, username, postContent, imageResource, timestampObject, commentCount, reactionCount, reacted));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
