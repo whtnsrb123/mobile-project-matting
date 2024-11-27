@@ -22,6 +22,7 @@ public class PostData {
                     postList.clear(); // postList가 null이 아님을 보장
                     for (DocumentSnapshot document : queryDocumentSnapshots) {
                         try {
+                            String documentId = document.getString("documentId");
                             String username = document.getString("username");
                             String postContent = document.getString("postContent");
                             String imageResource = document.getString("imageResource");
@@ -33,7 +34,7 @@ public class PostData {
                             int reactionCount = document.contains("reactionCount") ? document.getLong("reactionCount").intValue() : 0;
                             boolean reacted = document.contains("reacted") ? document.getBoolean("reacted") : false;
 
-                            postList.add(new Post(username, postContent, imageResource, timestampObject, commentCount, reactionCount, reacted));
+                            postList.add(new Post(documentId,username, postContent, imageResource, timestampObject, commentCount, reactionCount, reacted));
                         } catch (Exception e) {
                             e.printStackTrace(); // 데이터 변환 오류 처리
                         }

@@ -348,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 // 현재 위치로 지도 중심 이동
                 updateMapCenter(latitude, longitude);
 
-                getReverseGeocode(latitude, longitude);
+//                getReverseGeocode(latitude, longitude);
             } else {
                 Log.d("LocationDebug", "현재 위치를 가져올 수 없음. 기본 위치(서울)로 설정");
                 // 서울 중심 좌표로 지도 설정

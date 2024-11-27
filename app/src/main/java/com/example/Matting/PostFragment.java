@@ -29,7 +29,7 @@ public class PostFragment extends Fragment {
         ImageView profileImage = view.findViewById(R.id.profileImage);
         TextView username = view.findViewById(R.id.username);
         ImageView postImage = view.findViewById(R.id.postImage);
-        ImageView likeButton = view.findViewById(R.id.likeButton);
+        ImageView likeButton = view.findViewById(R.id.reactionButton);
         ImageView commentButton = view.findViewById(R.id.commentButton);
         TextView postDescription = view.findViewById(R.id.postDescription);
         TextView postTimestamp = view.findViewById(R.id.postTimestamp);

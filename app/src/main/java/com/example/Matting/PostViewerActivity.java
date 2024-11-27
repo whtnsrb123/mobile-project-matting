@@ -18,11 +18,13 @@ public class PostViewerActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private PostAdapter postAdapter;
     private List<Post> postList;
+    private int startPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_viewer);
+        startPosition = getIntent().getIntExtra("position", 0);
 
         // RecyclerView 설정
         recyclerView = findViewById(R.id.recyclerView);
@@ -35,10 +37,6 @@ public class PostViewerActivity extends AppCompatActivity {
 
         // Firestore에서 게시글 데이터를 가져옵니다.
         fetchPostsFromFirestore();
-
-        // 클릭한 게시글 위치로 이동
-        int startPosition = getIntent().getIntExtra("position", 0);
-        recyclerView.scrollToPosition(startPosition);
     }
 
     private void fetchPostsFromFirestore() {
@@ -52,6 +50,7 @@ public class PostViewerActivity extends AppCompatActivity {
                     queryDocumentSnapshots.forEach(document -> {
                         try {
                             // Firestore 문서에서 필드 가져오기
+                            String documentId = document.getId();
                             String username = document.getString("username");
                             String postContent = document.getString("postContent"); // 필드 이름 확인 필요
                             String imageResource = document.getString("imageResource");
@@ -61,13 +60,15 @@ public class PostViewerActivity extends AppCompatActivity {
                             boolean reacted = document.contains("reacted") ? document.getBoolean("reacted") : false;
 
                             // Post 객체 생성
-                            Post post = new Post(username, postContent, imageResource, timestamp, commentCount, reactionCount, reacted);
+                            Post post = new Post(documentId,username, postContent, imageResource, timestamp, commentCount, reactionCount, reacted);
                             postList.add(post);
                         } catch (Exception e) {
                             e.printStackTrace(); // 데이터 변환 중 오류 처리
                         }
                     });
                     postAdapter.notifyDataSetChanged(); // RecyclerView 갱신
+
+                    recyclerView.scrollToPosition(startPosition);
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "게시글 데이터를 가져오는 데 실패했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();

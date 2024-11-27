@@ -69,6 +69,7 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
     public void onPostUploaded(Map<String, Object> newPost) {
         // 새로운 게시글 데이터를 postList에 추가
         Post post = new Post(
+                (String) newPost.get("documentId"),
                 (String) newPost.get("username"),
                 (String) newPost.get("postContent"),
                 (String) newPost.get("imageResource"),
@@ -113,11 +114,6 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
                 startActivity(intent);
             }
         });
-
-
-        // 게시글 업로드
-        Button uploadPostButton = findViewById(R.id.uploadPostButton);
-        uploadPostButton.setOnClickListener(v -> checkPermissionAndOpenGallery());
 
         // 팔로워 버튼 영역
         LinearLayout followersLayout = findViewById(R.id.followersLayout);
@@ -166,6 +162,7 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
 
         // RecyclerView 설정
         setupRecyclerView();
+
     }
 
     // 팔로워 화면 이동 메서드
@@ -228,6 +225,14 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
 
         postList = new ArrayList<>();
         postAdapter = new PostAdapter(this, postList, true);
+
+        // 클릭 리스너 설정
+        postAdapter.setOnPostClickListener(post -> {
+            int position = postList.indexOf(post);
+            Intent intent = new Intent(MyProfileActivity.this, PostViewerActivity.class);
+            intent.putExtra("position", position);
+            startActivity(intent);
+        });
         postRecyclerView.setAdapter(postAdapter);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -239,6 +244,7 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
                     postList.clear();
                     for (DocumentSnapshot document : queryDocumentSnapshots) {
                         try {
+                            String documentId = document.getString("documentId");
                             String username = document.getString("username");
                             String postContent = document.getString("postContent");
                             String imageResource = document.getString("imageResource");
@@ -251,7 +257,7 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
                             boolean reacted = document.contains("reacted") ? document.getBoolean("reacted") : false;
 
                             // Timestamp 객체를 그대로 전달
-                            postList.add(new Post(username, postContent, imageResource, timestampObject, commentCount, reactionCount, reacted));
+                            postList.add(new Post(documentId,username, postContent, imageResource, timestampObject, commentCount, reactionCount, reacted));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
