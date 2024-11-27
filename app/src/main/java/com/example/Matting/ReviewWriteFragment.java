@@ -1,150 +1,110 @@
 package com.example.Matting;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
-public class InfoFragment extends Fragment {
-    private TextView tvTitle, tvCategory, tvDescription, tvLink, tvRating, tvMapX, tvMapY;
-    private RecyclerView reviewRecyclerView;
-    private ReviewAdapter reviewAdapter;
-    private List<Review> reviewList = new ArrayList<>();
-    private FirebaseFirestore firestore;
-    private ImageView btnClose;
-    private Button btnReserve;
-
-    public static InfoFragment newInstance(String title, String category, String description, String link, double rating, int map_x, int map_y) {
-        InfoFragment fragment = new InfoFragment();
-        Bundle args = new Bundle();
-        args.putString("title", title);
-        args.putString("category", category);
-        args.putString("description", description);
-        args.putString("link", link);
-        args.putDouble("rating", rating);
-        args.putInt("map_x", map_x);
-        args.putInt("map_y", map_y);
-        fragment.setArguments(args);
-        return fragment;
-    }
+public class ReviewWriteFragment extends Fragment {
+    private EditText etReviewContent;
+    private Button btnSubmit;
+    private ImageButton btnClose;
+    private TextView tvRestaurant;
+    private String address;
+    private RatingBar ratingBar;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.info_fragment, container, false);
+        View view = inflater.inflate(R.layout.review_fragment, container, false);
 
-        // UI 초기화
-        tvTitle = view.findViewById(R.id.tvTitle);
-        tvCategory = view.findViewById(R.id.tvCategory);
-        tvDescription = view.findViewById(R.id.tvDescription);
-        tvLink = view.findViewById(R.id.tvLink);
-        tvRating = view.findViewById(R.id.tvRating);
-//        tvMapX = view.findViewById(R.id.tvMapX);
-//        tvMapY = view.findViewById(R.id.tvMapY);
-        reviewRecyclerView = view.findViewById(R.id.reviewRecyclerView);
-        btnClose = view.findViewById(R.id.btnClose); // 닫기 버튼 초기화
+        btnSubmit = view.findViewById(R.id.btnSubmit);
+        btnClose = view.findViewById(R.id.btnClose);
+        tvRestaurant = view.findViewById(R.id.tvRestaurant);
+        etReviewContent = view.findViewById(R.id.etReviewContent);
+        ratingBar = view.findViewById(R.id.ratingBar);
+        Log.d("ratingBar", String.valueOf(ratingBar));
 
-        // Firestore 초기화
-        firestore = FirebaseFirestore.getInstance();
-
-        // RecyclerView 설정
-        reviewAdapter = new ReviewAdapter(reviewList);
-        reviewRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        reviewRecyclerView.setAdapter(reviewAdapter);
-
-        // Arguments 확인
-        if (getArguments() != null) {
-            tvTitle.setText(getArguments().getString("title"));
-            tvCategory.setText(getArguments().getString("category"));
-            tvDescription.setText(getArguments().getString("description"));
-            tvLink.setText(getArguments().getString("link"));
-            tvRating.setText(String.valueOf(getArguments().getDouble("rating")));
-//            tvMapX.setText(String.valueOf(getArguments().getInt("map_x")));
-//            tvMapY.setText(String.valueOf(getArguments().getInt("map_y")));
-        } else {
-            Log.e("InfoFragment", "getArguments() returned null");
+        // 전달받은 데이터 수신
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            String restaurant = arguments.getString("restaurant");
+            address = arguments.getString("address");
+            if (restaurant != null) {
+                tvRestaurant.setText(restaurant); // 전달받은 title 값을 EditText에 설정
+            }
         }
 
-        // Firestore에서 리뷰 데이터 가져오기
-        fetchReviewsFromFirestore();
-
-        // 닫기 버튼 동작
-        btnClose.setOnClickListener(new View.OnClickListener() {
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // InfoFragment를 닫음
-                getParentFragmentManager().popBackStack();
+                String title = tvRestaurant.getText().toString();
+                String content = etReviewContent.getText().toString();
+                float rating = ratingBar.getRating();
 
-                // MainActivity의 메서드를 호출하여 BottomSheet 상태를 STATE_EXPANDED로 설정
-                AppCompatActivity activity = (AppCompatActivity) getActivity();
-                if (activity instanceof MainActivity) {
-                    ((MainActivity) activity).showBottomSheetExpanded();
+                if (!content.isEmpty()) {
+                    // Firebase Firestore에 리뷰 추가
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                    db.collection("review")
+                            .add(new Review(address, content, Timestamp.now(), rating, "tmp_id")) // username은 예시로 고정값 설정
+                            .addOnSuccessListener(documentReference -> {
+                                Toast.makeText(getActivity(), "리뷰가 저장되었습니다", Toast.LENGTH_SHORT).show();
+
+                                // 프래그먼트 종료 및 이전 프래그먼트로 돌아가기
+                                getParentFragmentManager().popBackStack();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getActivity(), "리뷰 저장에 실패했습니다", Toast.LENGTH_SHORT).show();
+                            });
                 } else {
-                    Log.e("BottomSheetDebug", "MainActivity instance not found");
+                    // 내용이 비어있을 경우 메시지 표시
+                    Toast.makeText(getActivity(), "내용을 입력하세요", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        btnReserve = view.findViewById(R.id.btnReserve);
-        btnReserve.setOnClickListener(new View.OnClickListener() {
+
+        btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // CreateCommunityFragment 인스턴스 생성
-                CreateCommunityFragment createCommunityFragment = new CreateCommunityFragment();
-                // 데이터 전달을 위한 Bundle 생성
-                Bundle bundle = new Bundle();
-                bundle.putString("restaurant", getArguments().getString("title")); // InfoFragment에서 받은 title 전달
-                bundle.putString("mapx", String.valueOf(getArguments().getInt("map_x")));
-                bundle.putString("mapy", String.valueOf(getArguments().getInt("map_y")));
-                Log.d("mapxy", "Info"+getArguments().getInt("map_x")+getArguments().getInt("map_y"));
-                createCommunityFragment.setArguments(bundle);
-                // Fragment 전환
-                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                transaction.replace(R.id.info_fragment_container, createCommunityFragment);
-                transaction.addToBackStack(null); // 뒤로 가기 스택에 추가
-                transaction.commit();
+                // CreateFragment를 닫고 BackStack에서 이전 프래그먼트(InfoFragment)를 다시 보여줌
+                getParentFragmentManager().popBackStack();
             }
         });
 
         return view;
     }
 
-    private void fetchReviewsFromFirestore() {
-        firestore.collection("review")
-                .whereEqualTo("address", getArguments().getString("description"))
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        reviewList.clear();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            Review review = document.toObject(Review.class);
-                            reviewList.add(review);
-                        }
-                        reviewAdapter.notifyDataSetChanged();
-                    } else {
-                        Log.e("FirestoreError", "리뷰 데이터를 가져오는 데 실패했습니다.");
-                    }
-                });
-    }
+
 
     @Override
     public void onResume() {

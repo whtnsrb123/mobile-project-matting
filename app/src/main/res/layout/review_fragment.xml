@@ -27,14 +27,16 @@
                 android:gravity="center_vertical"
                 android:paddingBottom="8dp">
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/btnClose"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_close"
+                    android:background="@android:color/transparent"
                     android:contentDescription="Close" />
 
                 <TextView
+                    android:id="@+id/tvRestaurant"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="식당 이름"
@@ -49,13 +51,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:numStars="5"
-                android:stepSize="1"
+                android:stepSize="0.5"
+                android:progressTint="#BB2649"
                 android:layout_marginTop="16dp"
                 android:layout_gravity="center_horizontal" />
 
             <!-- Review Input -->
             <EditText
-                android:id="@+id/reviewEditText"
+                android:id="@+id/etReviewContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="식당에 대한 솔직한 리뷰를 남겨주세요."
@@ -67,7 +70,6 @@
 
             <!-- Image Upload -->
             <LinearLayout
-                android:id="@+id/btnReview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -101,7 +103,7 @@
 
     <!-- Submit Button -->
     <Button
-        android:id="@+id/submitButton"
+        android:id="@+id/btnSubmit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="완료"
