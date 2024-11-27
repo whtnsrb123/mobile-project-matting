@@ -44,11 +44,12 @@
 
     <!-- Description -->
     <TextView
-        android:id="@+id/tvDescription"
+        android:id="@+id/tvAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tvTitleLayout"
         android:textSize="16sp"
+        android:text="식당주소"
         android:layout_marginTop="8dp"/>
 
     <!-- 별점 및 리뷰 수 -->
@@ -56,29 +57,28 @@
         android:id="@+id/tvReview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tvDescription"
+        android:layout_below="@id/tvAddress"
         android:orientation="horizontal"
         android:layout_marginTop="8dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="⭐ "
-            android:textSize="16sp"/>
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="⭐ "-->
+<!--            android:textSize="16sp"/>-->
 
-        <TextView
-            android:id="@+id/tvRating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="4.9"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/tvReviewCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" • 리뷰 724개"
-            android:textSize="16sp"
-            android:layout_marginStart="8dp" />
+<!--        <TextView-->
+<!--            android:id="@+id/tvRating"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="4.9"-->
+<!--            android:textSize="16sp" />-->
+<!--        <TextView-->
+<!--            android:id="@+id/tvReviewCount"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text=" • 리뷰 724개"-->
+<!--            android:textSize="16sp"-->
+<!--            android:layout_marginStart="8dp" />-->
     </LinearLayout>
 
     <!-- 식당 링크 -->
@@ -106,24 +106,37 @@
 
     </LinearLayout>
 
-    <!-- 닫기 버튼 -->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/reviewRecyclerView"
-        android:layout_width="302dp"
-        android:layout_height="152dp"
-        android:layout_below="@id/tvReview"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="13dp"
-        android:layout_marginTop="90dp" />
-
-    <ImageView
-        android:id="@+id/btnClose"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_close"
-        android:layout_gravity="end"
-        android:contentDescription="Close" />
+        android:layout_below="@id/tvLinkLayout"
+        android:layout_alignParentStart="true"
+        android:padding="8dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1">
+        <ImageView
+            android:id="@+id/btnClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_close"
+            android:layout_gravity="end"
+            android:contentDescription="Close" />
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+        <ImageView
+            android:id="@+id/btnReview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_reviews"
+            android:layout_gravity="end" />
+    </LinearLayout>
 
     <!-- 하단 예약 버튼 -->
     <Button

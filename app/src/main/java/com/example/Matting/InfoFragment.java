@@ -25,20 +25,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InfoFragment extends Fragment {
-    private TextView tvTitle, tvCategory, tvDescription, tvLink, tvRating, tvMapX, tvMapY;
+    private TextView tvTitle, tvCategory, tvAddress, tvLink, tvRating, tvMapX, tvMapY;
     private RecyclerView reviewRecyclerView;
     private ReviewAdapter reviewAdapter;
     private List<Review> reviewList = new ArrayList<>();
     private FirebaseFirestore firestore;
-    private ImageView btnClose;
+    private ImageView btnClose, btnReview;
     private Button btnReserve;
 
-    public static InfoFragment newInstance(String title, String category, String description, String link, double rating, int map_x, int map_y) {
+    public static InfoFragment newInstance(String title, String category, String address, String link, double rating, int map_x, int map_y) {
         InfoFragment fragment = new InfoFragment();
         Bundle args = new Bundle();
         args.putString("title", title);
         args.putString("category", category);
-        args.putString("description", description);
+        args.putString("address", address);
         args.putString("link", link);
         args.putDouble("rating", rating);
         args.putInt("map_x", map_x);
@@ -55,13 +55,15 @@ public class InfoFragment extends Fragment {
         // UI 초기화
         tvTitle = view.findViewById(R.id.tvTitle);
         tvCategory = view.findViewById(R.id.tvCategory);
-        tvDescription = view.findViewById(R.id.tvDescription);
+        tvAddress = view.findViewById(R.id.tvAddress);
         tvLink = view.findViewById(R.id.tvLink);
-        tvRating = view.findViewById(R.id.tvRating);
+//        tvRating = view.findViewById(R.id.tvRating);
 //        tvMapX = view.findViewById(R.id.tvMapX);
 //        tvMapY = view.findViewById(R.id.tvMapY);
         reviewRecyclerView = view.findViewById(R.id.reviewRecyclerView);
         btnClose = view.findViewById(R.id.btnClose); // 닫기 버튼 초기화
+        btnReserve = view.findViewById(R.id.btnReserve);
+        btnReview = view.findViewById(R.id.btnReview);
 
         // Firestore 초기화
         firestore = FirebaseFirestore.getInstance();
@@ -75,9 +77,9 @@ public class InfoFragment extends Fragment {
         if (getArguments() != null) {
             tvTitle.setText(getArguments().getString("title"));
             tvCategory.setText(getArguments().getString("category"));
-            tvDescription.setText(getArguments().getString("description"));
+            tvAddress.setText(getArguments().getString("address"));
             tvLink.setText(getArguments().getString("link"));
-            tvRating.setText(String.valueOf(getArguments().getDouble("rating")));
+//            tvRating.setText(String.valueOf(getArguments().getDouble("rating")));
 //            tvMapX.setText(String.valueOf(getArguments().getInt("map_x")));
 //            tvMapY.setText(String.valueOf(getArguments().getInt("map_y")));
         } else {
@@ -104,7 +106,25 @@ public class InfoFragment extends Fragment {
             }
         });
 
-        btnReserve = view.findViewById(R.id.btnReserve);
+        btnReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // CreateCommunityFragment 인스턴스 생성
+                ReviewWriteFragment reviewWriteFragment = new ReviewWriteFragment();
+                // 데이터 전달을 위한 Bundle 생성
+                Bundle bundle = new Bundle();
+                bundle.putString("restaurant", getArguments().getString("title")); // InfoFragment에서 받은 title 전달
+                bundle.putString("address", getArguments().getString("address"));
+                reviewWriteFragment.setArguments(bundle);
+
+                // Fragment 전환
+                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                transaction.replace(R.id.info_fragment_container, reviewWriteFragment);
+                transaction.addToBackStack(null); // 뒤로 가기 스택에 추가
+                transaction.commit();
+            }
+        });
+
         btnReserve.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,7 +150,7 @@ public class InfoFragment extends Fragment {
 
     private void fetchReviewsFromFirestore() {
         firestore.collection("review")
-                .whereEqualTo("address", getArguments().getString("description"))
+                .whereEqualTo("address", getArguments().getString("address"))
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -155,6 +175,7 @@ public class InfoFragment extends Fragment {
             BottomNavigationView bottomNavigationView = activity.findViewById(R.id.bottomNavigation);
             bottomNavigationView.setVisibility(View.GONE);
         }
+        fetchReviewsFromFirestore();
     }
 
     @Override

@@ -36,8 +36,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
         Main main = mainList.get(position);
         holder.tvTitle.setText(main.getTitle());
         holder.tvCategory.setText(main.getCategory());
-        holder.tvDescription.setText(main.getDescription());
-//        holder.tvLink.setText(main.getDescription());
+        holder.tvAddress.setText(main.getAddress());
         holder.tvRating.setText(String.valueOf(main.getRating()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -46,7 +45,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
                 InfoFragment infoFragment = InfoFragment.newInstance(
                         main.getTitle(),
                         main.getCategory(),
-                        main.getDescription(),
+                        main.getAddress(),
                         main.getLink(),
                         main.getRating(),
                         main.getMapX(),
@@ -75,13 +74,13 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
     }
 
     public static class MainViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvCategory, tvDescription, tvRating;
+        TextView tvTitle, tvCategory, tvAddress, tvRating;
 
         public MainViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
             tvCategory = itemView.findViewById(R.id.tvCategory);
-            tvDescription = itemView.findViewById(R.id.tvDescription);
+            tvAddress = itemView.findViewById(R.id.tvAddress);
             tvRating = itemView.findViewById(R.id.tvRating);
         }
     }
