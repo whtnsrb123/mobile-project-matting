@@ -3,16 +3,16 @@ package com.example.Matting;
 public class Main {
     private String title;
     private String category;
-    private String description;
+    private String address;
     private String link;
     private double rating;
     private int map_x;
     private int map_y;
 
-    public Main(String title, String category, String description, String link, double rating, int map_x, int map_y) {
+    public Main(String title, String category, String address, String link, double rating, int map_x, int map_y) {
         this.title = title;
         this.category = category;
-        this.description = description;
+        this.address = address;
         this.link = link;
         this.rating = rating;
         this.map_x = map_x;
@@ -27,8 +27,8 @@ public class Main {
         return category;
     }
 
-    public String getDescription() {
-        return description;
+    public String getAddress() {
+        return address;
     }
 
     public String getLink() {
