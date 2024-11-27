@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -32,10 +34,22 @@ public class CommunityActivity extends AppCompatActivity {
     private CommunityAdapter communityAdapter;
     private List<Community> communityList;
 
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_community);
+
+
+        //로그인 확인
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            // 로그인 페이지로 이동하고 결과를 기다림
+            Intent loginIntent = new Intent(CommunityActivity.this, User_LoginActivity.class);
+            startActivityForResult(loginIntent, 1001); // 1001은 요청 코드
+        }
 
         db = FirebaseFirestore.getInstance();
         communityRef = db.collection("community"); // Firebase Firestore의 "community" 컬렉션 참조
@@ -89,15 +103,13 @@ public class CommunityActivity extends AppCompatActivity {
                 } else if (itemId == R.id.nav_community) {
 
                     return true;
-                }
-                else if (itemId == R.id.nav_chat) {
+                } else if (itemId == R.id.nav_chat) {
                     // 채팅 액티비티로 이동
                     Intent feedIntent = new Intent(CommunityActivity.this, Chat_ChatlistActivity.class);
                     startActivity(feedIntent);
                     overridePendingTransition(0, 0);
                     return true;
-                }
-                else if (itemId == R.id.nav_mypage) {
+                } else if (itemId == R.id.nav_mypage) {
                     // 마이페이지 액티비티로 이동
                     Intent mypageIntent = new Intent(CommunityActivity.this, MyProfileActivity.class);
                     startActivity(mypageIntent);
@@ -111,7 +123,7 @@ public class CommunityActivity extends AppCompatActivity {
 
     private void addPostToFirestore(String title, String content, String location, String restaurant, String date, String time, String mapx, String mapy) {
         Map<String, Object> post = new HashMap<>();
-        post.put("title", title);
+        post.put("title", title.trim());
         post.put("content", content);
         post.put("location", location);
         post.put("restaurant", restaurant);
@@ -121,7 +133,7 @@ public class CommunityActivity extends AppCompatActivity {
         post.put("mapy", mapy);
 
 
-        Log.d("mapxy", "loadPostsFromFirestore"+mapx+mapy);
+        Log.d("mapxy", "loadPostsFromFirestore" + mapx + mapy);
 
         communityRef.add(post)
                 .addOnSuccessListener(documentReference -> {
