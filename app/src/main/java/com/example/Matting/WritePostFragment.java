@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -117,6 +118,7 @@ public class WritePostFragment extends Fragment {
                     getParentFragmentManager().popBackStack();
                 })
                 .addOnFailureListener(e -> {
+                    Log.e("WritePostFragment", "Upload failed", e);
                     Toast.makeText(getContext(), "게시글 업로드 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
