@@ -72,7 +72,7 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
     private FirebaseAuth mAuth;
 
     @Override
-    public void onPostUploaded(Map<String, Object> newPost) {
+        public void onPostUploaded(Map<String, Object> newPost) {
         // 새로운 게시글 데이터를 postList에 추가
         Post post = new Post(
                 (String) newPost.get("documentId"),

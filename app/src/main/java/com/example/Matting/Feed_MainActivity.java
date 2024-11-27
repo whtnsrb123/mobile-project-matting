@@ -23,6 +23,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,11 +38,20 @@ public class Feed_MainActivity extends AppCompatActivity {
     private ImageButton searchButton; // imageButton7을 위한 변수
     private FirebaseFirestore db;
     private SwipeRefreshLayout swipeRefreshLayout; // SwipeRefreshLayout 추가
-
+    private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed_main);
+
+        //로그인 확인
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            // 로그인 페이지로 이동하고 결과를 기다림
+            Intent loginIntent = new Intent(Feed_MainActivity.this, User_LoginActivity.class);
+            startActivityForResult(loginIntent, 1001); // 1001은 요청 코드
+        }
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
