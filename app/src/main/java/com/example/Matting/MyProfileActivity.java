@@ -26,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -76,6 +77,8 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
     private List<Post> postList;
     private TextView accountIdTextView;
     private TextView userNameTextView;
+    private SwipeRefreshLayout swipeRefreshLayout;
+
 
 
     private FirebaseAuth mAuth;
@@ -222,7 +225,11 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
                 return false;
             }
         });
-
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            setupRecyclerView(); // 최신 데이터를 가져오는 메서드 호출
+            swipeRefreshLayout.setRefreshing(false); // 새로고침 애니메이션 종료
+        });
         // RecyclerView 설정
         setupRecyclerView();
 
