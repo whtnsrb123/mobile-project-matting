@@ -203,23 +203,25 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
                     Intent homeIntent = new Intent(MyProfileActivity.this, MainActivity.class);
                     startActivity(homeIntent);
                     overridePendingTransition(0, 0);
+                    finish();
                     return true;
                 } else if (itemId == R.id.nav_feed) {
                     Intent feedIntent = new Intent(MyProfileActivity.this, Feed_MainActivity.class);
                     startActivity(feedIntent);
                     overridePendingTransition(0, 0);
+                    finish();
                     return true;
                 } else if (itemId == R.id.nav_chat) {
                     Intent chatIntent = new Intent(MyProfileActivity.this, Chat_ChatlistActivity.class);
                     startActivity(chatIntent);
                     overridePendingTransition(0, 0);
+                    finish();
                     return true;
                 } else if (itemId == R.id.nav_community) {
                     Intent communityIntent = new Intent(MyProfileActivity.this, CommunityActivity.class);
                     startActivity(communityIntent);
                     overridePendingTransition(0, 0);
-                    return true;
-                } else if (itemId == R.id.nav_mypage) {
+                    finish();
                     return true;
                 }
                 return false;

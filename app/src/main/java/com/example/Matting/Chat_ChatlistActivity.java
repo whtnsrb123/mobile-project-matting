@@ -107,27 +107,25 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
                     Intent homeIntent = new Intent(Chat_ChatlistActivity.this, MainActivity.class);
                     startActivity(homeIntent);
                     overridePendingTransition(0, 0);
+                    finish();
                     return true;
                 } else if (itemId == R.id.nav_feed) {
                     Intent feedIntent = new Intent(Chat_ChatlistActivity.this, Feed_MainActivity.class);
                     startActivity(feedIntent);
                     overridePendingTransition(0, 0);
+                    finish();
                     return true;
                 } else if (itemId == R.id.nav_community) {
                     Intent communityIntent = new Intent(Chat_ChatlistActivity.this, CommunityActivity.class);
                     startActivity(communityIntent);
                     overridePendingTransition(0, 0);
-                    return true;
-                } else if (itemId == R.id.nav_chat) {
-                    // 채팅 액티비티로 이동
-                    Intent chatIntent = new Intent(Chat_ChatlistActivity.this, Chat_ChatlistActivity.class);
-                    startActivity(chatIntent);
-                    overridePendingTransition(0, 0);
+                    finish();
                     return true;
                 } else if (itemId == R.id.nav_mypage) {
                     Intent mypageIntent = new Intent(Chat_ChatlistActivity.this, MyProfileActivity.class);
                     startActivity(mypageIntent);
                     overridePendingTransition(0, 0);
+                    finish();
                     return true;
                 }
                 return false;
