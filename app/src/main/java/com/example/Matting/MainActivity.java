@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
@@ -74,14 +75,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private ImageView showBottomSheetButton;
     private FirebaseAuth mAuth;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-
+        bottomNavigationView = findViewById(R.id.bottomNavigation);
 
         //로그인 확인
         mAuth = FirebaseAuth.getInstance();
@@ -303,15 +304,54 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (locationSource.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
-            if (locationSource.isActivated()) {
-                getLastKnownLocationAndUpdateMap(); // 권한 승인 후 위치 가져오기
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // 권한이 허용되었을 때 지도 초기화
+                showMap(); // 지도를 다시 표시
+                initMap(); // 지도 초기화 메서드 호출
             } else {
-                Toast.makeText(this, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
+                // 권한 거부 시 기본 위치 사용 및 지도 숨기기
+                useDefaultLocation();
+                hideMap();
             }
-            return;
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    // 기본 위치 사용
+    private void useDefaultLocation() {
+        double defaultLat = 37.5665; // 서울 위도
+        double defaultLon = 126.9780; // 서울 경도
+        updateMapCenter(defaultLat, defaultLon);
+    }
+
+    // 지도 숨기기
+    private void hideMap() {
+        View mapFragmentContainer = findViewById(R.id.map_fragment_main);
+        if (mapFragmentContainer != null) {
+            mapFragmentContainer.setVisibility(View.GONE); // 지도를 숨김
+        }
+    }
+
+    // 지도 다시 표시
+    private void showMap() {
+        View mapFragmentContainer = findViewById(R.id.map_fragment_main);
+        if (mapFragmentContainer != null) {
+            mapFragmentContainer.setVisibility(View.VISIBLE); // 지도를 다시 표시
+        }
+    }
+
+    // 위치 권한 허용 시 액티비티 재시작
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @NonNull Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                // 권한 허용 시 액티비티 재시작
+                recreate(); // 현재 액티비티 다시 로드
+            }
+        }
     }
 
     @Override
@@ -350,13 +390,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 //                getReverseGeocode(latitude, longitude);
             } else {
-                Log.d("LocationDebug", "현재 위치를 가져올 수 없음. 기본 위치(서울)로 설정");
-                // 서울 중심 좌표로 지도 설정
-                updateMapCenter(37.5665, 126.9780); // 서울 중심 좌표
+                Log.d("LocationDebug", "현재 위치를 가져올 수 없음. 기본 위치로 설정");
+                useDefaultLocation();
             }
         } else {
-            // 권한 요청
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+            // 권한 없음: 기본 위치 사용 및 지도 숨김
+            useDefaultLocation();
+            hideMap();
         }
     }
 
@@ -538,6 +578,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void showBottomSheetExpanded() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // 위치 권한 확인
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // 권한이 없으면 요청
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST_CODE
+            );
+        } else {
+            // 권한이 이미 허용되었으면 지도 초기화
+            showMap(); // 지도 표시
+            getLastKnownLocationAndUpdateMap(); // 현재 위치 가져오기 및 지도 업데이트
+        }
     }
 
 }
