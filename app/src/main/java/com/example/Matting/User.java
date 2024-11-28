@@ -1,6 +1,7 @@
 package com.example.Matting;
 
 import android.content.Context;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
 
@@ -32,7 +33,11 @@ public class User {
             dbRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    nickName = snapshot.getValue(String.class);
+                    if (snapshot.exists()) {
+                        nickName = snapshot.getValue(String.class);
+                    } else {
+                        nickName = "Unknown"; // 기본값 설정
+                    }
                 }
 
                 @Override
@@ -40,6 +45,14 @@ public class User {
                     // 에러 처리
                 }
             });
+        } else {
+            // 로그인 페이지로 이동하고 결과를 기다림
+            Intent loginIntent = new Intent(context, User_LoginActivity.class);
+            context.startActivity(loginIntent);
+            // 현재 액티비티가 어떤 액티비티이든 종료
+            if (context instanceof android.app.Activity) {
+                ((android.app.Activity) context).finish();
+            }
         }
     }
 
