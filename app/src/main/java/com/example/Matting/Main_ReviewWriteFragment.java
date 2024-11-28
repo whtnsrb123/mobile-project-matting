@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,6 +33,7 @@ public class Main_ReviewWriteFragment extends Fragment {
     private String address, email, username;
     private RatingBar ratingBar;
 
+    private User user;
     private FirebaseAuth mAuth;
 
     @Nullable
@@ -41,6 +43,8 @@ public class Main_ReviewWriteFragment extends Fragment {
 
         // FirebaseAuth 객체 생성
         mAuth = FirebaseAuth.getInstance();
+        user = new User(getActivity());
+
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
             // 로그인되지 않은 경우, 로그인 페이지로 이동
@@ -48,7 +52,8 @@ public class Main_ReviewWriteFragment extends Fragment {
             startActivity(loginIntent);
         } else {
             // 로그인된 사용자 정보 사용
-            email = currentUser.getEmail();
+            Log.d("nickname", user.getUserId());
+            email = user.getEmail();
 //            String userId = currentUser.getUid();
             if (email != null) {
                 username = extractIdFromEmail(email);
