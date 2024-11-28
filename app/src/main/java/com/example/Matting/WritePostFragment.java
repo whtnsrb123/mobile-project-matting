@@ -120,6 +120,7 @@ public class WritePostFragment extends Fragment {
         db.collection("posts")
                 .add(postMap)
                 .addOnSuccessListener(documentReference -> {
+
                     Toast.makeText(getContext(), "게시글이 업로드되었습니다.", Toast.LENGTH_SHORT).show();
 
                     // 성공 시 프래그먼트 종료
