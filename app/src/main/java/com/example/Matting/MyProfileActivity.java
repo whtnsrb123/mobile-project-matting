@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -299,7 +300,12 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        // 현재 로그인된 사용자의 ID 가져오기
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        String currentUserId = auth.getCurrentUser().getUid();
+
         db.collection("posts")
+                .whereEqualTo("username", currentUserId)
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -326,7 +332,10 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
                     }
                     postAdapter.notifyDataSetChanged();
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "데이터를 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "쿼리 실패", e); // 실패 원인 출력
+                    Toast.makeText(this, "데이터를 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                });
     }
 
 
