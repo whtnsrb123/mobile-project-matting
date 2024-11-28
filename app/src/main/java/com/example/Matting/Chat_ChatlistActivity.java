@@ -7,26 +7,24 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +32,7 @@ import java.util.List;
 public class Chat_ChatlistActivity extends AppCompatActivity {
     private ListView listViewChatRooms;
     private List<String> chatRoomList;
-    private ArrayAdapter<String> adapter;
+    private Chat_ChatRoomAdapter adapter;
     private User user;
     private FirebaseAuth mAuth;
 
@@ -58,16 +56,19 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
 
         listViewChatRooms = findViewById(R.id.listViewChatRooms);
         chatRoomList = new ArrayList<>();
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, chatRoomList);
+        adapter = new Chat_ChatRoomAdapter(this, chatRoomList);
         listViewChatRooms.setAdapter(adapter);
 
         // Firebase에서 채팅방 목록을 로드
         FirebaseDatabase.getInstance().getReference("users").child(user.getUserId()).child("chats").addValueEventListener(new ValueEventListener() {
-            @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
                 chatRoomList.clear();
                 for (DataSnapshot chatRoomSnapshot : snapshot.getChildren()) {
                     String chatRoomId = chatRoomSnapshot.getValue(String.class);
-                    if (chatRoomId != null) {chatRoomList.add(chatRoomId); }
+                    if (chatRoomId != null) {
+                        chatRoomList.add(chatRoomId);
+                    }
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -90,9 +91,6 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
 
         ImageButton addButton = findViewById(R.id.btn_add_chat);
         addButton.setOnClickListener(v -> showAddChatRoomDialog());
@@ -154,5 +152,4 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
 
         builder.show();
     }
-
 }
