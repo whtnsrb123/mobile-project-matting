@@ -2,6 +2,7 @@ package com.example.Matting;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,20 +37,12 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
         holder.tvInfo.setText(community.getInfo());
         holder.tvRestaurant.setText(community.getRestaurant());
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, Community_DetailActivity.class);
-                intent.putExtra("title", community.getTitle());
-                intent.putExtra("content", community.getContent());
-                intent.putExtra("restaurant", community.getRestaurant());
-                intent.putExtra("info", community.getInfo());
-                intent.putExtra("date", community.getDate());
-                intent.putExtra("time", community.getTime());
-                intent.putExtra("mapx", community.getMapX());
-                intent.putExtra("mapy", community.getMapY());
-                context.startActivity(intent);
-            }
+        // 항목 클릭 시 documentId 전달
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, Community_DetailActivity.class);
+            intent.putExtra("documentId", community.getDocumentId()); // documentId 전달
+            context.startActivity(intent);
+            Log.d("getDocumentId", "CommunityAdapter: "+community.getDocumentId());
         });
     }
 

@@ -41,7 +41,6 @@ public class CommunityActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_community);
 
-
         //로그인 확인
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -66,18 +65,6 @@ public class CommunityActivity extends AppCompatActivity {
 
         // Intent에서 새로운 게시물 데이터 가져오기
         Intent intent = getIntent();
-        String newTitle = intent.getStringExtra("title");
-        String newContent = intent.getStringExtra("content");
-        String newLocation = intent.getStringExtra("location");
-        String newRestaurant = intent.getStringExtra("restaurant");
-        String newDate = intent.getStringExtra("date");
-        String newTime = intent.getStringExtra("time");
-        String newMapX = intent.getStringExtra("mapx");
-        String newMapY = intent.getStringExtra("mapy");
-
-        if (newTitle != null && newContent != null) {
-            addPostToFirestore(newTitle, newContent, newLocation, newRestaurant, newDate, newTime, newMapX, newMapY);
-        }
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
@@ -122,34 +109,13 @@ public class CommunityActivity extends AppCompatActivity {
         });
     }
 
-    private void addPostToFirestore(String title, String content, String location, String restaurant, String date, String time, String mapx, String mapy) {
-        Map<String, Object> post = new HashMap<>();
-        post.put("title", title.trim());
-        post.put("content", content);
-        post.put("location", location);
-        post.put("restaurant", restaurant);
-        post.put("date", date);
-        post.put("time", time);
-        post.put("mapx", mapx);
-        post.put("mapy", mapy);
-
-
-        Log.d("mapxy", "loadPostsFromFirestore" + mapx + mapy);
-
-        communityRef.add(post)
-                .addOnSuccessListener(documentReference -> {
-                    Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
-                    loadPostsFromFirestore();
-                })
-                .addOnFailureListener(e -> Log.w(TAG, "Error adding document", e));
-    }
-
     private void loadPostsFromFirestore() {
         communityRef.get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         communityList.clear(); // 기존 리스트 비우기
                         for (QueryDocumentSnapshot document : task.getResult()) {
+                            String documentId = document.getId();
                             String title = document.getString("title");
                             String content = document.getString("content");
                             String location = document.getString("location");
@@ -158,8 +124,9 @@ public class CommunityActivity extends AppCompatActivity {
                             String time = document.getString("time");
                             String mapx = document.getString("mapx");
                             String mapy = document.getString("mapy");
-                            Log.d("mapxy", "loadPostsFromFirestore");
-                            communityList.add(new Community(title, content, location, restaurant, date, time, mapx, mapy)); // Firestore에서 불러온 데이터를 리스트에 추가
+                            String userid = document.getString("userid");
+                            Log.d("userid", userid);
+                            communityList.add(new Community(documentId, title, content, location, restaurant, date, time, mapx, mapy, userid)); // Firestore에서 불러온 데이터를 리스트에 추가
                         }
                         communityAdapter.notifyDataSetChanged(); // RecyclerView 업데이트
                     } else {
