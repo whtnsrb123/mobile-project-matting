@@ -47,7 +47,7 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
     private ArrayList<Community_RecyclerViewItem> mList;
     private Community_DetailRecyclerViewAdapter mCommunityDetailRecyclerViewAdapter;
 
-    private String documentId, title, content, restaurant, location, date, time;
+    private String documentId, title, content, userid, restaurant, location, date, time;
 
     private Marker marker = new Marker();
 
@@ -74,6 +74,7 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
                         title = document.getString("title");
                         content = document.getString("content");
                         location = document.getString("location");
+                        userid = document.getString("userid");
                         date = document.getString("date");
                         time = document.getString("time");
                         restaurant = document.getString("restaurant");
@@ -99,6 +100,7 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
         TextView meetDate = findViewById(R.id.date);
         TextView meetTime = findViewById(R.id.time);
         TextView tvLocation = findViewById(R.id.tvLocation);
+        TextView tvId = findViewById(R.id.go_profile);
 
         restaurantName.setText(restaurant);
         postTitle.setText(title);
@@ -106,6 +108,7 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
         meetDate.setText(date);
         meetTime.setText(time);
         tvLocation.setText(location);
+        tvId.setText(userid);
 
         // 지도 초기화
         initMap();

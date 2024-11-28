@@ -19,19 +19,43 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Main_CreateMattingFragment extends Fragment {
     private EditText etTitle, etContent, etLocation, etRestaurant, etDate, etTime;
     private Button btnCreatePost, dateButton, timeButton;
     private ImageButton closeButton;
-    private String mapx, mapy;
+    private String mapx, mapy, userId;
+
+    private User user;
+    private FirebaseAuth mAuth;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_community, container, false);
+
+        //로그인 확인
+        mAuth = FirebaseAuth.getInstance();
+        user = new User(getActivity());
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            // 로그인되지 않은 경우, 로그인 페이지로 이동
+            Intent loginIntent = new Intent(getActivity(), User_LoginActivity.class);
+            startActivity(loginIntent);
+        } else {
+            // 로그인된 사용자 정보 사용
+            Log.d("nickname", user.getUserId());
+            userId = user.getUserId();
+        }
 
         etTitle = view.findViewById(R.id.etTitle);
         etContent = view.findViewById(R.id.etContent);
@@ -71,23 +95,34 @@ public class Main_CreateMattingFragment extends Fragment {
                 String time = etTime.getText().toString();
 
                 if (!title.isEmpty() && !content.isEmpty() && !date.isEmpty() && !time.isEmpty()) {
-                    // CommunityActivity로 데이터 전달
-                    Intent intent = new Intent(getActivity(), CommunityActivity.class);
+                    // Firestore에 데이터 저장
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    CollectionReference communityRef = db.collection("community");
 
-                    intent.putExtra("title", title);
-                    intent.putExtra("content", content);
-                    intent.putExtra("location", location);
-                    intent.putExtra("restaurant", restaurant);
-                    intent.putExtra("date", date);
-                    intent.putExtra("time", time);
-                    intent.putExtra("mapx", mapx);
-                    intent.putExtra("mapy", mapy);
+                    Map<String, Object> post = new HashMap<>();
+                    post.put("title", title);
+                    post.put("content", content);
+                    post.put("location", location);
+                    post.put("restaurant", restaurant);
+                    post.put("date", date);
+                    post.put("time", time);
+                    post.put("mapx", mapx);
+                    post.put("mapy", mapy);
+                    post.put("userid", userId); // 현재 사용자 ID 추가
 
-                    Log.d("mapxy", "putExtra"+mapx+mapy);
+                    communityRef.add(post)
+                            .addOnSuccessListener(documentReference -> {
+                                Toast.makeText(getActivity(), "게시물이 저장되었습니다.", Toast.LENGTH_SHORT).show();
 
-                    // 스택을 초기화하고 새로운 액티비티를 시작하기 위한 플래그 설정
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
+                                // CommunityActivity로 이동
+                                Intent intent = new Intent(getActivity(), CommunityActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getActivity(), "게시물 저장에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                Log.w("Firestore", "Error adding document", e);
+                            });
                 } else {
                     // 제목 또는 내용이 비어있을 경우 메시지 표시
                     Toast.makeText(getActivity(), "제목, 내용, 날짜, 시간은 필수 입력 사항입니다.", Toast.LENGTH_SHORT).show();
