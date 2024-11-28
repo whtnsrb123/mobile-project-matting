@@ -186,24 +186,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Intent feedIntent = new Intent(MainActivity.this, Feed_MainActivity.class);
                     startActivity(feedIntent);
                     overridePendingTransition(0, 0);
+                    finish();
                     return true;
                 } else if (itemId == R.id.nav_community) {
                     // 커뮤니티 액티비티로 이동
                     Intent communityIntent = new Intent(MainActivity.this, CommunityActivity.class);
                     startActivity(communityIntent);
                     overridePendingTransition(0, 0);
+                    finish();
                     return true;
                 } else if (itemId == R.id.nav_chat) {
                     // 챗 액티비티로 이동
                     Intent communityIntent = new Intent(MainActivity.this, Chat_ChatlistActivity.class);
                     startActivity(communityIntent);
                     overridePendingTransition(0, 0);
+                    finish();
                     return true;
                 } else if (itemId == R.id.nav_mypage) {
                     // 마이페이지 액티비티로 이동
                     Intent mypageIntent = new Intent(MainActivity.this, MyProfileActivity.class);
                     startActivity(mypageIntent);
                     overridePendingTransition(0, 0);
+                    finish();
                     return true;
                 }
                 return false;
