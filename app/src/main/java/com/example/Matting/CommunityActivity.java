@@ -133,9 +133,6 @@ public class CommunityActivity extends AppCompatActivity {
         post.put("mapx", mapx);
         post.put("mapy", mapy);
 
-
-        Log.d("mapxy", "loadPostsFromFirestore" + mapx + mapy);
-
         communityRef.add(post)
                 .addOnSuccessListener(documentReference -> {
                     Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
@@ -150,6 +147,7 @@ public class CommunityActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         communityList.clear(); // 기존 리스트 비우기
                         for (QueryDocumentSnapshot document : task.getResult()) {
+                            String documentId = document.getId();
                             String title = document.getString("title");
                             String content = document.getString("content");
                             String location = document.getString("location");
@@ -159,7 +157,7 @@ public class CommunityActivity extends AppCompatActivity {
                             String mapx = document.getString("mapx");
                             String mapy = document.getString("mapy");
                             Log.d("mapxy", "loadPostsFromFirestore");
-                            communityList.add(new Community(title, content, location, restaurant, date, time, mapx, mapy)); // Firestore에서 불러온 데이터를 리스트에 추가
+                            communityList.add(new Community(documentId, title, content, location, restaurant, date, time, mapx, mapy)); // Firestore에서 불러온 데이터를 리스트에 추가
                         }
                         communityAdapter.notifyDataSetChanged(); // RecyclerView 업데이트
                     } else {

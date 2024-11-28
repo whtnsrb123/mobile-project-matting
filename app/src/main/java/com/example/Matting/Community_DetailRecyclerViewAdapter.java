@@ -2,6 +2,8 @@ package com.example.Matting;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,10 +32,10 @@ public class Community_DetailRecyclerViewAdapter extends RecyclerView.Adapter<Co
         }
     }
 
-    private ArrayList<RecyclerViewItem> mList = null;
+    private ArrayList<Community_RecyclerViewItem> mList = null;
     private Context mContext;
 
-    public Community_DetailRecyclerViewAdapter(ArrayList<RecyclerViewItem> mList, Context context) {
+    public Community_DetailRecyclerViewAdapter(ArrayList<Community_RecyclerViewItem> mList, Context context) {
         this.mList = mList;
         this.mContext = context;
     }
@@ -53,7 +55,7 @@ public class Community_DetailRecyclerViewAdapter extends RecyclerView.Adapter<Co
     // position에 해당하는 데이터를 뷰홀더의 아이템뷰에 표시
     @Override
     public void onBindViewHolder(@NonNull Community_DetailRecyclerViewAdapter.ViewHolder holder, int position) {
-        RecyclerViewItem item = mList.get(position);
+        Community_RecyclerViewItem item = mList.get(position);
 
         holder.imgView_item.setImageResource(R.drawable.food);   // 사진 없어서 기본 파일로 이미지 띄움
         holder.txt_main.setText(item.getMainText());
@@ -64,7 +66,11 @@ public class Community_DetailRecyclerViewAdapter extends RecyclerView.Adapter<Co
             @Override
             public void onClick(View v) {
                 // 팝업창 표시
-                setupClickListenerForPopup(item.getMainText(), item.getSubText());
+//                setupClickListenerForPopup(item.getMainText(), item.getSubText());
+                Intent intent = new Intent(v.getContext(), Community_DetailActivity.class);
+                intent.putExtra("documentId", item.getDocumentId()); // Firestore documentId 전달
+                Log.d("getDocumentId", item.getDocumentId());
+                v.getContext().startActivity(intent);
             }
         });
 

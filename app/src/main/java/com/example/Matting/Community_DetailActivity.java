@@ -20,6 +20,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.naver.maps.geometry.LatLng;
@@ -38,10 +44,10 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
     private NaverMap naverMap;
 
     private RecyclerView mRecyclerView;
-    private ArrayList<RecyclerViewItem> mList;
+    private ArrayList<Community_RecyclerViewItem> mList;
     private Community_DetailRecyclerViewAdapter mCommunityDetailRecyclerViewAdapter;
 
-    private String title, content, restaurant, location, date, time;
+    private String documentId, title, content, restaurant, location, date, time;
 
     private Marker marker = new Marker();
 
@@ -50,14 +56,56 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        title = getIntent().getStringExtra("title");
-        content = getIntent().getStringExtra("content");
-        restaurant = getIntent().getStringExtra("restaurant");
-        location = getIntent().getStringExtra("info");
-        date = getIntent().getStringExtra("date");
-        time = getIntent().getStringExtra("time");
-        cur_lon = Double.parseDouble(getIntent().getStringExtra("mapx")) / 10_000_000.0;
-        cur_lat = Double.parseDouble(getIntent().getStringExtra("mapy")) / 10_000_000.0;
+        // Intent에서 documentId 가져오기
+        documentId = getIntent().getStringExtra("documentId");
+        Log.d("getDocumentId", "Community_DetailActivity: "+documentId);
+
+        // Firestore에서 데이터 가져오기
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("community").document(documentId);
+
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d("getDocumentId", "DocumentSnapshot data: " + document.getData());
+                        title = document.getString("title");
+                        content = document.getString("content");
+                        location = document.getString("location");
+                        date = document.getString("date");
+                        time = document.getString("time");
+                        restaurant = document.getString("restaurant");
+                        cur_lon = document.getString("mapx") != null ? Double.parseDouble(document.getString("mapx")) / 10_000_000.0 : 0.0;
+                        cur_lat = document.getString("mapy") != null ? Double.parseDouble(document.getString("mapy")) / 10_000_000.0 : 0.0;
+
+                        updateUI();
+
+                    } else {
+                        Log.d("getDocumentId", "No such document");
+                    }
+                } else {
+                    Log.d("getDocumentId", "get failed with ", task.getException());
+                }
+            }
+        });
+    }
+
+    private void updateUI() {
+        TextView restaurantName = findViewById(R.id.restaurant_name);
+        TextView postTitle = findViewById(R.id.post_title);
+        TextView postContent = findViewById(R.id.post_content);
+        TextView meetDate = findViewById(R.id.date);
+        TextView meetTime = findViewById(R.id.time);
+        TextView tvLocation = findViewById(R.id.tvLocation);
+
+        restaurantName.setText(restaurant);
+        postTitle.setText(title);
+        postContent.setText(content);
+        meetDate.setText(date);
+        meetTime.setText(time);
+        tvLocation.setText(location);
 
         // 지도 초기화
         initMap();
@@ -82,20 +130,6 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
         setupClickListenerForPopup(goChat, "채팅", "채팅 페이지로 이동합니다.");
         goChat.setOnClickListener(v ->  newCommunityChat());
 
-        // 게시글, 본문
-        TextView restaurantName = findViewById(R.id.restaurant_name);
-        TextView postTitle = findViewById(R.id.post_title);
-        TextView postContent = findViewById(R.id.post_content);
-        TextView meetDate = findViewById(R.id.date);
-        TextView meetTime = findViewById(R.id.time);
-        TextView tvLocation = findViewById(R.id.tvLocation);
-        restaurantName.setText(restaurant);
-        postTitle.setText(title);
-        postContent.setText(content);
-        meetDate.setText(date);
-        meetTime.setText(time);
-        tvLocation.setText(location);
-
         // 뒤로가기
         ImageButton goBackButton = findViewById(R.id.go_back);
         goBackButton.setOnClickListener(new View.OnClickListener() {
@@ -113,15 +147,9 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
                 showFullScreenImage(R.drawable.food);  // 확대할 이미지 리소스를 전달
             }
         });
+
     }
 
-    // 맵 위치 업데이트 메서드
-    private void updateMapLocation() {
-        if (naverMap != null) {
-            CameraPosition cameraPosition = new CameraPosition(new LatLng(cur_lat, cur_lon), 13);
-            naverMap.setCameraPosition(cameraPosition);
-        }
-    }
 
     // 지도 초기화 메서드
     private void initMap() {
@@ -146,7 +174,7 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
         //위치 및 각도 조정
         CameraPosition cameraPosition = new CameraPosition(
                 new LatLng(cur_lat, cur_lon),   // 위치 지정
-                15,                           // 줌 레벨
+                16,                           // 줌 레벨
                 0,                          // 기울임 각도
                 0                           // 방향
         );
@@ -186,13 +214,19 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
                     if (task.isSuccessful()) {
                         mList.clear(); // 기존 데이터 초기화
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            // Firestore 데이터를 RecyclerViewItem으로 변환
+                            String docId = document.getId(); // documentId 가져오기
                             String otherTitle = document.getString("title");
-                            if (!otherTitle.equals(title)) { // 현재 게시물 제목과 다른 경우만 추가
-                                String date = document.getString("date");
-                                addItem("iconName", otherTitle, date); // 데이터 추가
-                            } // 데이터 추가
+                            String date = document.getString("date");
+
+                            if (!docId.equals(documentId)) { // 현재 게시물 제외
+                                Community_RecyclerViewItem item = new Community_RecyclerViewItem();
+                                item.setDocumentId(docId);
+                                item.setMainText(otherTitle);
+                                item.setSubText(date);
+                                mList.add(item);
+                            }
                         }
+
                         // 어댑터에 변경 알림
                         mCommunityDetailRecyclerViewAdapter = new Community_DetailRecyclerViewAdapter(mList, this);
                         mRecyclerView.setAdapter(mCommunityDetailRecyclerViewAdapter);
@@ -203,10 +237,9 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
                 });
     }
 
-
     // RecyclerView 항목 추가 메서드
     public void addItem(String imgName, String mainText, String subText){
-        RecyclerViewItem item = new RecyclerViewItem();
+        Community_RecyclerViewItem item = new Community_RecyclerViewItem();
 
         item.setImgName(imgName);
         item.setMainText(mainText);

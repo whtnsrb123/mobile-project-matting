@@ -4,9 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Community implements Parcelable {
-    private String title, content, info, restaurant, date, time, mapx, mapy;
+    private String documentId, title, content, info, restaurant, date, time, mapx, mapy;
 
-    public Community(String title, String content, String info, String restaurant, String date, String time, String mapx, String mapy) {
+    public Community(String documentId, String title, String content, String info, String restaurant, String date, String time, String mapx, String mapy) {
+        this.documentId = documentId;
         this.title = title;
         this.content = content;
         this.info = info;
@@ -39,6 +40,15 @@ public class Community implements Parcelable {
             return new Community[size];
         }
     };
+
+    // Getter 및 Setter
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
+    }
 
     public String getTitle() {
         return title;
