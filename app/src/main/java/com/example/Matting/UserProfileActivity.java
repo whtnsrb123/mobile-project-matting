@@ -6,17 +6,16 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import androidx.appcompat.widget.Toolbar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -54,8 +53,6 @@ public class UserProfileActivity extends AppCompatActivity {
         // TextView 초기화
         userNameTextView = findViewById(R.id.user_name);
 
-
-
         // postList 초기화 및 RecyclerView 설정
         postList = new ArrayList<>();
         setupRecyclerView();
@@ -71,7 +68,12 @@ public class UserProfileActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); // 뒤로가기 버튼 활성화
         getSupportActionBar().setTitle(""); // 액션바 제목 비우기 또는 원하는 값으로 설정
+
+        // 추가된 팔로워 및 팔로잉 버튼 동작 설정
+        setupFollowButtons();
+
     }
+
     // 뒤로가기 버튼 동작 처리
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -81,8 +83,6 @@ public class UserProfileActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 
     private void fetchUserData() {
         DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
@@ -154,4 +154,25 @@ public class UserProfileActivity extends AppCompatActivity {
         postAdapter = new PostAdapter(this, postList, true);
         postRecyclerView.setAdapter(postAdapter);
     }
+
+    // 팔로워 및 팔로잉 버튼 클릭 이벤트 추가
+    private void setupFollowButtons() {
+        LinearLayout followersLayout = findViewById(R.id.followersLayout);
+        LinearLayout followingLayout = findViewById(R.id.followingLayout);
+
+        // 팔로워 버튼 클릭
+        followersLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(UserProfileActivity.this, FollowersActivity.class);
+            intent.putExtra("userId", userId); // 현재 프로필의 userId 전달
+            startActivity(intent);
+        });
+
+        // 팔로잉 버튼 클릭
+        followingLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(UserProfileActivity.this, FollowingActivity.class);
+            intent.putExtra("userId", userId); // 현재 프로필의 userId 전달
+            startActivity(intent);
+        });
+    }
+
 }
