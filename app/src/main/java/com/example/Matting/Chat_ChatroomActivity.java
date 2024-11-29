@@ -51,6 +51,7 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
         listViewMessages = findViewById(R.id.listViewMessages);
         editTextMessage = findViewById(R.id.editTextMessage);
         buttonSend = findViewById(R.id.buttonSend);
+        usercnt = findViewById(R.id.usercnt);
 
         user = new User(this);
         // Intent로부터 채팅방 ID를 가져옴
@@ -60,8 +61,12 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
         db = FirebaseDatabase.getInstance().getReference().child("chatroomlist").child(chatroomId);
         db.child("id").setValue(chatroomId);
 
-// 'users' 노드의 값을 가져오기 위해 addListenerForSingleValueEvent 사용
-        db.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+        chatMessageList = new ArrayList<>();
+        chatMessageAdapter = new Chat_MessageAdapter(this, chatMessageList, user.getUserId());
+        listViewMessages.setAdapter(chatMessageAdapter);
+
+        // users 노드의 변경 사항을 실시간으로 감지
+        db.child("users").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -74,21 +79,15 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
                         }
                     }
                     // userList를 사용하여 추가 작업 수행
-                    // 예: userList를 로그에 출력
-                    usercnt = findViewById(R.id.usercnt);
-                    usercnt.setText(String.valueOf(userList.toArray().length));
+                    usercnt.setText(String.valueOf(userList.size()));
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                // 에러 처리
             }
         });
-
-
-        chatMessageList = new ArrayList<>();
-        chatMessageAdapter = new Chat_MessageAdapter(this, chatMessageList, user.getUserId());
-        listViewMessages.setAdapter(chatMessageAdapter);
 
         buttonSend.setOnClickListener(v -> {
             String messageText = editTextMessage.getText().toString();
@@ -133,6 +132,7 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                // 에러 처리
             }
         });
     }
