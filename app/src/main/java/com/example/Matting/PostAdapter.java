@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +59,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         Post post = postList.get(position);
 
+
+
         holder.itemView.setOnClickListener(v -> {
             if (onPostClickListener != null) {
                 onPostClickListener.onPostClick(post);
@@ -74,6 +77,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 holder.postImage.setImageResource(R.drawable.mosu);
             }
         } else {
+            // deleteButton null 확인
+            if (holder.deleteButton == null) {
+                Log.e("PostAdapter", "Delete button is not initialized properly.");
+            }
+            holder.deleteButton.setOnClickListener(v -> {
+                if (context instanceof PostViewerActivity) {
+                    ((PostViewerActivity) context).confirmDeletePost(post, position);
+                } else {
+                    Log.e("PostAdapter", "Context is not PostViewerActivity");
+                }
+            });
             // 전체 게시물 표시 모드
             if (post.getUsername() != null) {
                 holder.username.setText(post.getUsername());
@@ -168,6 +182,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         TextView username;
         TextView postDescription;
         TextView postTimestamp;
+        ImageView deleteButton; // 삭제 버튼 추가
 
         // 추가된 뷰 요소
         ImageView reactionButton;
@@ -179,7 +194,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             super(itemView);
             postImage = itemView.findViewById(R.id.postImage);
 
+
             if (!imageOnlyMode) {
+                deleteButton = itemView.findViewById(R.id.deleteButton);
                 username = itemView.findViewById(R.id.username);
                 postDescription = itemView.findViewById(R.id.postDescription);
                 postTimestamp = itemView.findViewById(R.id.postTimestamp);
