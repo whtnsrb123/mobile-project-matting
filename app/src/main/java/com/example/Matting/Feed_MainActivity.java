@@ -23,8 +23,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,20 +36,11 @@ public class Feed_MainActivity extends AppCompatActivity {
     private ImageButton searchButton; // imageButton7을 위한 변수
     private FirebaseFirestore db;
     private SwipeRefreshLayout swipeRefreshLayout; // SwipeRefreshLayout 추가
-    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed_main);
-
-        //로그인 확인
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            // 로그인 페이지로 이동하고 결과를 기다림
-            Intent loginIntent = new Intent(Feed_MainActivity.this, User_LoginActivity.class);
-            startActivityForResult(loginIntent, 1001); // 1001은 요청 코드
-        }
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -59,7 +48,18 @@ public class Feed_MainActivity extends AppCompatActivity {
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout); // SwipeRefreshLayout 초기화
 
         feedItems = new ArrayList<>();
-        feedAdapter = new FeedAdapter(feedItems);
+
+        // FeedAdapter 초기화 및 클릭 리스너 설정
+        feedAdapter = new FeedAdapter(feedItems, username -> {
+            // 유저네임 클릭 시 UserProfileActivity로 이동
+            Intent intent = new Intent(Feed_MainActivity.this, UserProfileActivity.class);
+            if (username != null) {
+                intent.putExtra("username",username);
+            } else {
+                intent.putExtra("username", "Unknown User"); // 기본값 전달
+            }
+            startActivity(intent);
+        });
         recyclerView.setAdapter(feedAdapter);
 
         db = FirebaseFirestore.getInstance();
@@ -109,7 +109,6 @@ public class Feed_MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
         // imageButton7 찾기
         searchButton = findViewById(R.id.imageButton7);
 
@@ -136,18 +135,31 @@ public class Feed_MainActivity extends AppCompatActivity {
                         feedItems.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String documentId = document.getId();
-                            String userId = document.getString("username"); // Firestore에서 username 가져오기
+                            String username = document.getString("username"); // Firestore에서 username 가져오기
                             String postContent = document.getString("postContent");
                             String imageUrl = document.getString("imageResource");
                             int reactionCount = document.getLong("reactionCount").intValue();
                             int commentCount = document.getLong("commentCount").intValue();
                             Date timestamp = document.getTimestamp("timestamp").toDate();
 
-                            // Realtime Database에서 nicknames 가져오기
-                            fetchNicknameFromRealtimeDatabase(userId, nicknames -> {
-                                // FeedItem 생성 및 추가
-                                feedItems.add(new FeedItem(documentId, nicknames, postContent, imageUrl, reactionCount, commentCount, timestamp));
-                                feedAdapter.notifyDataSetChanged();
+                            // Realtime Database에서 username의 nicknames 가져오기
+                            DatabaseReference userRef = FirebaseDatabase.getInstance()
+                                    .getReference("users")
+                                    .child(username); // username으로 users/{username}/nicknames 접근
+
+                            userRef.child("nicknames").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    String nickname = snapshot.exists() ? snapshot.getValue(String.class) : "Unknown User";
+                                    // FeedItem 생성 및 추가
+                                    feedItems.add(new FeedItem(documentId, username, nickname, postContent, imageUrl, reactionCount, commentCount, timestamp));
+                                    feedAdapter.notifyDataSetChanged();
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.e("Feed_MainActivity", "Error fetching nicknames", error.toException());
+                                }
                             });
                         }
                     } else {
@@ -159,30 +171,5 @@ public class Feed_MainActivity extends AppCompatActivity {
                     Log.e("Feed_MainActivity", "Error loading data", e);
                     swipeRefreshLayout.setRefreshing(false);
                 });
-    }
-
-    // Realtime Database에서 nicknames 가져오기
-    private void fetchNicknameFromRealtimeDatabase(String userId, OnNicknameFetchedListener listener) {
-        DatabaseReference realtimeDbRef = FirebaseDatabase.getInstance().getReference();
-
-        realtimeDbRef.child("users").child(userId).child("nicknames")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        String nickname = snapshot.exists() ? snapshot.getValue(String.class) : "Unknown User";
-                        listener.onNicknameFetched(nickname);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("RealtimeDB", "Error fetching nicknames for userId: " + userId, error.toException());
-                        listener.onNicknameFetched("Unknown User"); // 기본값 설정
-                    }
-                });
-    }
-
-    // 닉네임 데이터 콜백을 처리하기 위한 인터페이스
-    public interface OnNicknameFetchedListener {
-        void onNicknameFetched(String nickname);
     }
 }
