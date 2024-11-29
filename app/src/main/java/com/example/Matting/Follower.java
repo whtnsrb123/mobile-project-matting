@@ -3,12 +3,12 @@ package com.example.Matting;
 public class Follower {
     private String username;
     private String subText;
-    private int profileImageRes;
+    private String profileImage; // URL로 변경
 
-    public Follower(String username, String subText, int profileImageRes) {
+    public Follower(String username, String subText, String profileImage) {
         this.username = username;
         this.subText = subText;
-        this.profileImageRes = profileImageRes;
+        this.profileImage = profileImage;
     }
 
     public String getUsername() {
@@ -19,7 +19,7 @@ public class Follower {
         return subText;
     }
 
-    public int getProfileImageRes() {
-        return profileImageRes;
+    public String getProfileImage() {
+        return profileImage;
     }
 }
