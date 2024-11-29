@@ -18,7 +18,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Chat_ChatRoomAdapter extends ArrayAdapter<String> {
     private Context context;
@@ -54,6 +57,14 @@ public class Chat_ChatRoomAdapter extends ArrayAdapter<String> {
             notifyDataSetChanged();
             // Firebase에서 해당 채팅방 삭제 (필요 시)
             User user = new User(context);
+            //채팅방 유저목록에 추가
+            DatabaseReference chatdb;
+            chatdb = FirebaseDatabase.getInstance().getReference().child("chatroomlist").child(chatRoomName).child("users");
+            Set<String> userSet = new HashSet<>();
+            userSet.remove(user.getUserId());
+            chatdb.setValue(new ArrayList<>(userSet));
+
+            //유저의 채팅리스트 삭제
             DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUserId()).child("chats");
 
             // 특정 문자열을 가지는 데이터를 삭제
