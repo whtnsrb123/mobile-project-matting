@@ -6,6 +6,7 @@ import java.util.Date;
 public class FeedItem {
     private String documentId;
     private String username;
+    private String nicknames;
     private String postContent;
     private String imageUrl;
     private int reactionCount;
@@ -13,18 +14,21 @@ public class FeedItem {
     private Date timestamp;
     private boolean reacted;
 
-    public FeedItem(String documentId, String username, String postContent, String imageUrl, int reactionCount, int commentCount, Date timestamp) {
+    public FeedItem(String documentId, String username, String nicknames, String postContent,
+                    String imageUrl, int reactionCount, int commentCount, Date timestamp) {
         this.documentId = documentId;
         this.username = username;
+        this.nicknames = nicknames; // 추가된 nicknames 필드
         this.postContent = postContent;
         this.imageUrl = imageUrl;
         this.reactionCount = reactionCount;
         this.commentCount = commentCount;
         this.timestamp = timestamp;
-        this.reacted = false;
     }
 
     // Getter와 Setter
+
+    public String getNicknames(){ return nicknames; }
     public String getDocumentId() {
         return documentId;
     }
