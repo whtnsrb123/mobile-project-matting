@@ -18,10 +18,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class Chat_ChatRoomAdapter extends ArrayAdapter<String> {
     private Context context;
@@ -55,14 +52,25 @@ public class Chat_ChatRoomAdapter extends ArrayAdapter<String> {
             // 삭제 버튼 클릭 시 동작 정의
             chatRooms.remove(position);
             notifyDataSetChanged();
-            // Firebase에서 해당 채팅방 삭제 (필요 시)
+            // Firebase에서 해당 채팅방 삭제
             User user = new User(context);
-            //채팅방 유저목록에 추가
+            //채팅방 유저목록에서 삭제
             DatabaseReference chatdb;
             chatdb = FirebaseDatabase.getInstance().getReference().child("chatroomlist").child(chatRoomName).child("users");
-            Set<String> userSet = new HashSet<>();
-            userSet.remove(user.getUserId());
-            chatdb.setValue(new ArrayList<>(userSet));
+            chatdb.orderByValue().equalTo(user.getUserId().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        // 해당 데이터 삭제
+                        snapshot.getRef().removeValue();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // 에러 처리
+                }
+            });
 
             //유저의 채팅리스트 삭제
             DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUserId()).child("chats");
