@@ -192,13 +192,20 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
         });
 
 
-        // 팔로워 버튼 영역
+        //팔로잉 팔로워 수정
         LinearLayout followersLayout = findViewById(R.id.followersLayout);
-        followersLayout.setOnClickListener(this::openFollowersList); // 팔로워 화면 이동
+        followersLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(MyProfileActivity.this, FollowersActivity.class);
+            intent.putExtra("userId", auth.getCurrentUser().getUid());
+            startActivity(intent);
+        });
 
-        // 팔로잉 버튼 영역
         LinearLayout followingLayout = findViewById(R.id.followingLayout);
-        followingLayout.setOnClickListener(this::openFollowingList); // 팔로잉 화면 이동
+        followingLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(MyProfileActivity.this, FollowingActivity.class);
+            intent.putExtra("userId", auth.getCurrentUser().getUid());
+            startActivity(intent);
+        });
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
