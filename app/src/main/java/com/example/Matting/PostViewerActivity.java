@@ -36,6 +36,9 @@ public class PostViewerActivity extends AppCompatActivity {
 
         // RecyclerView 설정
         recyclerView = findViewById(R.id.recyclerView);
+        if (recyclerView == null) {
+            Log.e("PostViewerActivity", "RecyclerView is null. Check your layout.");
+        }
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // 게시글 데이터 초기화
@@ -45,6 +48,24 @@ public class PostViewerActivity extends AppCompatActivity {
 
         // Firestore에서 게시글 데이터를 가져옵니다.
         fetchPostsFromFirestore();
+    }
+
+    public void confirmDeletePost(Post post, int position) {
+        DeleteConfirmationFragment fragment = new DeleteConfirmationFragment();
+        fragment.setOnDeleteConfirmedListener(() -> deletePost(post, position));
+        fragment.show(getSupportFragmentManager(), "deleteConfirmation");
+    }
+
+    private void deletePost(Post post, int position) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("posts").document(post.getDocumentId())
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    postList.remove(position);
+                    postAdapter.notifyItemRemoved(position);
+                    Toast.makeText(this, "게시글이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "삭제 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private void fetchPostsFromFirestore() {

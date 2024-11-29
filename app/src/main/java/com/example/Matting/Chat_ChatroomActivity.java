@@ -6,6 +6,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +31,9 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
     private DatabaseReference db;
     private User user;
     private String chatroomId;
+    private ArrayList<String> userlist;
+    private TextView usercnt;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +51,7 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
         listViewMessages = findViewById(R.id.listViewMessages);
         editTextMessage = findViewById(R.id.editTextMessage);
         buttonSend = findViewById(R.id.buttonSend);
+        usercnt = findViewById(R.id.usercnt);
 
         user = new User(this);
         // Intent로부터 채팅방 ID를 가져옴
@@ -55,9 +60,34 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
 
         db = FirebaseDatabase.getInstance().getReference().child("chatroomlist").child(chatroomId);
         db.child("id").setValue(chatroomId);
+
         chatMessageList = new ArrayList<>();
         chatMessageAdapter = new Chat_MessageAdapter(this, chatMessageList, user.getUserId());
         listViewMessages.setAdapter(chatMessageAdapter);
+
+        // users 노드의 변경 사항을 실시간으로 감지
+        db.child("users").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // DataSnapshot을 리스트로 변환
+                    List<String> userList = new ArrayList<>();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String userId = snapshot.getValue(String.class);
+                        if (userId != null) {
+                            userList.add(userId);
+                        }
+                    }
+                    // userList를 사용하여 추가 작업 수행
+                    usercnt.setText(String.valueOf(userList.size()));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // 에러 처리
+            }
+        });
 
         buttonSend.setOnClickListener(v -> {
             String messageText = editTextMessage.getText().toString();
@@ -102,6 +132,7 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                // 에러 처리
             }
         });
     }

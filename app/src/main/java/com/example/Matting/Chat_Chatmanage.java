@@ -10,11 +10,37 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Chat_Chatmanage {
     static void addNewChatRoom(String chatRoomId, User user) {
+        //채팅방 유저목록에 추가
+        DatabaseReference chatdb = FirebaseDatabase.getInstance().getReference().child("chatroomlist").child(chatRoomId).child("users");
+        Set<String> userSet = new HashSet<>();
+        userSet.add(user.getUserId());
+
+// 기존 데이터를 가져와서 set에 추가한 후에 db에 반영
+        chatdb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                    String existingUserId = childSnapshot.getValue(String.class);
+                    if (existingUserId != null) {
+                        userSet.add(existingUserId);
+                    }
+                }
+                // 리스트로 변환하여 Firebase에 저장
+                chatdb.setValue(new ArrayList<>(userSet));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // 에러 처리
+            }
+        });
+
+
+        //유저의 채팅참여 목록 추가
         DatabaseReference db;
         db = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUserId());
 

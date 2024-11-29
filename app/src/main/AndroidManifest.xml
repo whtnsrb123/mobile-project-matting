@@ -53,6 +53,7 @@
         <activity android:name=".FeedSearchActivity" />
         <activity android:name=".PostViewerActivity" />
         <activity android:name=".CommentActivity" />
+        <activity android:name=".UserProfileActivity" />
 
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"

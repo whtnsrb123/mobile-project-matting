@@ -1,6 +1,6 @@
 package com.example.Matting;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.format.DateUtils;
@@ -17,9 +17,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
@@ -28,9 +31,12 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
     private final List<FeedItem> feedItems;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance(); // Firestore 인스턴스
+    private final OnUsernameClickListener listener; // 리스너 추가
 
-    public FeedAdapter(List<FeedItem> feedItems) {
+    // FeedAdapter 생성자
+    public FeedAdapter(List<FeedItem> feedItems, OnUsernameClickListener listener) {
         this.feedItems = feedItems;
+        this.listener = listener; // 리스너 초기화
     }
 
     @NonNull
@@ -44,9 +50,35 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     public void onBindViewHolder(@NonNull FeedViewHolder holder, int position) {
         FeedItem feedItem = feedItems.get(position);
 
-        holder.usernameTextView.setText(feedItem.getUsername());
+        // 기존 username을 기반으로 닉네임 가져오기
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(feedItem.getUsername());
+        userRef.child("nicknames").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String nickname = snapshot.getValue(String.class);
+                    holder.usernameTextView.setText(nickname); // 닉네임을 화면에 표시
+                } else {
+                    holder.usernameTextView.setText("Unknown User"); // 닉네임이 없으면 기본값 표시
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("FeedAdapter", "Failed to fetch nickname for username: " + feedItem.getUsername(), error.toException());
+                holder.usernameTextView.setText("Unknown User"); // 에러 시 기본값 표시
+            }
+        });
+
         holder.postContentTextView.setText(feedItem.getPostContent());
         holder.reactionCountTextView.setText(String.valueOf(feedItem.getReactionCount()));
+
+        // 유저네임 클릭 이벤트 추가 (username 필드를 그대로 사용)
+        holder.usernameTextView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onUsernameClick(feedItem.getUsername());
+            }
+        });
 
         // Timestamp를 상대적 시간으로 변환하여 표시
         if (feedItem.getTimestamp() != null) {
@@ -161,6 +193,12 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         notifyDataSetChanged();
     }
 
+    // 인터페이스 정의
+    public interface OnUsernameClickListener {
+        void onUsernameClick(String username);
+    }
+
+    // ViewHolder 클래스
     public static class FeedViewHolder extends RecyclerView.ViewHolder {
 
         TextView usernameTextView;
@@ -185,4 +223,5 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             commentButton = itemView.findViewById(R.id.commentButton);
         }
     }
+
 }

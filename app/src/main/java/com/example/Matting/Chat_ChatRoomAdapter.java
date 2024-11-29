@@ -52,8 +52,27 @@ public class Chat_ChatRoomAdapter extends ArrayAdapter<String> {
             // 삭제 버튼 클릭 시 동작 정의
             chatRooms.remove(position);
             notifyDataSetChanged();
-            // Firebase에서 해당 채팅방 삭제 (필요 시)
+            // Firebase에서 해당 채팅방 삭제
             User user = new User(context);
+            //채팅방 유저목록에서 삭제
+            DatabaseReference chatdb;
+            chatdb = FirebaseDatabase.getInstance().getReference().child("chatroomlist").child(chatRoomName).child("users");
+            chatdb.orderByValue().equalTo(user.getUserId().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        // 해당 데이터 삭제
+                        snapshot.getRef().removeValue();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // 에러 처리
+                }
+            });
+
+            //유저의 채팅리스트 삭제
             DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUserId()).child("chats");
 
             // 특정 문자열을 가지는 데이터를 삭제
