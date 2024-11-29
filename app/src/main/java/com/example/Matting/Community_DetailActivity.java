@@ -59,15 +59,28 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
     private Marker marker = new Marker();
 
     private FirebaseAuth mAuth;
-    private FirebaseUser currentUser;
+    private String userId;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        //로그인 확인
         mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
+        user = new User(this);
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            // 로그인되지 않은 경우, 로그인 페이지로 이동
+            Intent loginIntent = new Intent(this, User_LoginActivity.class);
+            startActivity(loginIntent);
+        } else {
+            // 로그인된 사용자 정보 사용
+            Log.d("nickname", user.getUserId());
+            userId = user.getUserId();
+        }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -103,6 +116,8 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
 
                         updateUI();
 
+                        // Firestore 데이터 로드 완료 후 메뉴 갱신
+                        invalidateOptionsMenu();
                     } else {
                         Log.d("getDocumentId", "No such document");
                     }
@@ -133,14 +148,25 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem deleteMenuItem = menu.findItem(R.id.del);
 
-        // 로그인된 사용자와 게시물 작성자가 같은 경우만 메뉴 활성화
-        if (currentUser != null && currentUser.getUid().equals(userid)) {
+        // Firestore 데이터가 로드되지 않은 경우 메뉴 숨기기
+        if (userid == null || userId == null) {
+            Log.d("yesmenu", "Firestore 데이터가 아직 로드되지 않음");
+            deleteMenuItem.setVisible(false);
+            return super.onPrepareOptionsMenu(menu);
+        }
+
+        Log.d("yesmenu", "userId: " + userId + ", userid: " + userid);
+
+        // Firestore 데이터가 로드된 후 로그인된 사용자와 게시물 작성자 비교
+        if (userId.equals(userid)) {
             deleteMenuItem.setVisible(true); // 메뉴 보이기
         } else {
             deleteMenuItem.setVisible(false); // 메뉴 숨기기
         }
+
         return super.onPrepareOptionsMenu(menu);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
