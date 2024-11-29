@@ -6,6 +6,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +31,9 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
     private DatabaseReference db;
     private User user;
     private String chatroomId;
+    private ArrayList<String> userlist;
+    private TextView usercnt;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +59,33 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
 
         db = FirebaseDatabase.getInstance().getReference().child("chatroomlist").child(chatroomId);
         db.child("id").setValue(chatroomId);
+
+// 'users' 노드의 값을 가져오기 위해 addListenerForSingleValueEvent 사용
+        db.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // DataSnapshot을 리스트로 변환
+                    List<String> userList = new ArrayList<>();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String userId = snapshot.getValue(String.class);
+                        if (userId != null) {
+                            userList.add(userId);
+                        }
+                    }
+                    // userList를 사용하여 추가 작업 수행
+                    // 예: userList를 로그에 출력
+                    usercnt = findViewById(R.id.usercnt);
+                    usercnt.setText(String.valueOf(userList.toArray().length));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+
         chatMessageList = new ArrayList<>();
         chatMessageAdapter = new Chat_MessageAdapter(this, chatMessageList, user.getUserId());
         listViewMessages.setAdapter(chatMessageAdapter);
