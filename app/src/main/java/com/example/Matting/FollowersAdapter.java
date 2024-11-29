@@ -3,12 +3,13 @@ package com.example.Matting;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -42,7 +43,23 @@ public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.View
 
         holder.username.setText(follower.getUsername());
         holder.subText.setText(follower.getSubText());
-        holder.profileImage.setImageResource(follower.getProfileImageRes());
+
+        // 프로필 이미지 로드
+        if (follower.getProfileImage() != null && !follower.getProfileImage().isEmpty()) {
+            Glide.with(holder.profileImage.getContext())
+                    .load(follower.getProfileImage())
+                    .circleCrop()
+                    .into(holder.profileImage);
+        } else {
+            // 기본 이미지 설정
+            holder.profileImage.setImageResource(R.drawable.user);
+        }
+
+        holder.itemView.setOnClickListener(v -> {
+            if (onItemClickListener != null) {
+                onItemClickListener.onItemClick(follower);
+            }
+        });
 
         // 클릭 이벤트 처리
         holder.itemView.setOnClickListener(v -> {

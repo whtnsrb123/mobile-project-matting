@@ -66,9 +66,6 @@ public class UserProfileActivity extends AppCompatActivity {
         // Firestore에서 게시글 로드
         fetchPosts();
 
-        // 하단 네비게이션 바 초기화
-        setupBottomNavigationBar();
-
         // 액션바 설정
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -156,47 +153,5 @@ public class UserProfileActivity extends AppCompatActivity {
         postRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         postAdapter = new PostAdapter(this, postList, true);
         postRecyclerView.setAdapter(postAdapter);
-    }
-
-    private void setupBottomNavigationBar() {
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setSelectedItemId(R.id.nav_feed); // 현재 위치는 피드로 설정
-
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int itemId = item.getItemId();
-                if (itemId == R.id.nav_home) {
-                    // 메인 액티비티로 이동
-                    Intent homeIntent = new Intent(UserProfileActivity.this, MainActivity.class);
-                    startActivity(homeIntent);
-                    overridePendingTransition(0, 0);
-                    return true;
-                } else if (itemId == R.id.nav_feed) {
-                    Intent feedIntent = new Intent(UserProfileActivity.this, Feed_MainActivity.class);
-                    startActivity(feedIntent);
-                    overridePendingTransition(0, 0);
-                    return true;
-                } else if (itemId == R.id.nav_community) {
-                    Intent feedIntent = new Intent(UserProfileActivity.this, CommunityActivity.class);
-                    startActivity(feedIntent);
-                    overridePendingTransition(0, 0);
-                    return true;
-                } else if (itemId == R.id.nav_chat) {
-                    // 채팅 액티비티로 이동
-                    Intent feedIntent = new Intent(UserProfileActivity.this, Chat_ChatlistActivity.class);
-                    startActivity(feedIntent);
-                    overridePendingTransition(0, 0);
-                    return true;
-                } else if (itemId == R.id.nav_mypage) {
-                    // 마이페이지 액티비티로 이동
-                    Intent mypageIntent = new Intent(UserProfileActivity.this, MyProfileActivity.class);
-                    startActivity(mypageIntent);
-                    overridePendingTransition(0, 0);
-                    return true;
-                }
-                return false;
-            }
-        });
     }
 }

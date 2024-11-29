@@ -6,9 +6,16 @@ import android.text.TextWatcher;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,21 +32,20 @@ public class FollowersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_followers_list);
 
-        // RecyclerView 및 데이터 초기화
+        // 초기화
         followersList = new ArrayList<>();
         filteredList = new ArrayList<>();
-        populateFollowersData();
 
         followersRecyclerView = findViewById(R.id.followersRecyclerView);
         followersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // 어댑터 설정
         followersAdapter = new FollowersAdapter(filteredList);
-        followersAdapter.setOnItemClickListener(follower -> {
-            // 클릭 효과: 사용자 이름을 Toast 메시지로 표시
-            Toast.makeText(FollowersActivity.this, follower.getUsername() + " 클릭됨", Toast.LENGTH_SHORT).show();
-        });
+        followersAdapter.setOnItemClickListener(follower ->
+                Toast.makeText(FollowersActivity.this, follower.getUsername() + " 클릭됨", Toast.LENGTH_SHORT).show());
         followersRecyclerView.setAdapter(followersAdapter);
+
+        // Firebase에서 데이터 로드
+        fetchFollowersData();
 
         // 검색창 처리
         EditText searchBar = findViewById(R.id.searchBar);
@@ -55,20 +61,56 @@ public class FollowersActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {}
         });
-
-        // 초기 필터링 (전체 리스트 표시)
-        filterFollowers("");
     }
 
-    // 팔로워 데이터 초기화
-    private void populateFollowersData() {
-        followersList.add(new Follower("Follower1", "팔로워 설명 1", R.drawable.user));
-        followersList.add(new Follower("Follower2", "팔로워 설명 2", R.drawable.user));
-        followersList.add(new Follower("Follower3", "팔로워 설명 3", R.drawable.user));
-        // 더 많은 데이터를 추가할 수 있습니다.
+    private void fetchFollowersData() {
+        String userId = getIntent().getStringExtra("userId"); // 전달된 사용자 ID 가져오기
+        if (userId == null || userId.isEmpty()) {
+            Toast.makeText(this, "유효하지 않은 사용자입니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
+        databaseRef.child("users").child(userId).child("followers")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        followersList.clear();
+                        filteredList.clear(); // 초기화
+                        for (DataSnapshot followerSnapshot : snapshot.getChildren()) {
+                            String followerId = followerSnapshot.getKey();
+
+                            if (followerId != null) {
+                                databaseRef.child("users").child(followerId)
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot userSnapshot) {
+                                                String nickname = userSnapshot.child("nicknames").getValue(String.class);
+
+                                                String profileImageUrl = userSnapshot.child("profileImage").getValue(String.class);
+
+                                                if (nickname != null) {
+                                                    followersList.add(new Follower(nickname, "뭘 넣을 수 있긴 한데 필요 없으면 없애도 됩니다", profileImageUrl != null ? profileImageUrl : ""));
+                                                    filterFollowers(""); // RecyclerView 업데이트
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                Toast.makeText(FollowersActivity.this, "데이터를 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(FollowersActivity.this, "팔로워 데이터를 가져오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
-    // 검색 필터링
     private void filterFollowers(String query) {
         filteredList.clear();
         if (query.isEmpty()) {
@@ -80,6 +122,6 @@ public class FollowersActivity extends AppCompatActivity {
                 }
             }
         }
-        followersAdapter.notifyDataSetChanged();
+        followersAdapter.notifyDataSetChanged(); // 어댑터에 변경 사항 알림
     }
 }

@@ -29,8 +29,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -214,7 +217,36 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
         meetDate.setText(date);
         meetTime.setText(time);
         tvLocation.setText(location);
-        tvId.setText(userid);
+
+        // Firebase Realtime Database에서 닉네임 가져오기
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("users").child(userid).child("nicknames");
+        databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String nickname = snapshot.getValue(String.class);
+                    tvId.setText(nickname != null ? nickname : "Unknown User");
+                } else {
+                    tvId.setText("Unknown User");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                tvId.setText("Error");
+                Log.e("CommunityDetail", "Error fetching nickname: ", error.toException());
+            }
+        });
+
+        // 버튼 클릭 시 UserProfileActivity로 이동
+        tvId.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent userProfileIntent = new Intent(Community_DetailActivity.this, UserProfileActivity.class);
+                userProfileIntent.putExtra("username", userid); // `userid` 전달
+                startActivity(userProfileIntent);
+            }
+        });
 
         // 지도 초기화
         initMap();
@@ -229,15 +261,6 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
 
         // 같은 식당의 다른 모임 글
         otherMatting();
-
-        // 페이지 이동 버튼
-        TextView goRestaurant = findViewById(R.id.go_restaurant);
-        TextView goProgile = findViewById(R.id.go_profile);
-        Button goChat = findViewById(R.id.go_chat);
-        setupClickListenerForPopup(goRestaurant, "식당 정보", "식당 정보 페이지로 이동합니다.");
-        setupClickListenerForPopup(goProgile, "아이디", "프로필 페이지로 이동합니다.");
-        setupClickListenerForPopup(goChat, "채팅", "채팅 페이지로 이동합니다.");
-        goChat.setOnClickListener(v ->  newCommunityChat());
 
         // 뒤로가기
         ImageButton goBackButton = findViewById(R.id.go_back);
@@ -256,7 +279,6 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
                 showFullScreenImage(R.drawable.food);  // 확대할 이미지 리소스를 전달
             }
         });
-
     }
 
 

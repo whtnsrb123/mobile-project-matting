@@ -141,6 +141,17 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
             userNameTextView.setText("Unknown User");
         }
 
+        if (auth.getCurrentUser() != null) {
+            String userId = auth.getCurrentUser().getUid();
+
+            // 닉네임 가져오기
+            fetchNickname(userId);
+
+            // 팔로워와 팔로잉 수 가져오기
+            fetchFollowerCount(userId);
+            fetchFollowingCount(userId);
+        }
+
         // postList 초기화
         postList = new ArrayList<>();
         setupRecyclerView();
@@ -181,13 +192,20 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
         });
 
 
-        // 팔로워 버튼 영역
+        //팔로잉 팔로워 수정
         LinearLayout followersLayout = findViewById(R.id.followersLayout);
-        followersLayout.setOnClickListener(this::openFollowersList); // 팔로워 화면 이동
+        followersLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(MyProfileActivity.this, FollowersActivity.class);
+            intent.putExtra("userId", auth.getCurrentUser().getUid());
+            startActivity(intent);
+        });
 
-        // 팔로잉 버튼 영역
         LinearLayout followingLayout = findViewById(R.id.followingLayout);
-        followingLayout.setOnClickListener(this::openFollowingList); // 팔로잉 화면 이동
+        followingLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(MyProfileActivity.this, FollowingActivity.class);
+            intent.putExtra("userId", auth.getCurrentUser().getUid());
+            startActivity(intent);
+        });
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
@@ -383,6 +401,41 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
                     public void onCancelled(@NonNull DatabaseError error) {
                         Toast.makeText(MyProfileActivity.this, "닉네임을 가져오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
                         userNameTextView.setText("Unknown User");
+                    }
+                });
+    }
+    private void fetchFollowerCount(String userId) {
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
+        databaseRef.child("users").child(userId).child("followers")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        long count = snapshot.getChildrenCount(); // 팔로워 수
+                        TextView followersCountTextView = findViewById(R.id.followersCountTextView);
+                        followersCountTextView.setText(String.valueOf(count)); // TextView에 표시
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("MyProfileActivity", "Error fetching followers count", error.toException());
+                    }
+                });
+    }
+
+    private void fetchFollowingCount(String userId) {
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
+        databaseRef.child("users").child(userId).child("following")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        long count = snapshot.getChildrenCount(); // 팔로잉 수
+                        TextView followingCountTextView = findViewById(R.id.followingCountTextView);
+                        followingCountTextView.setText(String.valueOf(count)); // TextView에 표시
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("MyProfileActivity", "Error fetching following count", error.toException());
                     }
                 });
     }

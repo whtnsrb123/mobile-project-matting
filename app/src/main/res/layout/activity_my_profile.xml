@@ -29,7 +29,7 @@
                 android:textColor="#000000"
                 android:textSize="17sp" />
 
-            <!-- 로그 아웃 버튼  -->
+            <!-- 로그 아웃 버튼 -->
             <ImageButton
                 android:id="@+id/logoutButton"
                 android:layout_width="wrap_content"
@@ -56,7 +56,7 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/profile_image" />
 
-            <!-- 게시물, 팔로워, 팔로잉 정보를 담은 LinearLayout -->
+            <!-- 게시물, 팔로워, 팔로잉 -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -89,6 +89,7 @@
                         android:textColor="#000000"
                         android:textSize="14sp" />
                 </LinearLayout>
+
                 <!-- 팔로워 -->
                 <LinearLayout
                     android:id="@+id/followersLayout"
@@ -96,15 +97,14 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:onClick="onFollowerClick"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:onClick="openFollowersList">
 
                     <TextView
-                        android:id="@+id/followerCount"
+                        android:id="@+id/followersCountTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-medium"
-                        android:text="167"
+                        android:text="0"
                         android:textColor="#000000"
                         android:textSize="16sp" />
 
@@ -124,15 +124,14 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:onClick="onFollowingClick"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:onClick="openFollowingList">
 
                     <TextView
-                        android:id="@+id/followingCount"
+                        android:id="@+id/followingCountTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-medium"
-                        android:text="144"
+                        android:text="0"
                         android:textColor="#000000"
                         android:textSize="16sp" />
 
@@ -147,6 +146,7 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!-- 사용자 이름 -->
         <TextView
             android:id="@+id/user_name"
             android:layout_width="wrap_content"
@@ -156,6 +156,7 @@
             android:textColor="#000000"
             android:textSize="14sp" />
 
+        <!-- 프로필 편집 및 게시글 작성 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -165,7 +166,6 @@
             android:weightSum="2">
 
             <Button
-
                 android:id="@+id/editProfileButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -182,24 +182,23 @@
 
         </LinearLayout>
 
+        <!-- 게시글 목록 -->
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipe_refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        <!-- 그리드 뷰 (게시물) -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/postRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:scrollbars="vertical" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/postRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-
     </LinearLayout>
 
+    <!-- 하단 네비게이션 -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
@@ -208,11 +207,11 @@
         android:background="?android:attr/windowBackground"
         app:menu="@menu/bottom_navigation_menu" />
 
+    <!-- 프래그먼트 컨테이너 -->
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottomNavigation" />
-
 
 </RelativeLayout>
