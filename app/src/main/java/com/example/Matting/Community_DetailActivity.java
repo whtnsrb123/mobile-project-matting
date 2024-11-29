@@ -6,12 +6,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ImageButton;
+import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -22,6 +27,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
@@ -51,10 +58,23 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
 
     private Marker marker = new Marker();
 
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
 
         // Intent에서 documentId 가져오기
         documentId = getIntent().getStringExtra("documentId");
@@ -92,6 +112,66 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
             }
         });
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.del, menu);
+        return true;
+    }
+
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        if (item.getItemId() == R.id.del) {
+//            Toast.makeText(this, "Delete selected", Toast.LENGTH_SHORT).show();
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem deleteMenuItem = menu.findItem(R.id.del);
+
+        // 로그인된 사용자와 게시물 작성자가 같은 경우만 메뉴 활성화
+        if (currentUser != null && currentUser.getUid().equals(userid)) {
+            deleteMenuItem.setVisible(true); // 메뉴 보이기
+        } else {
+            deleteMenuItem.setVisible(false); // 메뉴 숨기기
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.del) {
+            // 삭제 확인 다이얼로그 표시
+            new AlertDialog.Builder(this)
+                    .setTitle("게시물 삭제")
+                    .setMessage("정말로 삭제하시겠습니까?")
+                    .setPositiveButton("삭제", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Firestore에서 게시물 삭제
+                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            db.collection("community").document(documentId)
+                                    .delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(Community_DetailActivity.this, "게시물이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                                        finish(); // 액티비티 종료
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(Community_DetailActivity.this, "게시물 삭제 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    });
+                        }
+                    })
+                    .setNegativeButton("취소", null)
+                    .show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     private void updateUI() {
         TextView restaurantName = findViewById(R.id.restaurant_name);
