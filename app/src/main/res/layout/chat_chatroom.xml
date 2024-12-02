@@ -13,6 +13,7 @@
         android:background="?attr/colorPrimary"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
+
         <ImageView
             android:layout_width="20dp"
             android:layout_height="20dp"
@@ -31,6 +32,14 @@
             android:text="0"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/buttonMeetingInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginRight="10dp"
+            android:text="모임정보" />
     </androidx.appcompat.widget.Toolbar>
 
     <!-- 채팅 메시지 리스트 -->

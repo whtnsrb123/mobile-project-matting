@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
@@ -33,7 +34,7 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
     private String chatroomId;
     private ArrayList<String> userlist;
     private TextView usercnt;
-
+    private Button buttonMeetingInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,14 +45,14 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
         // 액션바 설정
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);// 뒤로가기 버튼 활성화
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); // 뒤로가기 버튼 활성화
         getSupportActionBar().setTitle(chatroomId);
-
 
         listViewMessages = findViewById(R.id.listViewMessages);
         editTextMessage = findViewById(R.id.editTextMessage);
         buttonSend = findViewById(R.id.buttonSend);
         usercnt = findViewById(R.id.usercnt);
+        buttonMeetingInfo = findViewById(R.id.buttonMeetingInfo);
 
         user = new User(this);
         // Intent로부터 채팅방 ID를 가져옴
@@ -95,6 +96,15 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
                 sendMessage(messageText);
                 editTextMessage.setText("");
             }
+        });
+
+        buttonMeetingInfo.setOnClickListener(v -> {
+            // 프래그먼트 실행
+            MeetingInfoFragment fragment = new MeetingInfoFragment();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(android.R.id.content, fragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
         });
 
         receiveMessages();
