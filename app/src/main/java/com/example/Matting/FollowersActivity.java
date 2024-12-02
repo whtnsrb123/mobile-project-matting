@@ -32,19 +32,20 @@ public class FollowersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_followers_list);
 
-        // 초기화
+        // 데이터 초기화
         followersList = new ArrayList<>();
         filteredList = new ArrayList<>();
 
         followersRecyclerView = findViewById(R.id.followersRecyclerView);
         followersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        // 어댑터 설정
         followersAdapter = new FollowersAdapter(filteredList);
         followersAdapter.setOnItemClickListener(follower ->
                 Toast.makeText(FollowersActivity.this, follower.getUsername() + " 클릭됨", Toast.LENGTH_SHORT).show());
         followersRecyclerView.setAdapter(followersAdapter);
 
-        // Firebase에서 데이터 로드
+        // Firebase에서 팔로워 데이터 로드
         fetchFollowersData();
 
         // 검색창 처리
@@ -61,10 +62,13 @@ public class FollowersActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {}
         });
+
+        // 초기 필터링
+        filterFollowers("");
     }
 
     private void fetchFollowersData() {
-        String userId = getIntent().getStringExtra("userId"); // 전달된 사용자 ID 가져오기
+        String userId = getIntent().getStringExtra("userId");
         if (userId == null || userId.isEmpty()) {
             Toast.makeText(this, "유효하지 않은 사용자입니다.", Toast.LENGTH_SHORT).show();
             return;
@@ -86,11 +90,11 @@ public class FollowersActivity extends AppCompatActivity {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot userSnapshot) {
                                                 String nickname = userSnapshot.child("nicknames").getValue(String.class);
-
                                                 String profileImageUrl = userSnapshot.child("profileImage").getValue(String.class);
 
                                                 if (nickname != null) {
-                                                    followersList.add(new Follower(nickname, "뭘 넣을 수 있긴 한데 필요 없으면 없애도 됩니다", profileImageUrl != null ? profileImageUrl : ""));
+                                                    followersList.add(new Follower(nickname, "뭘 넣을 수 있긴 한데 필요 없으면 없애도 됩니다",
+                                                            profileImageUrl != null ? profileImageUrl : ""));
                                                     filterFollowers(""); // RecyclerView 업데이트
                                                 }
                                             }

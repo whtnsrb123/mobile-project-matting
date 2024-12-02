@@ -43,8 +43,15 @@ public class FollowingActivity extends AppCompatActivity {
                 Toast.makeText(FollowingActivity.this, follower.getUsername() + " 클릭됨", Toast.LENGTH_SHORT).show());
         followingRecyclerView.setAdapter(followingAdapter);
 
-        fetchFollowingData();
+        // 전달된 userId를 기반으로 데이터 가져오기
+        String userId = getIntent().getStringExtra("userId");
+        if (userId != null && !userId.isEmpty()) {
+            fetchFollowingData(userId);
+        } else {
+            Toast.makeText(this, "사용자 ID를 가져오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+        }
 
+        // 검색창 처리
         EditText searchBar = findViewById(R.id.searchBar);
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
@@ -58,45 +65,39 @@ public class FollowingActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {}
         });
-
-        filterFollowing("");
     }
 
-    private void fetchFollowingData() {
-        String userId = getIntent().getStringExtra("userId");
-        if (userId == null || userId.isEmpty()) {
-            Toast.makeText(this, "유효하지 않은 사용자입니다.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
+    private void fetchFollowingData(String userId) {
         DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
         databaseRef.child("users").child(userId).child("following")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         followingList.clear();
+                        filteredList.clear(); // 초기화
                         for (DataSnapshot followingSnapshot : snapshot.getChildren()) {
-                            String followingId = followingSnapshot.getKey();
+                            String followingId = followingSnapshot.getKey(); // 팔로잉 ID 가져오기
 
                             if (followingId != null) {
-                                // 닉네임과 프로필 이미지 가져오기
-                                databaseRef.child("users").child(followingId).addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot userSnapshot) {
-                                        String nickname = userSnapshot.child("nicknames").getValue(String.class);
-                                        String profileImageUrl = userSnapshot.child("profileImage").getValue(String.class);
+                                databaseRef.child("users").child(followingId)
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot userSnapshot) {
+                                                String nickname = userSnapshot.child("nicknames").getValue(String.class);
+                                                String profileImageUrl = userSnapshot.child("profileImage").getValue(String.class);
 
-                                        if (nickname != null) {
-                                            followingList.add(new Follower(nickname, "설명 없음", profileImageUrl));
-                                            filterFollowing(""); // RecyclerView 업데이트
-                                        }
-                                    }
+                                                // 닉네임과 프로필 이미지 추가
+                                                followingList.add(new Follower(
+                                                        nickname != null ? nickname : followingId, "뭘 넣을 수 있긴 한데 필요 없으면 없애도 됩니다",
+                                                        profileImageUrl != null ? profileImageUrl : "")); // 이미지 없으면 빈 문자열
+                                                filterFollowing(""); // RecyclerView 업데이트
+                                            }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                        Toast.makeText(FollowingActivity.this, "데이터를 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                Toast.makeText(FollowingActivity.this, "데이터를 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
                             }
                         }
                     }
