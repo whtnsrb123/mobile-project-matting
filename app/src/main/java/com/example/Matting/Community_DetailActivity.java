@@ -139,14 +139,6 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
         return true;
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        if (item.getItemId() == R.id.del) {
-//            Toast.makeText(this, "Delete selected", Toast.LENGTH_SHORT).show();
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
-
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem deleteMenuItem = menu.findItem(R.id.del);
