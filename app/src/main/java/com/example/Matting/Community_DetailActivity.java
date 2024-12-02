@@ -193,7 +193,6 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
         return super.onOptionsItemSelected(item);
     }
 
-
     private void updateUI() {
         TextView restaurantName = findViewById(R.id.restaurant_name);
         TextView postTitle = findViewById(R.id.post_title);
@@ -358,42 +357,6 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
                         Log.e("FirestoreError", "데이터 가져오기 실패: " + task.getException());
                     }
                 });
-    }
-
-    // RecyclerView 항목 추가 메서드
-    public void addItem(String imgName, String mainText, String subText){
-        Community_RecyclerViewItem item = new Community_RecyclerViewItem();
-
-        item.setImgName(imgName);
-        item.setMainText(mainText);
-        item.setSubText(subText);
-
-        mList.add(item);
-    }
-
-    // 팝업창
-    private void setupClickListenerForPopup(TextView textView, String title, String message) {
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // AlertDialog 생성 및 설정
-                AlertDialog.Builder builder = new AlertDialog.Builder(Community_DetailActivity.this);
-                builder.setTitle(title);
-                builder.setMessage(message);
-
-                // 확인 버튼 추가
-                builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss(); // 팝업 닫기
-                    }
-                });
-
-                // 팝업 창 표시
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }
-        });
     }
 
     // 전체 화면으로 이미지 표시 메서드
