@@ -33,6 +33,10 @@ public class Main_InfoFragment extends Fragment {
     private ImageView btnClose, btnReview;
     private Button btnReserve;
 
+    private RecyclerView mRecyclerView;
+    private ArrayList<Community_RecyclerViewItem> mList = new ArrayList<>();;
+    private Community_DetailRecyclerViewAdapter mCommunityDetailRecyclerViewAdapter;
+
     public static Main_InfoFragment newInstance(String title, String category, String address, String link, double rating, int map_x, int map_y) {
         Main_InfoFragment fragment = new Main_InfoFragment();
         Bundle args = new Bundle();
@@ -59,6 +63,7 @@ public class Main_InfoFragment extends Fragment {
         tvLink = view.findViewById(R.id.tvLink);
         tvRating = view.findViewById(R.id.tvRating);
         reviewRecyclerView = view.findViewById(R.id.reviewRecyclerView);
+        mRecyclerView = view.findViewById(R.id.recyclerView);
         btnClose = view.findViewById(R.id.btnClose); // 닫기 버튼 초기화
         btnReserve = view.findViewById(R.id.btnReserve);
         btnReview = view.findViewById(R.id.btnReview);
@@ -70,6 +75,10 @@ public class Main_InfoFragment extends Fragment {
         mainReviewAdapter = new Main_ReviewAdapter(mainReviewList);
         reviewRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         reviewRecyclerView.setAdapter(mainReviewAdapter);
+
+        mCommunityDetailRecyclerViewAdapter = new Community_DetailRecyclerViewAdapter(mList, getContext());
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView.setAdapter(mCommunityDetailRecyclerViewAdapter);
 
         // Arguments 확인
         if (getArguments() != null) {
@@ -83,6 +92,7 @@ public class Main_InfoFragment extends Fragment {
 
         // Firestore에서 리뷰 데이터 가져오기
         fetchReviewsFromFirestore();
+        otherMatting();
 
         // 닫기 버튼 동작
         btnClose.setOnClickListener(new View.OnClickListener() {
@@ -177,6 +187,37 @@ public class Main_InfoFragment extends Fragment {
                         }
                     } else {
                         Log.e("FirestoreError", "리뷰 데이터를 가져오는 데 실패했습니다.");
+                    }
+                });
+    }
+
+    // 현재 식당의 다른 모임 글
+    private void otherMatting() {
+        // Firestore에서 "restaurant" 필드가 현재 식당 이름과 일치하는 문서 가져오기
+        firestore.collection("community")
+                .whereEqualTo("restaurant", getArguments().getString("title")) // "restaurant" 필드와 일치하는 데이터만 가져오기
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        mList.clear(); // 기존 데이터 초기화
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String docId = document.getId(); // documentId 가져오기
+                            String otherTitle = document.getString("title");
+                            String date = document.getString("date");
+
+                            Community_RecyclerViewItem item = new Community_RecyclerViewItem();
+                            item.setDocumentId(docId);
+                            item.setMainText(otherTitle);
+                            item.setSubText(date);
+                            mList.add(item);
+                        }
+
+                        // 어댑터에 변경 알림
+                        mCommunityDetailRecyclerViewAdapter = new Community_DetailRecyclerViewAdapter(mList, getContext());
+                        mRecyclerView.setAdapter(mCommunityDetailRecyclerViewAdapter);
+                        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
+                    } else {
+                        Log.e("FirestoreError", "데이터 가져오기 실패: " + task.getException());
                     }
                 });
     }

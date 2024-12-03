@@ -6,6 +6,9 @@ public class Community_RecyclerViewItem {
     private String mSubText;
     private String documentId;
 
+    // 기본 생성자 (Firestore에서 객체 생성 시 필요)
+    public Community_RecyclerViewItem() {}
+
     // Getter 및 Setter
     public String getDocumentId() {
         return documentId;
