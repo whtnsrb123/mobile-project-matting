@@ -46,7 +46,7 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); // 뒤로가기 버튼 활성화
-        getSupportActionBar().setTitle(chatroomId);
+        getSupportActionBar().setTitle("채팅방");
 
         listViewMessages = findViewById(R.id.listViewMessages);
         editTextMessage = findViewById(R.id.editTextMessage);
@@ -100,7 +100,7 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
 
         buttonMeetingInfo.setOnClickListener(v -> {
             // 프래그먼트 실행
-            MeetingInfoFragment fragment = new MeetingInfoFragment();
+            MeetingInfoFragment fragment = MeetingInfoFragment.newInstance(chatroomId);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(android.R.id.content, fragment);
             transaction.addToBackStack(null);
