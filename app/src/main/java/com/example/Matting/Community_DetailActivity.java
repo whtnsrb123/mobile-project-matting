@@ -1,4 +1,5 @@
 package com.example.Matting;
+
 import static com.example.Matting.Chat_Chatmanage.addNewChatRoom;
 
 import android.app.Dialog;
@@ -12,15 +13,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.ImageButton;
 import android.widget.Toast;
-import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,7 +49,7 @@ import com.naver.maps.map.overlay.Marker;
 import java.util.ArrayList;
 
 
-public class Community_DetailActivity extends AppCompatActivity implements OnMapReadyCallback{
+public class Community_DetailActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private double cur_lat, cur_lon;
     private NaverMap naverMap;
@@ -69,6 +70,12 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+
+        // 채팅방 이동
+        Button goChat = findViewById(R.id.go_chat);
+        goChat.setOnClickListener(v -> newCommunityChat());
+
 
         //로그인 확인
         mAuth = FirebaseAuth.getInstance();
@@ -94,7 +101,7 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
 
         // Intent에서 documentId 가져오기
         documentId = getIntent().getStringExtra("documentId");
-        Log.d("getDocumentId", "Community_DetailActivity: "+documentId);
+        Log.d("getDocumentId", "Community_DetailActivity: " + documentId);
 
         // Firestore에서 데이터 가져오기
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -132,8 +139,7 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.del, menu);
         return true;
@@ -359,6 +365,42 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
                 });
     }
 
+    // RecyclerView 항목 추가 메서드
+    public void addItem(String imgName, String mainText, String subText) {
+        Community_RecyclerViewItem item = new Community_RecyclerViewItem();
+
+        item.setImgName(imgName);
+        item.setMainText(mainText);
+        item.setSubText(subText);
+
+        mList.add(item);
+    }
+
+    // 팝업창
+    private void setupClickListenerForPopup(TextView textView, String title, String message) {
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // AlertDialog 생성 및 설정
+                AlertDialog.Builder builder = new AlertDialog.Builder(Community_DetailActivity.this);
+                builder.setTitle(title);
+                builder.setMessage(message);
+
+                // 확인 버튼 추가
+                builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss(); // 팝업 닫기
+                    }
+                });
+
+                // 팝업 창 표시
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+    }
+
     // 전체 화면으로 이미지 표시 메서드
     private void showFullScreenImage(int imageResId) {
         // Dialog 생성
@@ -382,10 +424,10 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
     }
 
     //채팅방 연결
-    private void newCommunityChat(){
+    private void newCommunityChat() {
         User user = new User(this);
         TextView postTitle = findViewById(R.id.post_title);
-        addNewChatRoom(postTitle.getText().toString(),user);
+        addNewChatRoom(postTitle.getText().toString(), user);
         Intent intent = new Intent(Community_DetailActivity.this, Chat_ChatroomActivity.class);
         intent.putExtra("chatRoomId", postTitle.getText().toString());
         startActivity(intent);
