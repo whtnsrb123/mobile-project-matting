@@ -35,6 +35,7 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
     private ArrayList<String> userlist;
     private TextView usercnt;
     private Button buttonMeetingInfo;
+    private String meetId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +60,8 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
         Intent intent = getIntent();
         chatroomId = intent.getStringExtra("chatRoomId");
 
-        db = FirebaseDatabase.getInstance().getReference().child("chatroomlist").child(chatroomId);
+        db = FirebaseDatabase.getInstance().getReference().child(chatroomId);
         db.child("id").setValue(chatroomId);
-
         chatMessageList = new ArrayList<>();
         chatMessageAdapter = new Chat_MessageAdapter(this, chatMessageList, user.getUserId());
         listViewMessages.setAdapter(chatMessageAdapter);
@@ -100,7 +100,7 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
 
         buttonMeetingInfo.setOnClickListener(v -> {
             // 프래그먼트 실행
-            MeetingInfoFragment fragment = MeetingInfoFragment.newInstance(chatroomId);
+            MeetingInfoFragment fragment = MeetingInfoFragment.newInstance(chatroomId, chatroomId);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(android.R.id.content, fragment);
             transaction.addToBackStack(null);

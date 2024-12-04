@@ -1,18 +1,14 @@
 package com.example.Matting;
 
-import static com.example.Matting.Chat_Chatmanage.addNewChatRoom;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -32,6 +28,7 @@ import java.util.List;
 public class Chat_ChatlistActivity extends AppCompatActivity {
     private ListView listViewChatRooms;
     private List<String> chatRoomList;
+    private List<String> chatRoomNameList;
     private Chat_ChatRoomAdapter adapter;
     private User user;
     private FirebaseAuth mAuth;
@@ -56,7 +53,9 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
 
         listViewChatRooms = findViewById(R.id.listViewChatRooms);
         chatRoomList = new ArrayList<>();
-        adapter = new Chat_ChatRoomAdapter(this, chatRoomList);
+        chatRoomNameList = new ArrayList<>();
+        adapter = new Chat_ChatRoomAdapter(this, chatRoomNameList, chatRoomList);
+
         listViewChatRooms.setAdapter(adapter);
 
         // Firebase에서 채팅방 목록을 로드
@@ -64,13 +63,30 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 chatRoomList.clear();
+                chatRoomNameList.clear();
                 for (DataSnapshot chatRoomSnapshot : snapshot.getChildren()) {
                     String chatRoomId = chatRoomSnapshot.getValue(String.class);
                     if (chatRoomId != null) {
                         chatRoomList.add(chatRoomId);
+
+                        // 각 채팅방의 이름을 가져오기
+                        FirebaseDatabase.getInstance().getReference(chatRoomId).child("chatname").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String chatRoomName = snapshot.getValue(String.class);
+                                if (chatRoomName != null) {
+                                    chatRoomNameList.add(chatRoomName);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                // 에러 처리
+                            }
+                        });
                     }
                 }
-                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -98,7 +114,7 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
         }
 
         ImageButton addButton = findViewById(R.id.btn_add_chat);
-        addButton.setOnClickListener(v -> showAddChatRoomDialog());
+        //addButton.setOnClickListener(v -> showAddChatRoomDialog());
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
@@ -137,7 +153,7 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
             }
         });
     }
-
+/*
     private void showAddChatRoomDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add Chat Room");
@@ -147,12 +163,12 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
         builder.setPositiveButton("OK", (dialog, which) -> {
             String newChatRoomId = input.getText().toString();
             if (!newChatRoomId.isEmpty()) {
-                addNewChatRoom(newChatRoomId, user);
+                addNewChatRoom(newChatRoomId, user,);
             }
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         builder.show();
-    }
+    }*/
 }
