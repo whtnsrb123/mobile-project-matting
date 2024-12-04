@@ -83,26 +83,36 @@ public class Chat_ChatRoomAdapter extends ArrayAdapter<String> {
                     // 에러 처리
                 }
             });
-
-            // 유저의 채팅 리스트에서 삭제
             DatabaseReference dbRef = FirebaseDatabase.getInstance()
                     .getReference("users")
                     .child(user.getUserId())
                     .child("chats");
 
-            dbRef.orderByKey().equalTo(chatRoomId).addListenerForSingleValueEvent(new ValueEventListener() {
+// orderByValue()로 변경하여 값을 기준으로 필터링
+            dbRef.orderByValue().equalTo(chatRoomId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        snapshot.getRef().removeValue();
+                    if (dataSnapshot.exists()) { // 데이터가 존재하는지 확인
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            snapshot.getRef().removeValue().addOnSuccessListener(aVoid -> {
+                                // 데이터 삭제 성공
+                                System.out.println("Firebase 데이터 삭제 성공");
+                            }).addOnFailureListener(e -> {
+                                // 데이터 삭제 실패
+                                System.err.println("Firebase 데이터 삭제 실패: " + e.getMessage());
+                            });
+                        }
+                    } else {
+                        System.out.println("삭제할 데이터가 없습니다.");
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // 에러 처리
+                    System.err.println("Firebase 작업이 취소되었습니다: " + databaseError.getMessage());
                 }
             });
+
         });
 
         return convertView;
