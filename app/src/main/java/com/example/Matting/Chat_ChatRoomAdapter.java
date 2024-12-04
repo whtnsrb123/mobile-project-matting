@@ -22,12 +22,14 @@ import java.util.List;
 
 public class Chat_ChatRoomAdapter extends ArrayAdapter<String> {
     private Context context;
-    private List<String> chatRooms;
+    private List<String> chatRoomNames; // 채팅방 이름
+    private List<String> chatRoomIds;   // 채팅방 ID
 
-    public Chat_ChatRoomAdapter(@NonNull Context context, @NonNull List<String> objects) {
-        super(context, 0, objects);
+    public Chat_ChatRoomAdapter(@NonNull Context context, @NonNull List<String> names, @NonNull List<String> ids) {
+        super(context, 0, names);
         this.context = context;
-        this.chatRooms = objects;
+        this.chatRoomNames = names;
+        this.chatRoomIds = ids;
     }
 
     @NonNull
@@ -37,31 +39,41 @@ public class Chat_ChatRoomAdapter extends ArrayAdapter<String> {
             convertView = LayoutInflater.from(context).inflate(R.layout.chat_room_item, parent, false);
         }
 
-        String chatRoomName = chatRooms.get(position);
+        // 현재 위치의 채팅방 이름과 ID 가져오기
+        String chatRoomName = chatRoomNames.get(position);
+        String chatRoomId = chatRoomIds.get(position);
 
+        // 채팅방 이름 설정
         TextView textViewChatRoomName = convertView.findViewById(R.id.chatRoomName);
         textViewChatRoomName.setText(chatRoomName);
+
+        // 채팅방 클릭 이벤트
         textViewChatRoomName.setOnClickListener(v -> {
-            Intent intent = new Intent(context, Chat_ChatroomActivity.class); // 여기서 context를 사용
-            intent.putExtra("chatRoomId", chatRoomName);
-            context.startActivity(intent); // 여기서 context를 사용
+            Intent intent = new Intent(context, Chat_ChatroomActivity.class);
+            intent.putExtra("chatRoomId", chatRoomId); // chatRoomId 전달
+            context.startActivity(intent);
         });
 
+        // 삭제 버튼
         ImageButton btnDeleteChat = convertView.findViewById(R.id.btn_delete_chat);
         btnDeleteChat.setOnClickListener(v -> {
-            // 삭제 버튼 클릭 시 동작 정의
-            chatRooms.remove(position);
+            // 채팅방 삭제 로직
+            chatRoomNames.remove(position);
+            chatRoomIds.remove(position);
             notifyDataSetChanged();
-            // Firebase에서 해당 채팅방 삭제
+
+            // Firebase에서 데이터 삭제
             User user = new User(context);
-            //채팅방 유저목록에서 삭제
-            DatabaseReference chatdb;
-            chatdb = FirebaseDatabase.getInstance().getReference().child(chatRoomName).child("users");
-            chatdb.orderByValue().equalTo(user.getUserId().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+
+            // 채팅방 유저 목록에서 삭제
+            DatabaseReference chatdb = FirebaseDatabase.getInstance()
+                    .getReference()
+                    .child(chatRoomId)
+                    .child("users");
+            chatdb.orderByValue().equalTo(user.getUserId()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        // 해당 데이터 삭제
                         snapshot.getRef().removeValue();
                     }
                 }
@@ -72,17 +84,16 @@ public class Chat_ChatRoomAdapter extends ArrayAdapter<String> {
                 }
             });
 
-            //유저의 채팅리스트 삭제
-            DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUserId()).child("chats");
+            // 유저의 채팅 리스트에서 삭제
+            DatabaseReference dbRef = FirebaseDatabase.getInstance()
+                    .getReference("users")
+                    .child(user.getUserId())
+                    .child("chats");
 
-            // 특정 문자열을 가지는 데이터를 삭제
-            String targetString = chatRoomName;
-
-            dbRef.orderByValue().equalTo(targetString).addListenerForSingleValueEvent(new ValueEventListener() {
+            dbRef.orderByKey().equalTo(chatRoomId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        // 해당 데이터 삭제
                         snapshot.getRef().removeValue();
                     }
                 }

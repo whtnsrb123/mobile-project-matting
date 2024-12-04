@@ -28,6 +28,7 @@ import java.util.List;
 public class Chat_ChatlistActivity extends AppCompatActivity {
     private ListView listViewChatRooms;
     private List<String> chatRoomList;
+    private List<String> chatRoomNameList;
     private Chat_ChatRoomAdapter adapter;
     private User user;
     private FirebaseAuth mAuth;
@@ -52,7 +53,9 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
 
         listViewChatRooms = findViewById(R.id.listViewChatRooms);
         chatRoomList = new ArrayList<>();
-        adapter = new Chat_ChatRoomAdapter(this, chatRoomList);
+        chatRoomNameList = new ArrayList<>();
+        adapter = new Chat_ChatRoomAdapter(this, chatRoomNameList, chatRoomList);
+
         listViewChatRooms.setAdapter(adapter);
 
         // Firebase에서 채팅방 목록을 로드
@@ -60,13 +63,30 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 chatRoomList.clear();
+                chatRoomNameList.clear();
                 for (DataSnapshot chatRoomSnapshot : snapshot.getChildren()) {
                     String chatRoomId = chatRoomSnapshot.getValue(String.class);
                     if (chatRoomId != null) {
                         chatRoomList.add(chatRoomId);
+
+                        // 각 채팅방의 이름을 가져오기
+                        FirebaseDatabase.getInstance().getReference(chatRoomId).child("chatname").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String chatRoomName = snapshot.getValue(String.class);
+                                if (chatRoomName != null) {
+                                    chatRoomNameList.add(chatRoomName);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                // 에러 처리
+                            }
+                        });
                     }
                 }
-                adapter.notifyDataSetChanged();
             }
 
             @Override
