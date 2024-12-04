@@ -8,17 +8,22 @@ public class Main_Review {
     private String username;
     private double rating;
     private Timestamp date; // Firestore의 Timestamp 형식 사용
+    private String imageResource;
 
-    public Main_Review(String address, String content, Timestamp date, float rating, String username) {
+    public Main_Review(String address, String content, Timestamp date, float rating, String username, String imageResource) {
         this.address = address;
         this.content = content;
         this.date = date;
         this.rating = rating;
         this.username = username;
+        this.imageResource = imageResource;
     }
 
     // 기본 생성자 (Firestore에서 객체 생성 시 필요)
     public Main_Review() {}
+
+    public String getImageResource() { return imageResource; }
+    public void setImageResource(String imageResource) { this.imageResource = imageResource; }
 
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
