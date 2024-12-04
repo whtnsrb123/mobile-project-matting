@@ -59,7 +59,7 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
         Intent intent = getIntent();
         chatroomId = intent.getStringExtra("chatRoomId");
 
-        db = FirebaseDatabase.getInstance().getReference().child("chatroomlist").child(chatroomId);
+        db = FirebaseDatabase.getInstance().getReference().child(chatroomId);
         db.child("id").setValue(chatroomId);
 
         chatMessageList = new ArrayList<>();

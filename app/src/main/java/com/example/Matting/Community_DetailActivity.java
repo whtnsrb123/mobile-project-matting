@@ -427,9 +427,9 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
     private void newCommunityChat() {
         User user = new User(this);
         TextView postTitle = findViewById(R.id.post_title);
-        addNewChatRoom(postTitle.getText().toString(), user);
+        addNewChatRoom(postTitle.getText().toString(), user, documentId);
         Intent intent = new Intent(Community_DetailActivity.this, Chat_ChatroomActivity.class);
-        intent.putExtra("chatRoomId", postTitle.getText().toString());
+        intent.putExtra("chatRoomId", documentId);
         startActivity(intent);
         return;
     }

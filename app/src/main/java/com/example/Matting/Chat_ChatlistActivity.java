@@ -1,18 +1,14 @@
 package com.example.Matting;
 
-import static com.example.Matting.Chat_Chatmanage.addNewChatRoom;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -98,7 +94,7 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
         }
 
         ImageButton addButton = findViewById(R.id.btn_add_chat);
-        addButton.setOnClickListener(v -> showAddChatRoomDialog());
+        //addButton.setOnClickListener(v -> showAddChatRoomDialog());
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
@@ -137,7 +133,7 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
             }
         });
     }
-
+/*
     private void showAddChatRoomDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add Chat Room");
@@ -147,12 +143,12 @@ public class Chat_ChatlistActivity extends AppCompatActivity {
         builder.setPositiveButton("OK", (dialog, which) -> {
             String newChatRoomId = input.getText().toString();
             if (!newChatRoomId.isEmpty()) {
-                addNewChatRoom(newChatRoomId, user);
+                addNewChatRoom(newChatRoomId, user,);
             }
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         builder.show();
-    }
+    }*/
 }

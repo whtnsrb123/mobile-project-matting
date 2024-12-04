@@ -56,7 +56,7 @@ public class Chat_ChatRoomAdapter extends ArrayAdapter<String> {
             User user = new User(context);
             //채팅방 유저목록에서 삭제
             DatabaseReference chatdb;
-            chatdb = FirebaseDatabase.getInstance().getReference().child("chatroomlist").child(chatRoomName).child("users");
+            chatdb = FirebaseDatabase.getInstance().getReference().child(chatRoomName).child("users");
             chatdb.orderByValue().equalTo(user.getUserId().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
