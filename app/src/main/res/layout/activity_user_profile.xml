@@ -148,7 +148,7 @@
             android:weightSum="2">
 
             <Button
-                android:id="@+id/editProfileButton"
+                android:id="@+id/followButton"
                 android:layout_width="280dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
