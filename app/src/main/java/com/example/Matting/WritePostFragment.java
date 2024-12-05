@@ -121,10 +121,11 @@ public class WritePostFragment extends Fragment {
                 .add(postMap)
                 .addOnSuccessListener(documentReference -> {
 
-                    Toast.makeText(getContext(), "게시글이 업로드되었습니다.", Toast.LENGTH_SHORT).show();
-
-                    // 성공 시 프래그먼트 종료
-                    getParentFragmentManager().popBackStack();
+                    // MyProfileActivity 재실행
+                    Intent intent = new Intent(getContext(), MyProfileActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    getActivity().finish(); // 현재 프래그먼트 액티비티 종료
                 })
                 .addOnFailureListener(e -> {
                     Log.e("WritePostFragment", "Upload failed", e);
