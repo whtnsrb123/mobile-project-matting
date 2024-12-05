@@ -147,6 +147,7 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
 
             // 닉네임 가져오기
             fetchNickname(userId);
+            fetchPostCount(userId);
 
             // 팔로워와 팔로잉 수 가져오기
             fetchFollowerCount(userId);
@@ -468,6 +469,22 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
                     public void onCancelled(@NonNull DatabaseError error) {
                         Log.e("MyProfileActivity", "Error fetching following count", error.toException());
                     }
+                });
+    }
+
+    private void fetchPostCount(String userId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("posts")
+                .whereEqualTo("username", userId) // 사용자의 게시물만 가져옴
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    int count = queryDocumentSnapshots.size(); // 게시물 수 계산
+                    TextView postCountTextView = findViewById(R.id.postCount);
+                    postCountTextView.setText(String.valueOf(count)); // 게시물 수 업데이트
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("MyProfileActivity", "Error fetching post count", e);
                 });
     }
 }

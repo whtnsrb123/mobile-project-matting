@@ -63,6 +63,10 @@ public class UserProfileActivity extends AppCompatActivity {
         // Firestore에서 게시글 로드
         fetchPosts();
 
+        // 팔로워 및 팔로잉 수 불러오기
+        fetchFollowerCount();
+        fetchFollowingCount();
+
         // 액션바 설정
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -71,7 +75,6 @@ public class UserProfileActivity extends AppCompatActivity {
 
         // 추가된 팔로워 및 팔로잉 버튼 동작 설정
         setupFollowButtons();
-
     }
 
     // 뒤로가기 버튼 동작 처리
@@ -173,6 +176,41 @@ public class UserProfileActivity extends AppCompatActivity {
             intent.putExtra("userId", userId); // 현재 프로필의 userId 전달
             startActivity(intent);
         });
+    }
+    private void fetchFollowingCount() {
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
+        databaseRef.child("users").child(userId).child("following")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        long count = snapshot.getChildrenCount(); // 팔로잉 수 계산
+                        TextView followingCountTextView = findViewById(R.id.followingCount);
+                        followingCountTextView.setText(String.valueOf(count)); // UI에 표시
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("UserProfileActivity", "Error fetching following count", error.toException());
+                    }
+                });
+    }
+
+    private void fetchFollowerCount() {
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
+        databaseRef.child("users").child(userId).child("followers")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        long count = snapshot.getChildrenCount(); // 팔로워 수 계산
+                        TextView followerCountTextView = findViewById(R.id.followerCount);
+                        followerCountTextView.setText(String.valueOf(count)); // UI에 표시
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("UserProfileActivity", "Error fetching followers count", error.toException());
+                    }
+                });
     }
 
 }

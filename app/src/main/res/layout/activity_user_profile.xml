@@ -152,7 +152,7 @@
                 android:layout_width="280dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="팔로우 버튼일 될 것" />
+                android:text="팔로우" />
 
         </LinearLayout>
 
