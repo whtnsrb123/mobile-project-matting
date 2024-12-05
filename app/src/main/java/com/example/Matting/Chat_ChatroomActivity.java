@@ -103,9 +103,9 @@ public class Chat_ChatroomActivity extends AppCompatActivity {
             MeetingInfoFragment fragment = MeetingInfoFragment.newInstance(chatroomId, chatroomId);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(android.R.id.content, fragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
+            transaction.commit(); // 백 스택에 추가하지 않음
         });
+
 
         receiveMessages();
     }

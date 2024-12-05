@@ -10,15 +10,20 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -41,13 +46,14 @@ public class User_EditProfileActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); // 뒤로가기 버튼 활성화
-
+        user = new User(this);
         // 프로필 이미지 업로드
         profileImageButton = findViewById(R.id.profile_image_button);
+        loadProfileImageFromFirebase(); // Firebase에서 프로필 이미지 로드
         profileImageButton.setOnClickListener(v -> openImageChooser());
 
         // 프로필 변경사항 저장
-        user = new User(this);
+
         buttonSave = findViewById(R.id.buttonSave);
         editNickname = findViewById(R.id.editNickname);
         buttonSave.setOnClickListener(v -> {
@@ -59,7 +65,42 @@ public class User_EditProfileActivity extends AppCompatActivity {
             if (base64Image != null) {
                 db.child("profileImage").setValue(base64Image);
             }
+            // MyProfileActivity 재실행
+            Intent intent = new Intent(User_EditProfileActivity.this, MyProfileActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
             finish();
+        });
+    }
+
+    private void loadProfileImageFromFirebase() {
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference("users").child(user.getUserId()).child("profileImage");
+
+        db.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String base64Image = snapshot.getValue(String.class);
+                    if (base64Image != null) {
+                        // Glide로 Base64 디코딩 후 이미지 설정
+                        Glide.with(User_EditProfileActivity.this)
+                                .load(Base64.decode(base64Image, Base64.DEFAULT))
+                                .circleCrop()
+                                .into(profileImageButton);
+                    }
+                } else {
+                    // 기본 프로필 이미지 설정
+                    Glide.with(User_EditProfileActivity.this)
+                            .load(R.drawable.profile_image) // 기본 이미지
+                            .circleCrop()
+                            .into(profileImageButton);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // 데이터베이스 에러 처리
+                Toast.makeText(User_EditProfileActivity.this, "이미지를 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
