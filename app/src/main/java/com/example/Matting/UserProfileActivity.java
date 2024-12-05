@@ -4,8 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,6 +15,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -75,6 +75,9 @@ public class UserProfileActivity extends AppCompatActivity {
 
         // 추가된 팔로워 및 팔로잉 버튼 동작 설정
         setupFollowButtons();
+
+        // 팔로우 버튼 설정
+        setupFollowButton();
     }
 
     // 뒤로가기 버튼 동작 처리
@@ -177,6 +180,65 @@ public class UserProfileActivity extends AppCompatActivity {
             startActivity(intent);
         });
     }
+
+    private void setupFollowButton() {
+        Button followButton = findViewById(R.id.followButton);
+
+        // 현재 로그인된 사용자 ID
+        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
+
+        // 팔로우 상태 확인
+        databaseRef.child("users").child(userId).child("followers").child(currentUserId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            followButton.setText("팔로잉");
+                        } else {
+                            followButton.setText("팔로우");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("UserProfileActivity", "Error checking follow status", error.toException());
+                    }
+                });
+
+        // 버튼 클릭 이벤트
+        followButton.setOnClickListener(v -> {
+            databaseRef.child("users").child(userId).child("followers").child(currentUserId)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                // 팔로우 취소
+                                databaseRef.child("users").child(userId).child("followers").child(currentUserId).removeValue()
+                                        .addOnSuccessListener(unused -> {
+                                            followButton.setText("팔로우");
+                                            Toast.makeText(UserProfileActivity.this, "팔로우 취소", Toast.LENGTH_SHORT).show();
+                                        })
+                                        .addOnFailureListener(e -> Log.e("UserProfileActivity", "Error removing follower", e));
+                            } else {
+                                // 팔로우 추가
+                                databaseRef.child("users").child(userId).child("followers").child(currentUserId).setValue(true)
+                                        .addOnSuccessListener(unused -> {
+                                            followButton.setText("팔로잉");
+                                            Toast.makeText(UserProfileActivity.this, "팔로우 성공", Toast.LENGTH_SHORT).show();
+                                        })
+                                        .addOnFailureListener(e -> Log.e("UserProfileActivity", "Error adding follower", e));
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Log.e("UserProfileActivity", "Error toggling follow status", error.toException());
+                        }
+                    });
+        });
+    }
+
     private void fetchFollowingCount() {
         DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
         databaseRef.child("users").child(userId).child("following")
@@ -212,5 +274,4 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
                 });
     }
-
 }
