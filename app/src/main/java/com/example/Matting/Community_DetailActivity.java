@@ -48,17 +48,19 @@ import com.naver.maps.map.overlay.Marker;
 
 import java.util.ArrayList;
 
-
 public class Community_DetailActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private double cur_lat, cur_lon;
     private NaverMap naverMap;
 
-    private RecyclerView mRecyclerView;
+    private RecyclerView mRecyclerView, reviewImageRecyclerView;
     private ArrayList<Community_RecyclerViewItem> mList;
+    private ArrayList<String> reviewImageBase64List;
     private Community_DetailRecyclerViewAdapter mCommunityDetailRecyclerViewAdapter;
+    private ReviewImageAdapter reviewImageAdapter;
 
     private String documentId, title, content, userid, restaurant, location, date, time;
+    private String address;
 
     private Marker marker = new Marker();
 
@@ -71,11 +73,9 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-
         // 채팅방 이동
         Button goChat = findViewById(R.id.go_chat);
         goChat.setOnClickListener(v -> newCommunityChat());
-
 
         //로그인 확인
         mAuth = FirebaseAuth.getInstance();
@@ -123,11 +123,15 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
                         restaurant = document.getString("restaurant");
                         cur_lon = document.getString("mapx") != null ? Double.parseDouble(document.getString("mapx")) / 10_000_000.0 : 0.0;
                         cur_lat = document.getString("mapy") != null ? Double.parseDouble(document.getString("mapy")) / 10_000_000.0 : 0.0;
+                        address = document.getString("address");
 
                         updateUI();
 
                         // Firestore 데이터 로드 완료 후 메뉴 갱신
                         invalidateOptionsMenu();
+
+                        // 리뷰 이미지 가져오기
+                        fetchReviewImagesFromFirestore();
                     } else {
                         Log.d("getDocumentId", "No such document");
                     }
@@ -137,6 +141,37 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
             }
         });
     }
+
+    private void fetchReviewImagesFromFirestore() {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        reviewImageBase64List = new ArrayList<>();
+
+        firestore.collection("review")
+                .whereEqualTo("address", address)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String base64Image = document.getString("imageResource");
+                            if (base64Image != null && !base64Image.isEmpty()) { // 빈 문자열 확인 추가
+                                reviewImageBase64List.add(base64Image);
+                            }
+                        }
+                        setupReviewImageRecyclerView();
+                    } else {
+                        Log.e("FirestoreError", "리뷰 이미지를 가져오는 데 실패했습니다.", task.getException());
+                    }
+                });
+    }
+
+
+    private void setupReviewImageRecyclerView() {
+        reviewImageRecyclerView = findViewById(R.id.review_image_recycler_view);
+        reviewImageAdapter = new ReviewImageAdapter(this, reviewImageBase64List);
+        reviewImageRecyclerView.setAdapter(reviewImageAdapter);
+        reviewImageRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -267,7 +302,7 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
                 finish();
             }
         });
-
+/*
         // 이미지 클릭 시 전체 화면으로 이미지 보기
         ImageView thumbnailImage = findViewById(R.id.thumbnail_image);
         thumbnailImage.setOnClickListener(new View.OnClickListener() {
@@ -275,7 +310,7 @@ public class Community_DetailActivity extends AppCompatActivity implements OnMap
             public void onClick(View v) {
                 showFullScreenImage(R.drawable.food);  // 확대할 이미지 리소스를 전달
             }
-        });
+        });*/
     }
 
 
