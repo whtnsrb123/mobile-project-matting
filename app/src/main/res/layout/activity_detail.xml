@@ -78,13 +78,13 @@
                     android:textColor="#333333"
                     android:textSize="16sp" />
 
-                <TextView
-                    android:id="@+id/go_restaurant"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="식당 정보 보러가기 >"
-                    android:textColor="#666666"
-                    android:textSize="14sp" />
+<!--                <TextView-->
+<!--                    android:id="@+id/go_restaurant"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="식당 정보 보러가기 >"-->
+<!--                    android:textColor="#666666"-->
+<!--                    android:textSize="14sp" />-->
             </LinearLayout>
 
             <LinearLayout
