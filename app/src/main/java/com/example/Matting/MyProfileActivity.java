@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -289,12 +290,42 @@ public class MyProfileActivity extends AppCompatActivity implements WritePostFra
     }
 
     private void loadProfileImage() {
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        String imageUriString = sharedPreferences.getString(PROFILE_IMAGE_URI_KEY, null);
-        if (imageUriString != null) {
-            Uri imageUri = Uri.parse(imageUriString);
-            setProfileImage(imageUri); // 저장된 URI로 프로필 이미지 설정
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
+
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+
+            // Firebase에서 프로필 이미지 가져오기
+            userRef.child("profileImage").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        String base64Image = snapshot.getValue(String.class); // Base64로 저장된 이미지
+                        if (base64Image != null) {
+                            // Glide를 사용하여 이미지를 설정
+                            Glide.with(MyProfileActivity.this)
+                                    .load(Base64.decode(base64Image, Base64.DEFAULT)) // Base64 디코딩
+                                    .circleCrop()
+                                    .into(profileImage);
+                        }
+                    } else {
+                        // Firebase에 이미지가 없을 경우 기본 이미지 설정
+                        Glide.with(MyProfileActivity.this)
+                                .load(R.drawable.profile_image)
+                                .circleCrop()
+                                .into(profileImage);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(MyProfileActivity.this, "프로필 이미지를 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                }
+            });
         } else {
+            // 사용자가 로그인되지 않은 경우 기본 이미지 설정
             Glide.with(this)
                     .load(R.drawable.profile_image)
                     .circleCrop()

@@ -59,6 +59,10 @@ public class User_EditProfileActivity extends AppCompatActivity {
             if (base64Image != null) {
                 db.child("profileImage").setValue(base64Image);
             }
+            // MyProfileActivity 재실행
+            Intent intent = new Intent(User_EditProfileActivity.this, MyProfileActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
             finish();
         });
     }
