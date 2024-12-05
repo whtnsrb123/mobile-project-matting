@@ -52,9 +52,9 @@
                 android:id="@+id/tvRating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="4.26"
+                android:text=""
                 android:textSize="16sp"
-                android:textColor="@android:color/holo_red_dark"/>
+                android:textColor="@color/white"/>
         </LinearLayout>
 
         <!-- Image Row -->
