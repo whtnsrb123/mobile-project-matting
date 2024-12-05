@@ -1,40 +1,22 @@
 package com.example.Matting;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 public class Community_DetailRecyclerViewAdapter extends RecyclerView.Adapter<Community_DetailRecyclerViewAdapter.ViewHolder> {
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imgView_item;
-        TextView txt_main;
-        TextView txt_sub;
-
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            imgView_item = (ImageView) itemView.findViewById(R.id.imgView_item);
-            txt_main = (TextView) itemView.findViewById(R.id.txt_main);
-            txt_sub = (TextView) itemView.findViewById(R.id.txt_sub);
-        }
-    }
 
     private ArrayList<Community_RecyclerViewItem> mList = null;
     private Context mContext;
-
     public Community_DetailRecyclerViewAdapter(ArrayList<Community_RecyclerViewItem> mList, Context context) {
         this.mList = mList;
         this.mContext = context;
@@ -57,7 +39,6 @@ public class Community_DetailRecyclerViewAdapter extends RecyclerView.Adapter<Co
     public void onBindViewHolder(@NonNull Community_DetailRecyclerViewAdapter.ViewHolder holder, int position) {
         Community_RecyclerViewItem item = mList.get(position);
 
-        holder.imgView_item.setImageResource(R.drawable.food);   // 사진 없어서 기본 파일로 이미지 띄움
         holder.txt_main.setText(item.getMainText());
         holder.txt_sub.setText(item.getSubText());
 
@@ -65,15 +46,12 @@ public class Community_DetailRecyclerViewAdapter extends RecyclerView.Adapter<Co
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 팝업창 표시
-//                setupClickListenerForPopup(item.getMainText(), item.getSubText());
                 Intent intent = new Intent(v.getContext(), Community_DetailActivity.class);
                 intent.putExtra("documentId", item.getDocumentId()); // Firestore documentId 전달
                 Log.d("getDocumentId", item.getDocumentId());
                 v.getContext().startActivity(intent);
             }
         });
-
     }
 
     @Override
@@ -81,22 +59,14 @@ public class Community_DetailRecyclerViewAdapter extends RecyclerView.Adapter<Co
         return mList.size();
     }
 
-    // 팝업창 생성 메서드
-    private void setupClickListenerForPopup(String title, String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle(title);
-        builder.setMessage(message);
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView txt_main;
+        TextView txt_sub;
 
-        // 확인 버튼 추가
-        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss(); // 팝업 닫기
-            }
-        });
-
-        // 팝업 창 표시
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txt_main = itemView.findViewById(R.id.txt_main);
+            txt_sub = itemView.findViewById(R.id.txt_sub);
+        }
     }
 }
