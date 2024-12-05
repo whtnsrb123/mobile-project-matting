@@ -65,10 +65,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     LocationManager locationManager;
     private FusedLocationSource locationSource;
     private String currentAddress = "서울특별시 중구 태평로1가"; // 초기값
-    private double cur_lat = 37.5665; // 초기값 (서울 예시)
-    private double cur_lon = 126.9780;
+    private final double cur_lat = 37.5665; // 초기값 (서울 예시)
+    private final double cur_lon = 126.9780;
     private NaverMap naverMap;
-    private Marker marker = new Marker();
+    private final Marker marker = new Marker();
     private RecyclerView restaurantRecyclerView;
     private MainAdapter mainAdapter;
     private List<Main> mainList;
@@ -92,7 +92,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Intent loginIntent = new Intent(MainActivity.this, User_LoginActivity.class);
             startActivityForResult(loginIntent, 1001); // 1001은 요청 코드
         }
-
 
         locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
@@ -392,7 +391,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 // 현재 위치로 지도 중심 이동
                 updateMapCenter(latitude, longitude);
 
-//                getReverseGeocode(latitude, longitude);
+                getReverseGeocode(latitude, longitude);
             } else {
                 Log.d("LocationDebug", "현재 위치를 가져올 수 없음. 기본 위치로 설정");
                 useDefaultLocation();
