@@ -74,7 +74,7 @@ public class UserProfileActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(""); // 액션바 제목 비우기 또는 원하는 값으로 설정
 
         // 추가된 팔로워 및 팔로잉 버튼 동작 설정
-        setupFollowButtons();
+        setupFollow_FollowingButtons();
 
         // 팔로우 버튼 설정
         setupFollowButton();
@@ -89,7 +89,7 @@ public class UserProfileActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
+    // 유저 데이터 가져오기
     private void fetchUserData() {
         DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
         databaseRef.child("users").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -110,7 +110,7 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
     }
-
+    // 유저 게시글 불러오기
     private void fetchPosts() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -153,7 +153,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Log.e("UserProfileActivity", "Error fetching posts", e));
     }
-
+    // 뷰
     private void setupRecyclerView() {
         postRecyclerView = findViewById(R.id.postRecyclerView);
         postRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
@@ -162,7 +162,7 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     // 팔로워 및 팔로잉 버튼 클릭 이벤트 추가
-    private void setupFollowButtons() {
+    private void setupFollow_FollowingButtons() {
         LinearLayout followersLayout = findViewById(R.id.followersLayout);
         LinearLayout followingLayout = findViewById(R.id.followingLayout);
 
@@ -220,6 +220,10 @@ public class UserProfileActivity extends AppCompatActivity {
                                             Toast.makeText(UserProfileActivity.this, "팔로우 취소", Toast.LENGTH_SHORT).show();
                                         })
                                         .addOnFailureListener(e -> Log.e("UserProfileActivity", "Error removing follower", e));
+
+                                // 내 following에서도 상대방 userId 제거
+                                databaseRef.child("users").child(currentUserId).child("following").child(userId).removeValue()
+                                        .addOnFailureListener(e -> Log.e("UserProfileActivity", "Error removing following", e));
                             } else {
                                 // 팔로우 추가
                                 databaseRef.child("users").child(userId).child("followers").child(currentUserId).setValue(true)
@@ -228,6 +232,10 @@ public class UserProfileActivity extends AppCompatActivity {
                                             Toast.makeText(UserProfileActivity.this, "팔로우 성공", Toast.LENGTH_SHORT).show();
                                         })
                                         .addOnFailureListener(e -> Log.e("UserProfileActivity", "Error adding follower", e));
+
+                                // 내 following에도 상대방 userId 추가
+                                databaseRef.child("users").child(currentUserId).child("following").child(userId).setValue(true)
+                                        .addOnFailureListener(e -> Log.e("UserProfileActivity", "Error adding following", e));
                             }
                         }
 
@@ -238,7 +246,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     });
         });
     }
-
+    // 팔로잉 수 불러오기
     private void fetchFollowingCount() {
         DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
         databaseRef.child("users").child(userId).child("following")
@@ -256,7 +264,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
                 });
     }
-
+    // 팔로워 수 불러오기
     private void fetchFollowerCount() {
         DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
         databaseRef.child("users").child(userId).child("followers")
