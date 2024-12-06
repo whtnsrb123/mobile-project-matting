@@ -1,5 +1,6 @@
 package com.example.Matting;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,8 +25,8 @@ public class FollowersActivity extends AppCompatActivity {
 
     private RecyclerView followersRecyclerView;
     private FollowersAdapter followersAdapter;
-    private List<Follower> followersList; // 팔로워 데이터
-    private List<Follower> filteredList; // 검색된 결과 리스트
+    private List<Follower> followersList;
+    private List<Follower> filteredList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +42,12 @@ public class FollowersActivity extends AppCompatActivity {
 
         // 어댑터 설정
         followersAdapter = new FollowersAdapter(filteredList);
-        followersAdapter.setOnItemClickListener(follower ->
-                Toast.makeText(FollowersActivity.this, follower.getUsername() + " 클릭됨", Toast.LENGTH_SHORT).show());
+        followersAdapter.setOnItemClickListener(follower -> {
+            // 클릭된 팔로워의 프로필로 이동
+            Intent intent = new Intent(FollowersActivity.this, UserProfileActivity.class);
+            intent.putExtra("username", follower.getUserId()); // 클릭한 사용자의 userId 전달
+            startActivity(intent);
+        });
         followersRecyclerView.setAdapter(followersAdapter);
 
         // Firebase에서 팔로워 데이터 로드
@@ -93,7 +98,8 @@ public class FollowersActivity extends AppCompatActivity {
                                                 String profileImageUrl = userSnapshot.child("profileImage").getValue(String.class);
 
                                                 if (nickname != null) {
-                                                    followersList.add(new Follower(nickname, "뭘 넣을 수 있긴 한데 필요 없으면 없애도 됩니다",
+                                                    followersList.add(new Follower(followerId, nickname,
+                                                            "뭘 넣을 수 있긴 한데 필요 없으면 없애도 됩니다",
                                                             profileImageUrl != null ? profileImageUrl : ""));
                                                     filterFollowers(""); // RecyclerView 업데이트
                                                 }
