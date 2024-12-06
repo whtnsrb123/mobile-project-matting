@@ -1,10 +1,14 @@
 package com.example.Matting;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +19,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,6 +35,8 @@ import java.util.List;
 public class UserProfileActivity extends AppCompatActivity {
 
     private TextView userNameTextView;
+    private TextView followerCountTextView, followingCountTextView;
+    private ImageView profileImageView; // 프로필 이미지를 표시할 ImageView
     private RecyclerView postRecyclerView;
     private PostAdapter postAdapter;
     private List<Post> postList;
@@ -39,6 +46,12 @@ public class UserProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
+
+        // View 초기화
+        profileImageView = findViewById(R.id.profileImage);
+        userNameTextView = findViewById(R.id.user_name);
+        followerCountTextView = findViewById(R.id.followerCount);
+        followingCountTextView = findViewById(R.id.followingCount);
 
         // 전달받은 userId 가져오기
         userId = getIntent().getStringExtra("username");
@@ -50,15 +63,13 @@ public class UserProfileActivity extends AppCompatActivity {
             return;
         }
 
-        // TextView 초기화
-        userNameTextView = findViewById(R.id.user_name);
-
         // postList 초기화 및 RecyclerView 설정
         postList = new ArrayList<>();
         setupRecyclerView();
 
-        // 사용자 데이터 불러오기
+        // 사용자 데이터 및 프로필 이미지 불러오기
         fetchUserData();
+        fetchProfileImage(); // 프로필 이미지 불러오기
 
         // Firestore에서 게시글 로드
         fetchPosts();
@@ -73,13 +84,15 @@ public class UserProfileActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); // 뒤로가기 버튼 활성화
         getSupportActionBar().setTitle(""); // 액션바 제목 비우기 또는 원하는 값으로 설정
 
-        // 추가된 팔로워 및 팔로잉 버튼 동작 설정
+        // 팔로워 및 팔로잉 버튼 동작 설정
         setupFollow_FollowingButtons();
 
         // 팔로우 버튼 설정
         setupFollowButton();
-    }
 
+
+        loadProfileImage();
+    }
     // 뒤로가기 버튼 동작 처리
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -89,7 +102,7 @@ public class UserProfileActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-    // 유저 데이터 가져오기
+
     private void fetchUserData() {
         DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
         databaseRef.child("users").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -97,7 +110,7 @@ public class UserProfileActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     String nickname = snapshot.child("nicknames").getValue(String.class);
-                    userNameTextView.setText(nickname != null ? nickname : "Unknown User");
+                    userNameTextView.setText(nickname != null && !nickname.isEmpty() ? nickname : userId);
                 } else {
                     Toast.makeText(UserProfileActivity.this, "사용자 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
                 }
@@ -110,7 +123,48 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
     }
-    // 유저 게시글 불러오기
+
+    private void fetchProfileImage() {
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
+        databaseRef.child("users").child(userId).child("profileImage")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            String base64Image = snapshot.getValue(String.class); // Base64로 저장된 이미지
+                            if (base64Image != null && !base64Image.isEmpty()) {
+                                try {
+                                    byte[] decodedBytes = Base64.decode(base64Image, Base64.DEFAULT); // Base64 디코딩
+                                    Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length); // Bitmap 변환
+                                    profileImageView.setImageBitmap(bitmap); // 이미지 설정
+                                } catch (Exception e) {
+                                    Log.e("UserProfileActivity", "Error decoding Base64 image", e);
+                                    setDefaultProfileImage();
+                                }
+                            } else {
+                                setDefaultProfileImage();
+                            }
+                        } else {
+                            setDefaultProfileImage();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("UserProfileActivity", "Error loading profile image", error.toException());
+                        setDefaultProfileImage();
+                    }
+                });
+    }
+
+    private void setDefaultProfileImage() {
+        Glide.with(this)
+                .load(R.drawable.default_profile_image) // 기본 이미지
+                .circleCrop()
+                .into(profileImageView);
+    }
+
+    // Firestore에서 게시글 불러오기
     private void fetchPosts() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -119,41 +173,38 @@ public class UserProfileActivity extends AppCompatActivity {
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        postList.clear();
-                        queryDocumentSnapshots.forEach(document -> {
-                            try {
-                                String documentId = document.getString("documentId");
-                                String username = document.getString("username");
-                                String postContent = document.getString("postContent");
-                                String imageResource = document.getString("imageResource");
+                    postList.clear();
+                    queryDocumentSnapshots.forEach(document -> {
+                        try {
+                            String documentId = document.getString("documentId");
+                            String username = document.getString("username");
+                            String postContent = document.getString("postContent");
+                            String imageResource = document.getString("imageResource");
 
-                                int commentCount = document.contains("commentCount") ? document.getLong("commentCount").intValue() : 0;
-                                int reactionCount = document.contains("reactionCount") ? document.getLong("reactionCount").intValue() : 0;
-                                boolean reacted = document.contains("reacted") ? document.getBoolean("reacted") : false;
+                            int commentCount = document.contains("commentCount") ? document.getLong("commentCount").intValue() : 0;
+                            int reactionCount = document.contains("reactionCount") ? document.getLong("reactionCount").intValue() : 0;
+                            boolean reacted = document.contains("reacted") ? document.getBoolean("reacted") : false;
 
-                                postList.add(new Post(
-                                        documentId != null ? documentId : "",
-                                        username != null ? username : "",
-                                        postContent != null ? postContent : "",
-                                        imageResource != null ? imageResource : "",
-                                        document.getTimestamp("timestamp"),
-                                        commentCount,
-                                        reactionCount,
-                                        reacted
-                                ));
-                            } catch (Exception e) {
-                                Log.e("UserProfileActivity", "Error parsing post data", e);
-                            }
-                        });
-                        postAdapter.notifyDataSetChanged();
-                    } else {
-                        Log.d("UserProfileActivity", "No posts found for userId: " + userId);
-                    }
+                            postList.add(new Post(
+                                    documentId != null ? documentId : "",
+                                    username != null ? username : "",
+                                    postContent != null ? postContent : "",
+                                    imageResource != null ? imageResource : "",
+                                    document.getTimestamp("timestamp"),
+                                    commentCount,
+                                    reactionCount,
+                                    reacted
+                            ));
+                        } catch (Exception e) {
+                            Log.e("UserProfileActivity", "Error parsing post data", e);
+                        }
+                    });
+                    postAdapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> Log.e("UserProfileActivity", "Error fetching posts", e));
     }
-    // 뷰
+
+    // RecyclerView 설정
     private void setupRecyclerView() {
         postRecyclerView = findViewById(R.id.postRecyclerView);
         postRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
@@ -161,43 +212,72 @@ public class UserProfileActivity extends AppCompatActivity {
         postRecyclerView.setAdapter(postAdapter);
     }
 
-    // 팔로워 및 팔로잉 버튼 클릭 이벤트 추가
+
+
+    // 팔로워 및 팔로잉 버튼 설정
     private void setupFollow_FollowingButtons() {
         LinearLayout followersLayout = findViewById(R.id.followersLayout);
         LinearLayout followingLayout = findViewById(R.id.followingLayout);
 
-        // 팔로워 버튼 클릭
         followersLayout.setOnClickListener(v -> {
             Intent intent = new Intent(UserProfileActivity.this, FollowersActivity.class);
-            intent.putExtra("userId", userId); // 현재 프로필의 userId 전달
+            intent.putExtra("userId", userId);
             startActivity(intent);
         });
 
-        // 팔로잉 버튼 클릭
         followingLayout.setOnClickListener(v -> {
             Intent intent = new Intent(UserProfileActivity.this, FollowingActivity.class);
-            intent.putExtra("userId", userId); // 현재 프로필의 userId 전달
+            intent.putExtra("userId", userId);
             startActivity(intent);
         });
     }
 
+    // 팔로워 수 불러오기
+    private void fetchFollowerCount() {
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
+        databaseRef.child("users").child(userId).child("followers").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                long count = snapshot.getChildrenCount();
+                followerCountTextView.setText(String.valueOf(count));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("UserProfileActivity", "Error fetching followers count", error.toException());
+            }
+        });
+    }
+
+    // 팔로잉 수 불러오기
+    private void fetchFollowingCount() {
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
+        databaseRef.child("users").child(userId).child("following").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                long count = snapshot.getChildrenCount();
+                followingCountTextView.setText(String.valueOf(count));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("UserProfileActivity", "Error fetching following count", error.toException());
+            }
+        });
+    }
+
+    // 팔로우 버튼 설정
     private void setupFollowButton() {
         Button followButton = findViewById(R.id.followButton);
 
-        // 현재 로그인된 사용자 ID
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
 
-        // 팔로우 상태 확인
         databaseRef.child("users").child(userId).child("followers").child(currentUserId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            followButton.setText("팔로잉");
-                        } else {
-                            followButton.setText("팔로우");
-                        }
+                        followButton.setText(snapshot.exists() ? "팔로잉" : "팔로우");
                     }
 
                     @Override
@@ -206,79 +286,60 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
                 });
 
-        // 버튼 클릭 이벤트
         followButton.setOnClickListener(v -> {
-            databaseRef.child("users").child(userId).child("followers").child(currentUserId)
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (snapshot.exists()) {
-                                // 팔로우 취소
-                                databaseRef.child("users").child(userId).child("followers").child(currentUserId).removeValue()
-                                        .addOnSuccessListener(unused -> {
-                                            followButton.setText("팔로우");
-                                            Toast.makeText(UserProfileActivity.this, "팔로우 취소", Toast.LENGTH_SHORT).show();
-                                        })
-                                        .addOnFailureListener(e -> Log.e("UserProfileActivity", "Error removing follower", e));
+            databaseRef.child("users").child(userId).child("followers").child(currentUserId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        // Unfollow
+                        databaseRef.child("users").child(userId).child("followers").child(currentUserId).removeValue();
+                        databaseRef.child("users").child(currentUserId).child("following").child(userId).removeValue();
+                        followButton.setText("팔로우");
+                    } else {
+                        // Follow
+                        databaseRef.child("users").child(userId).child("followers").child(currentUserId).setValue(true);
+                        databaseRef.child("users").child(currentUserId).child("following").child(userId).setValue(true);
+                        followButton.setText("팔로우 취소");
+                    }
+                }
 
-                                // 내 following에서도 상대방 userId 제거
-                                databaseRef.child("users").child(currentUserId).child("following").child(userId).removeValue()
-                                        .addOnFailureListener(e -> Log.e("UserProfileActivity", "Error removing following", e));
-                            } else {
-                                // 팔로우 추가
-                                databaseRef.child("users").child(userId).child("followers").child(currentUserId).setValue(true)
-                                        .addOnSuccessListener(unused -> {
-                                            followButton.setText("팔로잉");
-                                            Toast.makeText(UserProfileActivity.this, "팔로우 성공", Toast.LENGTH_SHORT).show();
-                                        })
-                                        .addOnFailureListener(e -> Log.e("UserProfileActivity", "Error adding follower", e));
-
-                                // 내 following에도 상대방 userId 추가
-                                databaseRef.child("users").child(currentUserId).child("following").child(userId).setValue(true)
-                                        .addOnFailureListener(e -> Log.e("UserProfileActivity", "Error adding following", e));
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Log.e("UserProfileActivity", "Error toggling follow status", error.toException());
-                        }
-                    });
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("UserProfileActivity", "Error toggling follow status", error.toException());
+                }
+            });
         });
     }
-    // 팔로잉 수 불러오기
-    private void fetchFollowingCount() {
+    // 프로필 이미지
+    private void loadProfileImage() {
         DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
-        databaseRef.child("users").child(userId).child("following")
+        databaseRef.child("users").child(userId).child("profileImage")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        long count = snapshot.getChildrenCount(); // 팔로잉 수 계산
-                        TextView followingCountTextView = findViewById(R.id.followingCount);
-                        followingCountTextView.setText(String.valueOf(count)); // UI에 표시
+                        if (snapshot.exists()) {
+                            String base64Image = snapshot.getValue(String.class); // Base64로 저장된 이미지
+                            if (base64Image != null && !base64Image.isEmpty()) {
+                                try {
+                                    byte[] decodedBytes = Base64.decode(base64Image, Base64.DEFAULT); // Base64 디코딩
+                                    Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length); // Bitmap 변환
+                                    profileImageView.setImageBitmap(bitmap); // 이미지 설정
+                                } catch (Exception e) {
+                                    Log.e("UserProfileActivity", "Error decoding Base64 image", e);
+                                    profileImageView.setImageResource(R.drawable.default_profile_image); // 기본 이미지 설정
+                                }
+                            } else {
+                                profileImageView.setImageResource(R.drawable.default_profile_image); // 기본 이미지 설정
+                            }
+                        } else {
+                            profileImageView.setImageResource(R.drawable.default_profile_image); // 기본 이미지 설정
+                        }
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("UserProfileActivity", "Error fetching following count", error.toException());
-                    }
-                });
-    }
-    // 팔로워 수 불러오기
-    private void fetchFollowerCount() {
-        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
-        databaseRef.child("users").child(userId).child("followers")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        long count = snapshot.getChildrenCount(); // 팔로워 수 계산
-                        TextView followerCountTextView = findViewById(R.id.followerCount);
-                        followerCountTextView.setText(String.valueOf(count)); // UI에 표시
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("UserProfileActivity", "Error fetching followers count", error.toException());
+                        Log.e("UserProfileActivity", "Error loading profile image", error.toException());
+                        profileImageView.setImageResource(R.drawable.default_profile_image); // 기본 이미지 설정
                     }
                 });
     }
