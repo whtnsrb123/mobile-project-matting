@@ -64,8 +64,8 @@ public class CommunityActivity extends AppCompatActivity {
         // Firestore에서 데이터를 불러오는 메소드 호출
         loadPostsFromFirestore();
 
-        // Intent에서 새로운 게시물 데이터 가져오기
-        Intent intent = getIntent();
+//        // Intent에서 새로운 게시물 데이터 가져오기
+//        Intent intent = getIntent();
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
@@ -126,8 +126,8 @@ public class CommunityActivity extends AppCompatActivity {
                             String mapx = document.getString("mapx");
                             String mapy = document.getString("mapy");
                             String userid = document.getString("userid");
-                            Log.d("userid", userid);
-                            communityList.add(new Community(documentId, title, content, location, restaurant, date, time, mapx, mapy, userid)); // Firestore에서 불러온 데이터를 리스트에 추가
+                            String address = document.getString("address");
+                            communityList.add(new Community(documentId, title, content, location, restaurant, date, time, mapx, mapy, userid, address)); // Firestore에서 불러온 데이터를 리스트에 추가
                         }
                         communityAdapter.notifyDataSetChanged(); // RecyclerView 업데이트
                     } else {
