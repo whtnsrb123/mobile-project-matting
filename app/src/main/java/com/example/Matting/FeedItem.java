@@ -1,6 +1,5 @@
 package com.example.Matting;
 
-
 import java.util.Date;
 
 public class FeedItem {
@@ -13,22 +12,30 @@ public class FeedItem {
     private int commentCount;
     private Date timestamp;
     private boolean reacted;
+    private String profileImage;
 
     public FeedItem(String documentId, String username, String nicknames, String postContent,
-                    String imageUrl, int reactionCount, int commentCount, Date timestamp) {
+                    String imageUrl, int reactionCount, int commentCount, Date timestamp, String profileImage) {
         this.documentId = documentId;
         this.username = username;
-        this.nicknames = nicknames; // 추가된 nicknames 필드
+        this.nicknames = nicknames;
         this.postContent = postContent;
         this.imageUrl = imageUrl;
         this.reactionCount = reactionCount;
         this.commentCount = commentCount;
         this.timestamp = timestamp;
+        this.profileImage = profileImage; // 초기화
     }
 
-    // Getter와 Setter
+    // Getter와 Setter 추가
+    public String getProfileImage() {
+        return profileImage;
+    }
 
-    public String getNicknames(){ return nicknames; }
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
     public String getDocumentId() {
         return documentId;
     }
@@ -43,6 +50,14 @@ public class FeedItem {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getNicknames() {
+        return nicknames;
+    }
+
+    public void setNicknames(String nicknames) {
+        this.nicknames = nicknames;
     }
 
     public String getPostContent() {
