@@ -43,7 +43,7 @@ public class Main_ReviewAdapter extends RecyclerView.Adapter<Main_ReviewAdapter.
 
             holder.ivReviewImage.setImageBitmap(decodedByte);
         } else {
-            holder.ivReviewImage.setImageResource(R.drawable.ic_launcher_background); // 기본 이미지 설정
+            holder.ivReviewImage.setImageResource(R.drawable.ic_arrow_back); // 기본 이미지 설정
         }
     }
 
