@@ -54,7 +54,7 @@ public class Feed_MainActivity extends AppCompatActivity {
             // 유저네임 클릭 시 UserProfileActivity로 이동
             Intent intent = new Intent(Feed_MainActivity.this, UserProfileActivity.class);
             if (username != null) {
-                intent.putExtra("username",username);
+                intent.putExtra("username", username);
             } else {
                 intent.putExtra("username", "Unknown User"); // 기본값 전달
             }
@@ -68,7 +68,7 @@ public class Feed_MainActivity extends AppCompatActivity {
         loadFeedData();
 
         // SwipeRefreshLayout 새로고침 동작 설정
-        swipeRefreshLayout.setOnRefreshListener(() -> loadFeedData());
+        swipeRefreshLayout.setOnRefreshListener(this::loadFeedData);
 
         // BottomNavigationView 초기화
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
@@ -109,17 +109,15 @@ public class Feed_MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
         // imageButton7 찾기
         searchButton = findViewById(R.id.imageButton7);
 
         // imageButton7 클릭 시 FeedSearchActivity로 이동
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // FeedSearchActivity로 이동
-                Intent intent = new Intent(Feed_MainActivity.this, FeedSearchActivity.class);
-                startActivity(intent);
-            }
+        searchButton.setOnClickListener(v -> {
+            // FeedSearchActivity로 이동
+            Intent intent = new Intent(Feed_MainActivity.this, FeedSearchActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -142,23 +140,30 @@ public class Feed_MainActivity extends AppCompatActivity {
                             int commentCount = document.getLong("commentCount").intValue();
                             Date timestamp = document.getTimestamp("timestamp").toDate();
 
-                            // Realtime Database에서 username의 nicknames 가져오기
+                            // Realtime Database에서 username의 nicknames과 profileImage 가져오기
                             DatabaseReference userRef = FirebaseDatabase.getInstance()
                                     .getReference("users")
-                                    .child(username); // username으로 users/{username}/nicknames 접근
+                                    .child(username); // username으로 users/{username}/ 접근
 
-                            userRef.child("nicknames").addListenerForSingleValueEvent(new ValueEventListener() {
+                            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    String nickname = snapshot.exists() ? snapshot.getValue(String.class) : "Unknown User";
+                                    String nickname = snapshot.child("nicknames").exists()
+                                            ? snapshot.child("nicknames").getValue(String.class)
+                                            : "Unknown User";
+
+                                    String profileImage = snapshot.child("profileImage").exists()
+                                            ? snapshot.child("profileImage").getValue(String.class)
+                                            : null;
+
                                     // FeedItem 생성 및 추가
-                                    feedItems.add(new FeedItem(documentId, username, nickname, postContent, imageUrl, reactionCount, commentCount, timestamp));
+                                    feedItems.add(new FeedItem(documentId, username, nickname, postContent, imageUrl, reactionCount, commentCount, timestamp, profileImage));
                                     feedAdapter.notifyDataSetChanged();
                                 }
 
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {
-                                    Log.e("Feed_MainActivity", "Error fetching nicknames", error.toException());
+                                    Log.e("Feed_MainActivity", "Error fetching user data", error.toException());
                                 }
                             });
                         }
