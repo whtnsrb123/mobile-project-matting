@@ -1,5 +1,6 @@
 package com.example.Matting;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -38,9 +39,14 @@ public class FollowingActivity extends AppCompatActivity {
         followingRecyclerView = findViewById(R.id.followingRecyclerView);
         followingRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        // 어댑터 설정
         followingAdapter = new FollowersAdapter(filteredList);
-        followingAdapter.setOnItemClickListener(follower ->
-                Toast.makeText(FollowingActivity.this, follower.getUsername() + " 클릭됨", Toast.LENGTH_SHORT).show());
+        followingAdapter.setOnItemClickListener(follower -> {
+            // 클릭된 팔로잉 사용자의 프로필로 이동
+            Intent intent = new Intent(FollowingActivity.this, UserProfileActivity.class);
+            intent.putExtra("username", follower.getUserId()); // 클릭한 사용자의 userId 전달
+            startActivity(intent);
+        });
         followingRecyclerView.setAdapter(followingAdapter);
 
         // 전달된 userId를 기반으로 데이터 가져오기
@@ -88,7 +94,9 @@ public class FollowingActivity extends AppCompatActivity {
 
                                                 // 닉네임과 프로필 이미지 추가
                                                 followingList.add(new Follower(
-                                                        nickname != null ? nickname : followingId, "뭘 넣을 수 있긴 한데 필요 없으면 없애도 됩니다",
+                                                        followingId, // userId 전달
+                                                        nickname != null ? nickname : "Unknown User",
+                                                        "뭘 넣을 수 있긴 한데 필요 없으면 없애도 됩니다",
                                                         profileImageUrl != null ? profileImageUrl : "")); // 이미지 없으면 빈 문자열
                                                 filterFollowing(""); // RecyclerView 업데이트
                                             }
