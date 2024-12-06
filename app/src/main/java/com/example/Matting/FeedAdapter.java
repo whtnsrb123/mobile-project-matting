@@ -50,6 +50,25 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     public void onBindViewHolder(@NonNull FeedViewHolder holder, int position) {
         FeedItem feedItem = feedItems.get(position);
 
+        String profileImage = feedItem.getProfileImage();
+        if (profileImage != null && !profileImage.isEmpty()) {
+            try {
+                // Base64 헤더 제거
+                if (profileImage.startsWith("data:image")) {
+                    profileImage = profileImage.substring(profileImage.indexOf(",") + 1);
+                }
+                // Base64 디코딩 및 설정
+                byte[] decodedBytes = Base64.decode(profileImage, Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+                holder.profileImage.setImageBitmap(bitmap);
+            } catch (Exception e) {
+                Log.e("FeedAdapter", "Error decoding profile image", e);
+                holder.profileImage.setImageResource(R.drawable.default_profile_image);
+            }
+        } else {
+            holder.profileImage.setImageResource(R.drawable.default_profile_image);
+        }
+
         // 기존 username을 기반으로 닉네임 가져오기
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(feedItem.getUsername());
         userRef.child("nicknames").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -79,6 +98,13 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                 listener.onUsernameClick(feedItem.getUsername());
             }
         });
+        // 프로필 이미지 클릭 이벤트
+        holder.profileImage.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onUsernameClick(feedItem.getUsername());
+            }
+        });
+
 
         // Timestamp를 상대적 시간으로 변환하여 표시
         if (feedItem.getTimestamp() != null) {
@@ -206,7 +232,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         TextView reactionCountTextView;
         TextView commentCountTextView;
         TextView timestampTextView;
-        ImageView postImageView;
+        ImageView postImageView; // 게시물 이미지
+        ImageView profileImage; // 프로필 이미지
         ImageView reactionButton;
         ImageView commentButton;
 
@@ -218,7 +245,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             reactionCountTextView = itemView.findViewById(R.id.reactionCount);
             commentCountTextView = itemView.findViewById(R.id.commentCount);
             timestampTextView = itemView.findViewById(R.id.postTimestamp);
-            postImageView = itemView.findViewById(R.id.imageView);
+            postImageView = itemView.findViewById(R.id.imageView); // 게시물 이미지
+            profileImage = itemView.findViewById(R.id.profileImage); // 프로필 이미지
             reactionButton = itemView.findViewById(R.id.reactionButton);
             commentButton = itemView.findViewById(R.id.commentButton);
         }
