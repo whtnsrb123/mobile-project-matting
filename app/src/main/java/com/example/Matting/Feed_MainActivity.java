@@ -16,6 +16,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -121,9 +122,11 @@ public class Feed_MainActivity extends AppCompatActivity {
         });
     }
 
-    // Firestore에서 데이터 가져오기
     private void loadFeedData() {
         swipeRefreshLayout.setRefreshing(true);
+
+        // 현재 로그인한 사용자의 userId 가져오기
+        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         db.collection("posts")
                 .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING) // timestamp를 내림차순으로 정렬
@@ -134,6 +137,12 @@ public class Feed_MainActivity extends AppCompatActivity {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String documentId = document.getId();
                             String username = document.getString("username"); // Firestore에서 username 가져오기
+
+                            // 자신이 작성한 게시물 제외
+                            if (username.equals(currentUserId)) {
+                                continue;
+                            }
+
                             String postContent = document.getString("postContent");
                             String imageUrl = document.getString("imageResource");
                             int reactionCount = document.getLong("reactionCount").intValue();
