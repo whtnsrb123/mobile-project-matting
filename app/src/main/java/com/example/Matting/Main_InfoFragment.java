@@ -140,7 +140,7 @@ public class Main_InfoFragment extends Fragment {
                 bundle.putString("restaurant", getArguments().getString("title")); // InfoFragment에서 받은 title 전달
                 bundle.putString("mapx", String.valueOf(getArguments().getInt("map_x")));
                 bundle.putString("mapy", String.valueOf(getArguments().getInt("map_y")));
-                Log.d("mapxy", "Info"+getArguments().getInt("map_x")+getArguments().getInt("map_y"));
+                bundle.putString("address", getArguments().getString("address"));
                 mainCreateMattingFragment.setArguments(bundle);
                 // Fragment 전환
                 FragmentTransaction transaction = getParentFragmentManager().beginTransaction();

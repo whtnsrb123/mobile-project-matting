@@ -32,7 +32,7 @@ public class Main_CreateMattingFragment extends Fragment {
     private EditText etTitle, etContent, etLocation, etRestaurant, etDate, etTime;
     private Button btnCreatePost, dateButton, timeButton;
     private ImageButton closeButton;
-    private String mapx, mapy, userId;
+    private String mapx, mapy, userId, address;
 
     private User user;
     private FirebaseAuth mAuth;
@@ -78,6 +78,7 @@ public class Main_CreateMattingFragment extends Fragment {
             String restaurant = arguments.getString("restaurant");
             mapx = arguments.getString("mapx");
             mapy = arguments.getString("mapy");
+            address = arguments.getString("address");
             Log.d("mapxy", "putExtra"+mapx+mapy);
             if (restaurant != null) {
                 etRestaurant.setText(restaurant); // 전달받은 title 값을 EditText에 설정
@@ -109,6 +110,7 @@ public class Main_CreateMattingFragment extends Fragment {
                     post.put("mapx", mapx);
                     post.put("mapy", mapy);
                     post.put("userid", userId); // 현재 사용자 ID 추가
+                    post.put("address", address);
 
                     communityRef.add(post)
                             .addOnSuccessListener(documentReference -> {
