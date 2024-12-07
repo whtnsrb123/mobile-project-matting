@@ -72,14 +72,11 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
                                 }
                             }
                             // 유효한 이미지가 없는 경우 기본 이미지 설정
-                            holder.ivCommunity.setImageResource(R.drawable.ic_arrow_back);
                         } else {
                             Log.w("ReviewImage", "일치하는 리뷰가 없습니다.");
-                            holder.ivCommunity.setImageResource(R.drawable.ic_arrow_back); // 기본 이미지 설정
                         }
                     } else {
                         Log.e("FirestoreError", "리뷰 이미지를 가져오는 데 실패했습니다.", task.getException());
-                        holder.ivCommunity.setImageResource(R.drawable.ic_arrow_back); // 기본 이미지 설정
                     }
                 });
 
