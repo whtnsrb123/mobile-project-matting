@@ -4,31 +4,33 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Community implements Parcelable {
-    private String documentId, title, content, info, restaurant, date, time, mapx, mapy, userId;
+    private String documentId, title, content, location, restaurant, date, time, mapx, mapy, userId, address;
 
-    public Community(String documentId, String title, String content, String info, String restaurant, String date, String time, String mapx, String mapy, String userId) {
+    public Community(String documentId, String title, String content, String location, String restaurant, String date, String time, String mapx, String mapy, String userId, String address) {
         this.documentId = documentId;
         this.title = title;
         this.content = content;
-        this.info = info;
+        this.location = location;
         this.restaurant = restaurant;
         this.date = date;
         this.time = time;
         this.mapx = mapx;
         this.mapy = mapy;
         this.userId = userId;
+        this.address = address;
     }
 
     protected Community(Parcel in) {
         title = in.readString();
         content = in.readString();
-        info = in.readString();
+        location = in.readString();
         restaurant = in.readString();
         date = in.readString();
         time = in.readString();
         mapx = in.readString();
         mapy = in.readString();
         userId = in.readString();
+        address = in.readString();
     }
 
     public static final Creator<Community> CREATOR = new Creator<Community>() {
@@ -71,8 +73,8 @@ public class Community implements Parcelable {
         return restaurant;
     }
 
-    public String getInfo() {
-        return info;
+    public String getLocation() {
+        return location;
     }
 
     public String getDate() {
@@ -91,6 +93,10 @@ public class Community implements Parcelable {
         return mapy;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -100,6 +106,7 @@ public class Community implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(title);
         dest.writeString(content);
-        dest.writeString(info);
+        dest.writeString(location);
+        dest.writeString(address);
     }
 }

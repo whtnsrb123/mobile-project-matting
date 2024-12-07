@@ -66,9 +66,10 @@
             </LinearLayout>
 
             <ImageView
+                android:id="@+id/ivCommunity"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_launcher_background" />
+                android:src="@drawable/ic_arrow_back" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
