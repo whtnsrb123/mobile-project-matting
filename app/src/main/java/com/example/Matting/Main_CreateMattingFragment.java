@@ -1,5 +1,7 @@
 package com.example.Matting;
 
+import static com.example.Matting.Chat_Chatmanage.addNewChatRoom;
+
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
@@ -79,7 +81,7 @@ public class Main_CreateMattingFragment extends Fragment {
             mapx = arguments.getString("mapx");
             mapy = arguments.getString("mapy");
             address = arguments.getString("address");
-            Log.d("mapxy", "putExtra"+mapx+mapy);
+            Log.d("mapxy", "putExtra" + mapx + mapy);
             if (restaurant != null) {
                 etRestaurant.setText(restaurant); // 전달받은 title 값을 EditText에 설정
             }
@@ -116,6 +118,10 @@ public class Main_CreateMattingFragment extends Fragment {
                             .addOnSuccessListener(documentReference -> {
                                 Toast.makeText(getActivity(), "게시물이 저장되었습니다.", Toast.LENGTH_SHORT).show();
 
+                                //채팅 생성
+                                User user = new User(getActivity());
+                                addNewChatRoom(title, user, documentReference.getId());
+
                                 // CommunityActivity로 이동
                                 Intent intent = new Intent(getActivity(), CommunityActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -125,6 +131,8 @@ public class Main_CreateMattingFragment extends Fragment {
                                 Toast.makeText(getActivity(), "게시물 저장에 실패했습니다.", Toast.LENGTH_SHORT).show();
                                 Log.w("Firestore", "Error adding document", e);
                             });
+
+
                 } else {
                     // 제목 또는 내용이 비어있을 경우 메시지 표시
                     Toast.makeText(getActivity(), "제목, 내용, 날짜, 시간은 필수 입력 사항입니다.", Toast.LENGTH_SHORT).show();
