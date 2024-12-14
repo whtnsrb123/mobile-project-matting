@@ -180,9 +180,21 @@ public class Main_ReviewWriteFragment extends Fragment {
             InputStream inputStream = contentResolver.openInputStream(imageUri);
             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-            byte[] imageBytes = byteArrayOutputStream.toByteArray();
+//            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+//            byte[] imageBytes = byteArrayOutputStream.toByteArray();
+
+            // 이미지 압축 및 Base64 인코딩
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            int quality = 100; // 초기 압축 품질
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos);
+            while (baos.toByteArray().length >= 1024 * 1024) {
+                // 1MB 이하가 될 때까지 품질을 낮춤
+                quality -= 5;
+                baos.reset();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos);
+            }
+            byte[] imageBytes = baos.toByteArray();
 
             return Base64.encodeToString(imageBytes, Base64.DEFAULT);
         } catch (Exception e) {
