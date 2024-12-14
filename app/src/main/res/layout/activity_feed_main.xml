@@ -6,24 +6,21 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
+    <!-- Toolbar for ActionBar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:orientation="horizontal"
-        android:background="#BB2649">
+        android:background="?attr/colorPrimary"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/logo"
             android:layout_width="132dp"
             android:layout_height="54dp"
-            app:srcCompat="@drawable/feed_ic_matting"
+            android:src="@drawable/feed_ic_matting"
             app:tint="@color/white"
-            android:layout_gravity="left" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_gravity="start"/>
 
         <ImageButton
             android:id="@+id/imageButton7"
@@ -32,10 +29,10 @@
             android:background="?attr/selectableItemBackground"
             android:contentDescription="@string/comment_button"
             app:tint="@color/white"
-            android:layout_gravity="left"
-            android:layout_marginRight="16dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="16dp"
             app:srcCompat="@drawable/search" />
-    </LinearLayout>
+    </androidx.appcompat.widget.Toolbar>
 
     <!-- SwipeRefreshLayout 감싸기 -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
